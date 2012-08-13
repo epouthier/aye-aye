@@ -5,7 +5,7 @@ namespace ayeaye
 {
 	Language::Language(Parameters &parameters) throw(LanguageException) :
 		_parameters(parameters),
-		_currentLine(0)
+		_currentLine(1)
 	{
 		//variables
 		path languageFilePath;
@@ -92,7 +92,7 @@ namespace ayeaye
 					}
 					else
 					{
-						throw LanguageException(_parameters.getLanguage(), _currentLine, "\";\" absent");
+						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, "\";\" absent");
 					}
 				}
 			}
@@ -313,7 +313,10 @@ namespace ayeaye
 				(!_parseCharacter('\t')))
 			{
 				if (_parseCharacter('\n'))
+				{
 					_currentLine++;
+					continue;
+				}
 
 				break;
 			}

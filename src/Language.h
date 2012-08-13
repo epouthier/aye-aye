@@ -22,7 +22,7 @@
 			/* Attributs */
 			Parameters &_parameters;
 			ifstream _languageFile;
-			int _currentLine = 0;
+			int _currentLine = 1;
 
 		public:
 			/* Constructeur */
