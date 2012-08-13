@@ -3,6 +3,7 @@
 #define _AYEAYE_LANGUAGE_EXCEPTION_H
 
     #include <iostream>
+	#include <sstream>
     #include <string>
 
 	#include "Exception.h"
@@ -15,8 +16,8 @@
 		{
 		public:
 			/* Constructeur */
-			LanguageException(string type, string message) : Exception(type + " : " + message) {}
-			LanguageException(string message) : Exception(message) {}
+			LanguageException(string language, int line, string message);
+			LanguageException(string message);
 		};
 	}
 

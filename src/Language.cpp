@@ -4,7 +4,8 @@
 namespace ayeaye
 {
 	Language::Language(Parameters &parameters) throw(LanguageException) :
-		_parameters(parameters)
+		_parameters(parameters),
+		_currentLine(0)
 	{
 		//variables
 		path languageFilePath;
@@ -35,12 +36,14 @@ namespace ayeaye
 		}
 		else
 		{
-			throw LanguageException("Parser", "Le fichier du langage \"" + _parameters.getLanguage() + "\" est invalide");
+			throw LanguageException("Le fichier du langage \"" + _parameters.getLanguage() + "\" est invalide");
 		}
 	}
 
 	void Language::_parseLanguage() throw(LanguageException)
 	{
+		//language ::= (unnecessary-character . (comment | rule))*;
+
 		while (_languageFile.good())
 		{
 			_parseUnnecessaryCharacters();
@@ -52,6 +55,8 @@ namespace ayeaye
 
 	bool Language::_parseComment() throw(LanguageException)
 	{
+		//comment ::= '(*' . ... . '*)';
+
 		if (_parseString("(*"))
 		{
 			while (!_parseString("*)"))
@@ -67,6 +72,8 @@ namespace ayeaye
 
 	bool Language::_parseRule() throw(LanguageException)
 	{
+		//rule ::= rule-identifier . unnecessary-character . '::=' . unnecessary-character . rule-definition . unnecessary-character . ';';
+
 		if (_parseRuleIdentifier())
 		{
 			_parseUnnecessaryCharacters();
@@ -83,7 +90,15 @@ namespace ayeaye
 					{
 						return true;
 					}
+					else
+					{
+						throw LanguageException(_parameters.getLanguage(), _currentLine, "\";\" absent");
+					}
 				}
+			}
+			else
+			{
+				throw LanguageException(_parameters.getLanguage(), _currentLine, "\"::=\" absent");
 			}
 		}
 
@@ -92,13 +107,15 @@ namespace ayeaye
 
 	bool Language::_parseRuleIdentifier() throw(LanguageException)
 	{
+		//rule-identifier ::= regex([a-z]+(-[a-z]+)*);
+
 		string ruleIdentifier = "";
 		char c;
 
 		while (true)
 		{
-			if (_languageFile.eof())
-				throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");
+			/*if (_languageFile.eof())
+				throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");*/
 
 			ruleIdentifier += _languageFile.get();
 
@@ -113,13 +130,15 @@ namespace ayeaye
 		if (ruleIdentifier.empty())
 			return false;
 
-		cout << ruleIdentifier << endl;
+		cout << ruleIdentifier << endl; //debug
 
 		return (_parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*"));
 	}
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
 	{
+		//rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . logical-symbol . rule-definition ];
+
         if (_parseOptionalExpression() ||
             _parseGroupExpression() ||
             _parseUnaryExpression())
@@ -148,6 +167,8 @@ namespace ayeaye
 
     bool Language::_parseOptionalExpression() throw(LanguageException)
 	{
+		//optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']' . [ unnecessary-character . repetition-symbol ];
+
 		if (_parseCharacter('['))
 		{
 			_parseUnnecessaryCharacters();
@@ -166,6 +187,10 @@ namespace ayeaye
 
 					return true;
 				}
+				else
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, "\"]\" absent");
+				}
 			}
 		}
 
@@ -174,6 +199,8 @@ namespace ayeaye
 
     bool Language::_parseGroupExpression() throw(LanguageException)
 	{
+		//group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')' . [ unnecessary-character . repetition-symbol ];
+
 		if (_parseCharacter('('))
 		{
 			_parseUnnecessaryCharacters();
@@ -192,6 +219,10 @@ namespace ayeaye
 
 					return true;
 				}
+				else
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, "\")\" absent");
+				}
 			}
 		}
 
@@ -200,6 +231,8 @@ namespace ayeaye
 
     bool Language::_parseUnaryExpression() throw(LanguageException)
 	{
+		//unary-expression ::= ( rule-identifier | terminal-symbol ) . [ unnecessary-character . repetition-symbol ];
+
 		if (_parseRuleIdentifier() ||
 			_parseTerminalSymbol())
         {
@@ -217,6 +250,8 @@ namespace ayeaye
 
     bool Language::_parseLogicalSymbol() throw(LanguageException)
     {
+		//logical-symbol ::= '.' | '|';
+
         if (_parseCharacter('.') ||
             _parseCharacter('|'))
             return true;
@@ -226,6 +261,8 @@ namespace ayeaye
 
     bool Language::_parseRepetitionSymbol() throw(LanguageException)
     {
+		//repetition-symbol ::= '*' | '+' | '?';
+
         if (_parseCharacter('*') ||
             _parseCharacter('+') ||
             _parseCharacter('?'))
@@ -236,6 +273,8 @@ namespace ayeaye
 
     bool Language::_parseTerminalSymbol() throw(LanguageException)
 	{
+		//terminal-symbol ::= "'" . ... . "'" | '"' . ... . '"';
+
 		string terminalSymbol = "";
 
 		if (_parseCharacter('\''))
@@ -245,7 +284,7 @@ namespace ayeaye
 				terminalSymbol += _languageFile.get();
 			}
 
-            cout << "\"" << terminalSymbol << "\"" << endl;
+            cout << "\"" << terminalSymbol << "\"" << endl; //debug
 
 			return true;
 		}
@@ -256,7 +295,7 @@ namespace ayeaye
 				terminalSymbol += _languageFile.get();
 			}
 
-            cout << "\"" << terminalSymbol << "\"" << endl;
+            cout << "\"" << terminalSymbol << "\"" << endl; //debug
 
 			return true;
 		}
@@ -266,13 +305,18 @@ namespace ayeaye
 
 	void Language::_parseUnnecessaryCharacters() throw(LanguageException)
 	{
+		//unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
+
 		while (_languageFile.good())
 		{
 			if ((!_parseCharacter(' ')) &&
-				(!_parseCharacter('\t')) &&
-				(!_parseCharacter('\n')) &&
-				(!_parseCharacter('\r')))
+				(!_parseCharacter('\t')))
+			{
+				if (_parseCharacter('\n'))
+					_currentLine++;
+
 				break;
+			}
 		}
 	}
 
@@ -301,22 +345,14 @@ namespace ayeaye
 
 	bool Language::_parseCharacter(char c) throw(LanguageException)
 	{
-		if (_languageFile.eof())
-			throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");
+		/*if (_languageFile.eof())
+			throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");*/
 
 		if (_languageFile.get() != c)
 		{            
 			_languageFile.unget();
 			return false;
 		}
-
-        /*char ctmp = _languageFile.get();
-        cout << ctmp << endl;
-        if (ctmp != c)
-        {
-            _languageFile.unget();
-            return false;
-        }*/
 
 		return true;
 	}

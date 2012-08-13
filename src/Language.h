@@ -19,9 +19,10 @@
 		class Language
 		{
 		private:
-			/* Attribut */
+			/* Attributs */
 			Parameters &_parameters;
 			ifstream _languageFile;
+			int _currentLine = 0;
 
 		public:
 			/* Constructeur */
