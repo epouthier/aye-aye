@@ -1,0 +1,50 @@
+
+/* ceci est un commentaire multi-ligne */
+
+// ceci est commentaire sur une seule ligne
+
+bool bVariable = true;
+bVariable = false;
+
+int iVariable = 0;
+uint uiVariable = 1;
+int8 i8Variable = 2;
+uint8 ui8Variable = 3;
+int16 i16Variable = 4;
+uint16 ui16Variable = 5;
+int32 i32Variable = 6;
+uint32 ui32Variable = 7;
+
+float fVariable = 8.0;
+float32 fVariable = 9.0;
+float64 fVariable = 10.0;
+
+char8 cVariable = 'a';
+char16 cVariable = 'b';
+char32 cVariable = 'c';
+string sVariable = "abc";
+
+if ()
+{
+}
+else if()
+{
+}
+else
+{
+}
+
+while()
+{
+	break;
+}
+
+do
+{
+} while();
+
+for(;;)
+{
+	continue;
+}
+

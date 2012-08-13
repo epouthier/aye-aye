@@ -1,0 +1,12 @@
+
+(* type *)
+type ::= value-type;
+
+(* value-type *)
+value-type ::= boolean-type | integral-type | floating-point-type | string-type | array-type;
+boolean-type ::= "bool";
+integral-type ::= "int";
+floating-point-type ::= "float";
+string-type ::= "string";
+array-type ::= value-type . "[" . integral-value . [ "," . integral-value ]* . "]";
+

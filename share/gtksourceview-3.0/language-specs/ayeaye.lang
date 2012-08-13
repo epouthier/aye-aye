@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="ayeaye" _name="Aye-Aye" version="2.0" _section="Sources">
+	<metadata>
+		<property name="globs">*.aye</property>
+		<property name="block-comment-start">(*</property>
+        <property name="block-comment-end">*)</property>
+	</metadata>
+
+	<styles>
+        <style id="comment" _name="Comment" map-to="def:comment"/>
+        <style id="ruleIdentifier" _name="RuleIdentifier" map-to="def:type"/>
+        <style id="ruleAffectation" _name="RuleAffectation" map-to="def:constant"/>
+        <style id="terminalSymbol" _name="TerminalSymbol" map-to="def:string"/>
+        <style id="operator" _name="Operator" map-to="def:keyword"/>
+	</styles>
+
+	<definitions>
+        <context id="comment" style-ref="comment" class="no-spell-check">
+            <start>\(\*</start>
+            <end>\*\)</end>
+        </context>
+
+        <context id="ruleIdentifier" style-ref="ruleIdentifier">
+            <match>[a-z]+(-[a-z]+)*</match>
+        </context>
+
+        <context id="ruleAffectation" style-ref="ruleAffectation">
+            <match>::=|;</match>
+        </context>
+
+        <context id="terminalSymbolDoubleQuote" style-ref="terminalSymbol" class="no-spell-check" end-at-line-end="true">
+			<start>"</start>
+			<end>"</end>
+		</context>
+
+        <context id="terminalSymbolSingleQuote" style-ref="terminalSymbol" class="no-spell-check" end-at-line-end="true">
+			<start>'</start>
+			<end>'</end>
+		</context>
+
+        <context id="operator" style-ref="operator">
+            <match>\.|\||\*|\+|\?|\(|\)|\[|\]</match>
+        </context>
+
+		<context id="ayeaye">
+			<include>
+				<context ref="comment"/>
+				<context ref="ruleIdentifier"/>
+                <context ref="ruleAffectation"/>
+				<context ref="terminalSymbolDoubleQuote"/>
+                <context ref="terminalSymbolSingleQuote"/>
+				<context ref="operator"/>
+			</include>
+		</context>
+	</definitions>
+</language>
+
