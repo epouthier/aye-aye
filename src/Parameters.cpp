@@ -11,17 +11,17 @@ namespace ayeaye
 		try
 		{
 			//configuration des paramètres
-			options_description genericOptions("Options génériques");
+			options_description genericOptions(tr("Options génériques"));
 			genericOptions.add_options()
 				("help", "")
 				("version", "Affiche le numéro de version");
 
-			options_description languageOptions("Options pour les langages");
+			options_description languageOptions(tr("Options pour les langages"));
 			languageOptions.add_options()
 				("language", value<string>(), "Pour indiquer le langage des fichiers sources")
 				("language-dir", value<string>(), "Pour indiquer dans quelle répertoire où est le langage");
 
-			options_description sourceOptions("Options pour les sources");
+			options_description sourceOptions(tr("Options pour les sources"));
 			sourceOptions.add_options()
 				("source-dir", value<string>(), "Pour indiquer dans quelle répertoire où sont les sources");
 
@@ -52,7 +52,7 @@ namespace ayeaye
 				helpOptions.add(sourceOptions);
 				helpOptions.add(languageOptions);
 
-				cout << "Utilisation: ayeaye [OPTIONS] SOURCES" << endl
+				cout << tr("Utilisation: ayeaye [OPTIONS] SOURCES") << endl
 					 << helpOptions << endl;
 			}
 			else if (variablesMap.count("version")) //--version
@@ -83,7 +83,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw ParametersException("Il n'y a pas de fichier source spécifié");
+					throw ParametersException(tr("Il n'y a pas de fichier source spécifié"));
 				}
 			}
 		}

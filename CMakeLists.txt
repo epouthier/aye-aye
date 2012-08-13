@@ -23,12 +23,25 @@ find_package(
 	system
 )
 
+#vérification de gettext
+include(FindGettext)
+find_package(
+    Gettext
+    REQUIRED
+)
+
 #ajout des définitions
 add_definitions(${AYEAYE_LANGUAGE_DIRECTORY_DEFINE})
 
 #ajout des librairies
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
+include_directories(
+    ${Boost_INCLUDE_DIRS}
+    ${Gettext_INCLUDE_DIRS}
+)
+link_directories(
+    ${Boost_LIBRARY_DIRS}
+    ${Gettext_LIBRARY_DIRS}
+)
 
 #option du compilateur
 set(CMAKE_CXX_FLAGS "--std=c++0x")

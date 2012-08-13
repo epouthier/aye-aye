@@ -13,7 +13,7 @@ namespace ayeaye
 
 		//vérification que le langage existe
 		if (_parameters.getLanguage() == "")
-			throw LanguageException("Le langage des fichiers sources n'est pas spécifié");
+			throw LanguageException(tr("Le langage des fichiers sources n'est pas spécifié"));
 
 		if (_parameters.getLanguageDirectory() == "")
 			languageFilePath = AYEAYE_LANGUAGE_DIRECTORY;
@@ -92,13 +92,13 @@ namespace ayeaye
 					}
 					else
 					{
-						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, "\";\" absent");
+						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, tr("\";\" absent"));
 					}
 				}
 			}
 			else
 			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, "\"::=\" absent");
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"::=\" absent"));
 			}
 		}
 
@@ -189,7 +189,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, "\"]\" absent");
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"]\" absent"));
 				}
 			}
 		}
@@ -221,7 +221,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, "\")\" absent");
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\")\" absent"));
 				}
 			}
 		}

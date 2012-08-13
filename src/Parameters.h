@@ -8,6 +8,7 @@
 
 	#include <boost/program_options.hpp>
 
+    #include "Localization.h"
 	#include "ParametersException.h"
 
 	using namespace std;
