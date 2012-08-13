@@ -3,9 +3,14 @@
 
 namespace ayeaye
 {
-    string Localization::translate(string msgId)
+    string Localization::translate(const string &msgId)
     {
         return gettext(msgId.c_str());
+    }
+
+    template<typename... Params>
+    string Localization::translate(const string &msgId, Params... parameters)
+    {
     }
 }
 

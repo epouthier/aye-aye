@@ -41,9 +41,9 @@
             bool _parseRepetitionSymbol() throw(LanguageException);
             bool _parseTerminalSymbol() throw(LanguageException);
 			void _parseUnnecessaryCharacters() throw(LanguageException);
-			bool _parseRegex(string str, string rstr);
-			bool _parseString(string str) throw(LanguageException);
-			bool _parseCharacter(char c) throw(LanguageException);
+			bool _parseRegex(const string &str, const string &rstr);
+			bool _parseString(const string &str) throw(LanguageException);
+			bool _parseCharacter(const char c) throw(LanguageException);
 
 		};
 	}

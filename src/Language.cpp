@@ -323,14 +323,14 @@ namespace ayeaye
 		}
 	}
 
-	bool Language::_parseRegex(string str, string rstr)
+	bool Language::_parseRegex(const string &str, const string &rstr)
 	{
 		boost::regex r(rstr);
 
 		return (regex_match(str, r));
 	}
 
-	bool Language::_parseString(string str) throw(LanguageException)
+	bool Language::_parseString(const string &str) throw(LanguageException)
 	{
 		for (unsigned int i = 0; i < str.size(); i++)
 		{
@@ -346,7 +346,7 @@ namespace ayeaye
 		return true;
 	}
 
-	bool Language::_parseCharacter(char c) throw(LanguageException)
+	bool Language::_parseCharacter(const char c) throw(LanguageException)
 	{
 		/*if (_languageFile.eof())
 			throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");*/

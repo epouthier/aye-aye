@@ -16,8 +16,8 @@
 		{
 		public:
 			/* Constructeur */
-			LanguageException(string language, int line, string message);
-			LanguageException(string message);
+			LanguageException(const string &language, const int line, const string &message);
+			LanguageException(const string &message);
 		};
 	}
 

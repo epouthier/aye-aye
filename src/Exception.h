@@ -18,7 +18,7 @@
 
 		public:
 			/* Constructeur et destructeur */
-			Exception(string message = "") : _message(message) {}
+			Exception(const string &message = "") : _message(message) {}
 			virtual ~Exception() throw() {}
 
 			/* Méthode virtuelle */

@@ -3,7 +3,7 @@
 
 namespace ayeaye
 {
-	LanguageException::LanguageException(string language, int line, string message)
+	LanguageException::LanguageException(const string &language, const int line, const string &message)
 	{
 		//conversion int en string
 		ostringstream oss;
@@ -13,7 +13,7 @@ namespace ayeaye
 		_message = language + ":" + oss.str() + ": " + message;
 	}
 
-	LanguageException::LanguageException(string message) :
+	LanguageException::LanguageException(const string &message) :
 		Exception(message)
 	{
 	}

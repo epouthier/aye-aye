@@ -32,9 +32,9 @@
 
 
 			/* Getters */
-			string getLanguage() {return _language;}
-			string getLanguageDirectory() {return _languageDirectory;}
-			string getSourceDirectory() {return _sourceDirectory;}
+			string &getLanguage() {return _language;}
+			string &getLanguageDirectory() {return _languageDirectory;}
+			string &getSourceDirectory() {return _sourceDirectory;}
             vector<string> &getSources() {return _sources;}
 		};
 	}

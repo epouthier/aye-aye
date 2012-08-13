@@ -15,7 +15,7 @@
 		{
 		public:
 			/* Constructeur */
-			ParametersException(string message) : Exception(message) {}
+			ParametersException(const string &message) : Exception(message) {}
 		};
 	}
 

@@ -15,7 +15,10 @@
         class Localization
         {
         public:
-            static string translate(string msgId);
+            static string translate(const string &msgId);
+
+            template<typename... Params>
+            string translate(const string &msgId, Params... parameters);
         };
 
         #define tr(msgId) Localization::translate(msgId)
