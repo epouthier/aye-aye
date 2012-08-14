@@ -13,17 +13,25 @@ namespace ayeaye
 
 		//vérification que le langage existe
 		if (_parameters.getLanguage() == "")
+		{
 			throw LanguageException(tr("Le langage des fichiers sources n'est pas spécifié."));
+		}
 
 		if (_parameters.getLanguageDirectory() == "")
+		{
 			languageFilePath = AYEAYE_LANGUAGE_DIRECTORY;
+		}
 		else
+		{
 			languageFilePath = _parameters.getLanguageDirectory();
+		}
 
         languageFilePath /= _parameters.getLanguage() + ".aye";
 
 		if (!exists(languageFilePath))
+		{
             throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", _parameters.getLanguage()));
+		}
 
 
 		//chargement du langage
@@ -49,7 +57,9 @@ namespace ayeaye
 			_parseUnnecessaryCharacters();
 
 			if (!_parseComment())
+			{
 				_parseRule();
+			}
 		}
 	}
 
@@ -62,6 +72,11 @@ namespace ayeaye
 			while (!_parseString("*)"))
 			{
 				_languageFile.get();
+
+				if (!_languageFile.good())
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"*)\" absent."));
+				}
 			}
 
 			return true;
@@ -92,13 +107,17 @@ namespace ayeaye
 					}
 					else
 					{
-						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, tr("\";\" absent."));
+						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, tr("syntaxe incorrecte, symbole \";\" absent."));
 					}
+				}
+				else
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, règle non défini après le symbole \"::=\"."));
 				}
 			}
 			else
 			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"::=\" absent."));
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"::=\" absent."));
 			}
 		}
 
@@ -114,9 +133,6 @@ namespace ayeaye
 
 		while (true)
 		{
-			/*if (_languageFile.eof())
-				throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");*/
-
 			ruleIdentifier += _languageFile.get();
 
 			if (!_parseRegex(ruleIdentifier, "[a-z-]+"))
@@ -128,11 +144,13 @@ namespace ayeaye
 		}
 
 		if (ruleIdentifier.empty())
+		{
 			return false;
+		}
 
-		cout << ruleIdentifier << endl; //debug
+		//cout << ruleIdentifier << endl; //debug
 
-		return (_parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*"));
+		return _parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*");
 	}
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
@@ -155,7 +173,7 @@ namespace ayeaye
                 }
                 else
                 {
-                    return false;
+                    throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, sous-règle non défini après un symbole logique (\"|\" ou \".\")."));
                 }
             }
 
@@ -189,8 +207,12 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"]\" absent."));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"]\" absent."));
 				}
+			}
+			else
+			{
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"[\" et \"]\"."));
 			}
 		}
 
@@ -221,8 +243,12 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\")\" absent."));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \")\" absent."));
 				}
+			}
+			else
+			{
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"(\" et \")\"."));
 			}
 		}
 
@@ -254,7 +280,9 @@ namespace ayeaye
 
         if (_parseCharacter('.') ||
             _parseCharacter('|'))
+		{
             return true;
+		}
 
         return false;
     }
@@ -266,7 +294,9 @@ namespace ayeaye
         if (_parseCharacter('*') ||
             _parseCharacter('+') ||
             _parseCharacter('?'))
+		{
             return true;
+		}
 
         return false;
     }
@@ -282,9 +312,14 @@ namespace ayeaye
 			while (!_parseCharacter('\''))
 			{
 				terminalSymbol += _languageFile.get();
+
+				if (!_languageFile.good())
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"\'\" absent."));
+				}
 			}
 
-            cout << "\"" << terminalSymbol << "\"" << endl; //debug
+            //cout << "\"" << terminalSymbol << "\"" << endl; //debug
 
 			return true;
 		}
@@ -293,9 +328,14 @@ namespace ayeaye
 			while (!_parseCharacter('"'))
 			{
 				terminalSymbol += _languageFile.get();
+
+				if (!_languageFile.good())
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \'\"\' absent."));
+				}
 			}
 
-            cout << "\"" << terminalSymbol << "\"" << endl; //debug
+            //cout << "\"" << terminalSymbol << "\"" << endl; //debug
 
 			return true;
 		}
@@ -337,7 +377,9 @@ namespace ayeaye
 			if (!_parseCharacter(str[i]))
 			{
 				for (unsigned int j = 0; j < i; j++)
+				{
 					_languageFile.unget();
+				}
 
 				return false;
 			}
@@ -348,8 +390,10 @@ namespace ayeaye
 
 	bool Language::_parseCharacter(const char c) throw(LanguageException)
 	{
-		/*if (_languageFile.eof())
-			throw LanguageException("Parser", "La syntaxe du fichier du language \"" + _parameters.getLanguage() + "\" est invalide");*/
+		if (_languageFile.eof())
+		{
+			throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+		}
 
 		if (_languageFile.get() != c)
 		{            
