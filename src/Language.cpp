@@ -13,7 +13,7 @@ namespace ayeaye
 
 		//vérification que le langage existe
 		if (_parameters.getLanguage() == "")
-			throw LanguageException(tr("Le langage des fichiers sources n'est pas spécifié"));
+			throw LanguageException(tr("Le langage des fichiers sources n'est pas spécifié."));
 
 		if (_parameters.getLanguageDirectory() == "")
 			languageFilePath = AYEAYE_LANGUAGE_DIRECTORY;
@@ -23,7 +23,7 @@ namespace ayeaye
         languageFilePath /= _parameters.getLanguage() + ".aye";
 
 		if (!exists(languageFilePath))
-            throw LanguageException("Le langage \"" + _parameters.getLanguage() + "\" n'existe pas dans le répertoire des langages");
+            throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", _parameters.getLanguage()));
 
 
 		//chargement du langage
@@ -36,7 +36,7 @@ namespace ayeaye
 		}
 		else
 		{
-			throw LanguageException("Le fichier du langage \"" + _parameters.getLanguage() + "\" est invalide");
+			throw LanguageException(tr("Le fichier du langage \"%0\" est invalide.", _parameters.getLanguage()));
 		}
 	}
 
@@ -92,13 +92,13 @@ namespace ayeaye
 					}
 					else
 					{
-						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, tr("\";\" absent"));
+						throw LanguageException(_parameters.getLanguage(), _currentLine - 1, tr("\";\" absent."));
 					}
 				}
 			}
 			else
 			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"::=\" absent"));
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"::=\" absent."));
 			}
 		}
 
@@ -189,7 +189,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"]\" absent"));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\"]\" absent."));
 				}
 			}
 		}
@@ -221,7 +221,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\")\" absent"));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("\")\" absent."));
 				}
 			}
 		}

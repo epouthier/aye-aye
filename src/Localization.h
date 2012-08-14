@@ -3,9 +3,9 @@
 #define _AYEAYE_LOCALIZATION_H
 
     #include <iostream>
+	#include <sstream>
     #include <string>
 
-    #include <boost/regex.hpp>
     #include <libintl.h>
 
     using namespace std;
@@ -17,11 +17,13 @@
         public:
             static string translate(const string &msgId);
 
-            template<typename... Params>
-            string translate(const string &msgId, Params... parameters);
+			template<typename... Params>
+            static string translate(const string &msgId, Params... parameters);
         };
 
-        #define tr(msgId) Localization::translate(msgId)
+        #define tr Localization::translate
+
+		#include "Localization.hpp"
     }
 
 #endif

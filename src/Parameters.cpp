@@ -14,16 +14,16 @@ namespace ayeaye
 			options_description genericOptions(tr("Options génériques"));
 			genericOptions.add_options()
 				("help", "")
-				("version", "Affiche le numéro de version");
+				("version", tr("Affiche le numéro de version").c_str());
 
 			options_description languageOptions(tr("Options pour les langages"));
 			languageOptions.add_options()
-				("language", value<string>(), "Pour indiquer le langage des fichiers sources")
-				("language-dir", value<string>(), "Pour indiquer dans quelle répertoire où est le langage");
+				("language", value<string>(), tr("Pour indiquer le langage des fichiers sources").c_str())
+				("language-dir", value<string>(), tr("Pour indiquer dans quelle répertoire où est le langage").c_str());
 
 			options_description sourceOptions(tr("Options pour les sources"));
 			sourceOptions.add_options()
-				("source-dir", value<string>(), "Pour indiquer dans quelle répertoire où sont les sources");
+				("source-dir", value<string>(), tr("Pour indiquer dans quelle répertoire où sont les sources").c_str());
 
 			options_description sourceOptionsHidden("Options cachées pour les sources");
 			sourceOptionsHidden.add_options()
@@ -83,7 +83,7 @@ namespace ayeaye
 				}
 				else
 				{
-					throw ParametersException(tr("Il n'y a pas de fichier source spécifié"));
+					throw ParametersException(tr("Il n'y a pas de fichier source spécifié."));
 				}
 			}
 		}
