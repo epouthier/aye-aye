@@ -1,6 +1,6 @@
 
 template<typename... Params>
-string ayeaye::Localization::translate(const string &msgId, Params... parameters)
+string ayeaye::Localization::translate(const string &msgId, const Params&... parameters)
 {
 	//variables
 	size_t pos = 0;

@@ -12,6 +12,14 @@ namespace ayeaye
 
 		//chargement du language
 		Language language(parameters);
+
+        //parsage des sources
+        Parser parser(parameters, language);
+
+        //analyse sémantique
+        
+
+        //génération de code
 	}
 }
 

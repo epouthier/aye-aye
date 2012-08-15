@@ -4,6 +4,7 @@
 
 	#include "Language.h"
 	#include "Parameters.h"
+    #include "Parser.h"
 
 	namespace ayeaye
 	{

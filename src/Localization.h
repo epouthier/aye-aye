@@ -18,7 +18,7 @@
             static string translate(const string &msgId);
 
 			template<typename... Params>
-            static string translate(const string &msgId, Params... parameters);
+            static string translate(const string &msgId, const Params&... parameters);
         };
 
         #define tr Localization::translate
