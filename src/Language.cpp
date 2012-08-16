@@ -50,7 +50,7 @@ namespace ayeaye
 
 	void Language::_parseLanguage() throw(LanguageException)
 	{
-		//language ::= (unnecessary-character . (comment | rule))*;
+		//EBNF => language ::= (unnecessary-character . (comment | rule))*;
 
 		while (_languageFile.good())
 		{
@@ -65,7 +65,7 @@ namespace ayeaye
 
 	bool Language::_parseComment() throw(LanguageException)
 	{
-		//comment ::= '(*' . ... . '*)';
+		//EBNF => comment ::= '(*' . ... . '*)';
 
 		if (_parseString("(*"))
 		{
@@ -87,7 +87,7 @@ namespace ayeaye
 
 	bool Language::_parseRule() throw(LanguageException)
 	{
-		//rule ::= rule-identifier . unnecessary-character . '::=' . unnecessary-character . rule-definition . unnecessary-character . ';';
+		//EBNF => rule ::= rule-identifier . unnecessary-character . '::=' . unnecessary-character . rule-definition . unnecessary-character . ';';
 
 		if (_parseRuleIdentifier())
 		{
@@ -126,11 +126,13 @@ namespace ayeaye
 
 	bool Language::_parseRuleIdentifier() throw(LanguageException)
 	{
-		//rule-identifier ::= regex([a-z]+(-[a-z]+)*);
+		//EBNF => rule-identifier ::= regex([a-z]+(-[a-z]+)*);
 
-		string ruleIdentifier = "";
+		//variable
+		LSRuleIdentifier ruleIdentifier = "";
 		char c;
 
+		//on parse l'identifiant de la règle
 		while (true)
 		{
 			ruleIdentifier += _languageFile.get();
@@ -143,19 +145,19 @@ namespace ayeaye
 			}
 		}
 
+		//vérification que l'identifiant n'est pas vide
 		if (ruleIdentifier.empty())
 		{
 			return false;
 		}
 
-		//cout << ruleIdentifier << endl; //debug
-
+		//vérification que l'identifiant est correcte
 		return _parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*");
 	}
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
 	{
-		//rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . logical-symbol . rule-definition ];
+		//EBNF => rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . logical-symbol . rule-definition ];
 
         if (_parseOptionalExpression() ||
             _parseGroupExpression() ||
@@ -163,7 +165,9 @@ namespace ayeaye
         {
             _parseUnnecessaryCharacters();
 
-            if (_parseLogicalSymbol())
+			LSLogicalSymbol logicalSymbol = _parseLogicalSymbol();
+
+            if (logicalSymbol != LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL)
             {
                 _parseUnnecessaryCharacters();
 
@@ -185,7 +189,7 @@ namespace ayeaye
 
     bool Language::_parseOptionalExpression() throw(LanguageException)
 	{
-		//optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']' . [ unnecessary-character . repetition-symbol ];
+		//EBNF => optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']' . [ unnecessary-character . repetition-symbol ];
 
 		if (_parseCharacter('['))
 		{
@@ -199,9 +203,7 @@ namespace ayeaye
 				{
                     _parseUnnecessaryCharacters();
 
-                    if (_parseRepetitionSymbol())
-                    {
-                    }
+                    LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
 
 					return true;
 				}
@@ -221,7 +223,7 @@ namespace ayeaye
 
     bool Language::_parseGroupExpression() throw(LanguageException)
 	{
-		//group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')' . [ unnecessary-character . repetition-symbol ];
+		//EBNF => group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')' . [ unnecessary-character . repetition-symbol ];
 
 		if (_parseCharacter('('))
 		{
@@ -235,9 +237,7 @@ namespace ayeaye
 				{
                     _parseUnnecessaryCharacters();
 
-                    if (_parseRepetitionSymbol())
-                    {
-                    }
+                    LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
 
 					return true;
 				}
@@ -257,16 +257,14 @@ namespace ayeaye
 
     bool Language::_parseUnaryExpression() throw(LanguageException)
 	{
-		//unary-expression ::= ( rule-identifier | terminal-symbol ) . [ unnecessary-character . repetition-symbol ];
+		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol ) . [ unnecessary-character . repetition-symbol ];
 
 		if (_parseRuleIdentifier() ||
 			_parseTerminalSymbol())
         {
             _parseUnnecessaryCharacters();
 
-            if (_parseRepetitionSymbol())
-            {
-            }
+            LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
 
 			return true;
         }
@@ -274,38 +272,47 @@ namespace ayeaye
 		return false;
 	}
 
-    bool Language::_parseLogicalSymbol() throw(LanguageException)
+    LSLogicalSymbol Language::_parseLogicalSymbol() throw(LanguageException)
     {
-		//logical-symbol ::= '.' | '|';
+		//EBNF => logical-symbol ::= '.' | '|';
 
-        if (_parseCharacter('.') ||
-            _parseCharacter('|'))
+        if (_parseCharacter('.'))
 		{
-            return true;
+			return LSLogicalSymbol::LSLS_AND;
+		}
+		else if (_parseCharacter('|'))
+		{
+            return LSLogicalSymbol::LSLS_OR;
 		}
 
-        return false;
+        return LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL;
     }
 
-    bool Language::_parseRepetitionSymbol() throw(LanguageException)
+    LSRepetitionSymbol Language::_parseRepetitionSymbol() throw(LanguageException)
     {
-		//repetition-symbol ::= '*' | '+' | '?';
+		//EBNF => repetition-symbol ::= '*' | '+' | '?';
 
-        if (_parseCharacter('*') ||
-            _parseCharacter('+') ||
-            _parseCharacter('?'))
+        if (_parseCharacter('*'))
 		{
-            return true;
+			return LSRepetitionSymbol::LSRS_ZERO_TO_N;
+		}
+		else if (_parseCharacter('+'))
+		{
+			return LSRepetitionSymbol::LSRS_ONE_TO_N;
+		}
+		else if (_parseCharacter('?'))
+		{
+            return LSRepetitionSymbol::LSRS_ZERO_OR_ONE;
 		}
 
-        return false;
+        return LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL;
     }
 
     bool Language::_parseTerminalSymbol() throw(LanguageException)
 	{
-		//terminal-symbol ::= "'" . ... . "'" | '"' . ... . '"';
+		//EBNF => terminal-symbol ::= "'" . ... . "'" | '"' . ... . '"';
 
-		string terminalSymbol = "";
+		LSTerminalSymbol terminalSymbol = "";
 
 		if (_parseCharacter('\''))
 		{
@@ -319,7 +326,11 @@ namespace ayeaye
 				}
 			}
 
-            //cout << "\"" << terminalSymbol << "\"" << endl; //debug
+			//vérification que le symbole terminal n'est pas vide
+			if (terminalSymbol.empty())
+			{
+				return false;
+			}
 
 			return true;
 		}
@@ -335,7 +346,11 @@ namespace ayeaye
 				}
 			}
 
-            //cout << "\"" << terminalSymbol << "\"" << endl; //debug
+            //vérification que le symbole terminal n'est pas vide
+			if (terminalSymbol.empty())
+			{
+				return false;
+			}
 
 			return true;
 		}
@@ -345,7 +360,7 @@ namespace ayeaye
 
 	void Language::_parseUnnecessaryCharacters() throw(LanguageException)
 	{
-		//unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
+		//EBNF => unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
 
 		while (_languageFile.good())
 		{

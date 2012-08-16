@@ -10,6 +10,7 @@
 	#include <boost/regex.hpp>
 
 	#include "LanguageException.h"
+	#include "LanguageStructure.h"
 	#include "Parameters.h"
 
     using namespace std;
@@ -38,8 +39,8 @@
             bool _parseOptionalExpression() throw(LanguageException);
             bool _parseGroupExpression() throw(LanguageException);
             bool _parseUnaryExpression() throw(LanguageException);
-            bool _parseLogicalSymbol() throw(LanguageException);
-            bool _parseRepetitionSymbol() throw(LanguageException);
+            LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
+            LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);
             bool _parseTerminalSymbol() throw(LanguageException);
 			void _parseUnnecessaryCharacters() throw(LanguageException);
 			bool _parseRegex(const string &str, const string &rstr);
