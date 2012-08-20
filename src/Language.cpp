@@ -154,7 +154,7 @@ namespace ayeaye
 		//vérification que l'identifiant est correcte
 		if (!_parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*"))
 		{
-			return false;
+			throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, \"%0\", la convention de nommage des identifiants des règles est un ensemble de mots (composé de une ou plusieurs lettres minuscules de a à z) séparé par des traits d'unions, ex: \"rule-identifier\".", ruleIdentifier));
 		}
 
 		//ajout à la pile d'indentifiants de règles
