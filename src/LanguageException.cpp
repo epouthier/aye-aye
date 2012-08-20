@@ -13,6 +13,12 @@ namespace ayeaye
 		_message = language + ":" + oss.str() + ": " + message;
 	}
 
+	LanguageException::LanguageException(const string &language, const string &message)
+	{
+		//construction du message
+		_message = language + ": " + message;
+	}
+
 	LanguageException::LanguageException(const string &message) :
 		Exception(message)
 	{

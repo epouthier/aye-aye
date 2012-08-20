@@ -36,12 +36,9 @@
 		struct LSUnaryExpression
 		{
 			LSUnaryExpressionType type;
-			union
-			{
-				LSRuleIdentifier ruleIdentifier;
-				LSTerminalSymbol terminalSymbol;
-				LSRepetitionSymbol repetitionSymbol;
-			};
+			LSRuleIdentifier ruleIdentifier;
+			LSTerminalSymbol terminalSymbol;
+			LSRepetitionSymbol repetitionSymbol;
 		};
 	}
 

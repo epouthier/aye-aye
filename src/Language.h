@@ -4,6 +4,7 @@
 
     #include <iostream>
 	#include <fstream>
+	#include <stack>
     #include <string>
 
 	#include <boost/filesystem.hpp>
@@ -25,6 +26,9 @@
 			Parameters &_parameters;
 			ifstream _languageFile;
 			int _currentLine = 1;
+			stack<LSRuleIdentifier> ruleIdentifierStack;
+			stack<LSUnaryExpression> unaryExpressionStack;
+			stack<LSTerminalSymbol> terminalSymbolStack;			
 
 		public:
 			/* Constructeur */

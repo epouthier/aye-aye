@@ -152,7 +152,16 @@ namespace ayeaye
 		}
 
 		//vérification que l'identifiant est correcte
-		return _parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*");
+		if (!_parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*"))
+		{
+			return false;
+		}
+
+		//ajout à la pile d'indentifiants de règles
+		ruleIdentifierStack.push(ruleIdentifier);
+
+		//tout c'est bien passé !!!
+		return true;
 	}
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
@@ -259,12 +268,64 @@ namespace ayeaye
 	{
 		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol ) . [ unnecessary-character . repetition-symbol ];
 
-		if (_parseRuleIdentifier() ||
-			_parseTerminalSymbol())
+		//variable
+		LSRuleIdentifier ruleIdentifier;
+		LSTerminalSymbol terminalSymbol;
+		LSRepetitionSymbol repetitionSymbol;
+		LSUnaryExpression unaryExpression;
+
+		//parse unary expression
+		if (_parseRuleIdentifier())
+		{
+			_parseUnnecessaryCharacters();
+
+			//on récupert le symbole de répétition s'il y en a un
+			repetitionSymbol = _parseRepetitionSymbol();
+
+			//on récupert le dernier identifiant de règle
+			if (ruleIdentifierStack.size() >= 1)
+			{
+				ruleIdentifier = ruleIdentifierStack.top();
+				ruleIdentifierStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+			//ajout à la pile d'expression unaire
+			unaryExpression.type = LSUnaryExpressionType::LSUET_RULE_IDENTIFIER;
+			unaryExpression.ruleIdentifier = ruleIdentifier;
+			unaryExpression.repetitionSymbol = repetitionSymbol;
+			unaryExpressionStack.push(unaryExpression);
+
+			return true;
+		}
+		else if (_parseTerminalSymbol())
         {
             _parseUnnecessaryCharacters();
 
-            LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
+			//on récupert le symbole de répétition s'il y en a un
+            repetitionSymbol = _parseRepetitionSymbol();
+
+			//on récupert le dernier symbole terminal
+			if (terminalSymbolStack.size() >= 1)
+			{
+				terminalSymbol = terminalSymbolStack.top();
+				terminalSymbolStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+			//ajout à la pile d'expression unaire
+			unaryExpression.type = LSUnaryExpressionType::LSUET_RULE_IDENTIFIER;
+			unaryExpression.terminalSymbol = terminalSymbol;
+			unaryExpression.repetitionSymbol = repetitionSymbol;
+			unaryExpressionStack.push(unaryExpression);
 
 			return true;
         }
@@ -312,14 +373,17 @@ namespace ayeaye
 	{
 		//EBNF => terminal-symbol ::= "'" . ... . "'" | '"' . ... . '"';
 
+		//variable
 		LSTerminalSymbol terminalSymbol = "";
 
-		if (_parseCharacter('\''))
+		//on parse le symbole terminal
+		if (_parseCharacter('\'')) //EBNF => "'" . ... . "'"
 		{
 			while (!_parseCharacter('\''))
 			{
 				terminalSymbol += _languageFile.get();
 
+				//traitement des erreurs
 				if (!_languageFile.good())
 				{
 					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"\'\" absent."));
@@ -329,17 +393,21 @@ namespace ayeaye
 			//vérification que le symbole terminal n'est pas vide
 			if (terminalSymbol.empty())
 			{
-				return false;
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"\'\"."));
 			}
+
+			//ajout à la pile de symbole terminal
+			terminalSymbolStack.push(terminalSymbol);
 
 			return true;
 		}
-		else if (_parseCharacter('"'))
+		else if (_parseCharacter('"')) //EBNF => '"' . ... . '"'
 		{
 			while (!_parseCharacter('"'))
 			{
 				terminalSymbol += _languageFile.get();
 
+				//traitement des erreurs
 				if (!_languageFile.good())
 				{
 					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \'\"\' absent."));
@@ -349,8 +417,11 @@ namespace ayeaye
             //vérification que le symbole terminal n'est pas vide
 			if (terminalSymbol.empty())
 			{
-				return false;
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \'\"\'."));
 			}
+
+			//ajout à la pile de symbole terminal
+			terminalSymbolStack.push(terminalSymbol);
 
 			return true;
 		}
@@ -367,6 +438,7 @@ namespace ayeaye
 			if ((!_parseCharacter(' ')) &&
 				(!_parseCharacter('\t')))
 			{
+				//si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
 				if (_parseCharacter('\n'))
 				{
 					_currentLine++;
@@ -405,6 +477,7 @@ namespace ayeaye
 
 	bool Language::_parseCharacter(const char c) throw(LanguageException)
 	{
+		//traitement des erreurs
 		if (_languageFile.eof())
 		{
 			throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
