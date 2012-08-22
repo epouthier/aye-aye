@@ -166,14 +166,20 @@ namespace ayeaye
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
 	{
-		//EBNF => rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . logical-symbol . rule-definition ];
+		//EBNF => rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . repetition-symbol ] . [ unnecessary-character . logical-symbol . rule-definition ];
 
         if (_parseOptionalExpression() ||
             _parseGroupExpression() ||
             _parseUnaryExpression())
         {
+			_parseUnnecessaryCharacters();
+
+			//on récupert le symbole de répétition s'il y en a un
+			LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
+
             _parseUnnecessaryCharacters();
 
+			//on récupert le symbole logique
 			LSLogicalSymbol logicalSymbol = _parseLogicalSymbol();
 
             if (logicalSymbol != LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL)
@@ -198,7 +204,7 @@ namespace ayeaye
 
     bool Language::_parseOptionalExpression() throw(LanguageException)
 	{
-		//EBNF => optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']' . [ unnecessary-character . repetition-symbol ];
+		//EBNF => optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']';
 
 		if (_parseCharacter('['))
 		{
@@ -210,10 +216,6 @@ namespace ayeaye
 
 				if (_parseCharacter(']'))
 				{
-                    _parseUnnecessaryCharacters();
-
-                    LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
-
 					return true;
 				}
 				else
@@ -232,7 +234,7 @@ namespace ayeaye
 
     bool Language::_parseGroupExpression() throw(LanguageException)
 	{
-		//EBNF => group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')' . [ unnecessary-character . repetition-symbol ];
+		//EBNF => group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')';
 
 		if (_parseCharacter('('))
 		{
@@ -244,10 +246,6 @@ namespace ayeaye
 
 				if (_parseCharacter(')'))
 				{
-                    _parseUnnecessaryCharacters();
-
-                    LSRepetitionSymbol repetitionSymbol = _parseRepetitionSymbol();
-
 					return true;
 				}
 				else
@@ -266,22 +264,16 @@ namespace ayeaye
 
     bool Language::_parseUnaryExpression() throw(LanguageException)
 	{
-		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol ) . [ unnecessary-character . repetition-symbol ];
+		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol );
 
 		//variable
 		LSRuleIdentifier ruleIdentifier;
 		LSTerminalSymbol terminalSymbol;
-		LSRepetitionSymbol repetitionSymbol;
 		LSUnaryExpression unaryExpression;
 
 		//parse unary expression
 		if (_parseRuleIdentifier())
 		{
-			_parseUnnecessaryCharacters();
-
-			//on récupert le symbole de répétition s'il y en a un
-			repetitionSymbol = _parseRepetitionSymbol();
-
 			//on récupert le dernier identifiant de règle
 			if (ruleIdentifierStack.size() >= 1)
 			{
@@ -297,18 +289,12 @@ namespace ayeaye
 			//ajout à la pile d'expression unaire
 			unaryExpression.type = LSUnaryExpressionType::LSUET_RULE_IDENTIFIER;
 			unaryExpression.ruleIdentifier = ruleIdentifier;
-			unaryExpression.repetitionSymbol = repetitionSymbol;
 			unaryExpressionStack.push(unaryExpression);
 
 			return true;
 		}
 		else if (_parseTerminalSymbol())
         {
-            _parseUnnecessaryCharacters();
-
-			//on récupert le symbole de répétition s'il y en a un
-            repetitionSymbol = _parseRepetitionSymbol();
-
 			//on récupert le dernier symbole terminal
 			if (terminalSymbolStack.size() >= 1)
 			{
@@ -324,7 +310,6 @@ namespace ayeaye
 			//ajout à la pile d'expression unaire
 			unaryExpression.type = LSUnaryExpressionType::LSUET_RULE_IDENTIFIER;
 			unaryExpression.terminalSymbol = terminalSymbol;
-			unaryExpression.repetitionSymbol = repetitionSymbol;
 			unaryExpressionStack.push(unaryExpression);
 
 			return true;

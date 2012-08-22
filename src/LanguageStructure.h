@@ -39,7 +39,6 @@
 			LSUnaryExpressionType type;
 			LSRuleIdentifier ruleIdentifier;
 			LSTerminalSymbol terminalSymbol;
-			LSRepetitionSymbol repetitionSymbol;
 		};
 
         enum LSSubRuleDefinitionType
