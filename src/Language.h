@@ -28,9 +28,9 @@
 			ifstream _languageFile;
 			int _currentLine = 1;
 			stack<LSRuleIdentifier> ruleIdentifierStack;
+			stack<LSRuleDefinition> ruleDefinitionStack;
 			stack<LSUnaryExpression> unaryExpressionStack;
 			stack<LSTerminalSymbol> terminalSymbolStack;
-			LSRuleDefinition currentRuleDefinition;
 			LSRules rules;
 
 		public:
@@ -43,8 +43,8 @@
 			bool _parseRule() throw(LanguageException);
 			bool _parseRuleIdentifier() throw(LanguageException);
 			bool _parseRuleDefinition() throw(LanguageException);
-            //bool _parseOptionalExpression() throw(LanguageException);
-            //bool _parseGroupExpression() throw(LanguageException);
+            bool _parseOptionalExpression() throw(LanguageException);
+            bool _parseGroupExpression() throw(LanguageException);
             bool _parseUnaryExpression() throw(LanguageException);
             LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);

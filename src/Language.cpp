@@ -139,8 +139,9 @@ namespace ayeaye
 	{
 		//EBNF => rule ::= rule-identifier . unnecessary-character . '::=' . unnecessary-character . rule-definition . unnecessary-character . ';';
 
-		//variable
+		//variables
 		LSRuleIdentifier ruleIdentifier;
+		LSRuleDefinition ruleDefinition;
 
 		if (_parseRuleIdentifier())
 		{
@@ -149,6 +150,9 @@ namespace ayeaye
 			if (_parseString("::="))
 			{
 				_parseUnnecessaryCharacters();
+
+				//ajout d'une définition de règle
+				ruleDefinitionStack.push(ruleDefinition);
 
 				if (_parseRuleDefinition())
 				{
@@ -168,18 +172,20 @@ namespace ayeaye
 							throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
 						}
 
-						//verification de l'existence d'une définition de règle
-						if (currentRuleDefinition.empty())
+						//on récupert la dernière definition de la règle
+						if (ruleDefinitionStack.size() >= 1)
+						{
+							ruleDefinition = ruleDefinitionStack.top();
+							ruleDefinitionStack.pop();
+						}
+						else
 						{
 							//traitement des erreurs
 							throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
 						}
 
 						//ajout de la règle dans le tableau des règles
-						rules[ruleIdentifier] = currentRuleDefinition;
-
-						//on remet à zero la définition de la règle courante
-						currentRuleDefinition.clear();
+						rules[ruleIdentifier] = ruleDefinition;
 
 						return true;
 					}
@@ -252,9 +258,10 @@ namespace ayeaye
 		LSLogicalSymbol logicalSymbol;
 		LSUnaryExpression unaryExpression;
 		LSSubRuleDefinition subRuleDefinition;
+		LSRuleDefinition ruleDefinition;
 
 		//parse rule definition
-		/*if (_parseOptionalExpression())
+		if (_parseOptionalExpression())
 		{
 			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION;
 		}
@@ -262,7 +269,7 @@ namespace ayeaye
 		{
 			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION;
 		}
-		else */if (_parseUnaryExpression())
+		else if (_parseUnaryExpression())
 		{
 			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION;
 		}
@@ -284,33 +291,28 @@ namespace ayeaye
 		//si il n'y a pas de symbole logique
 		if (logicalSymbol == LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL)
 		{
-			//on récupert la dernière expression unaire
-			if (unaryExpressionStack.size() >= 1)
-			{
-				unaryExpression = unaryExpressionStack.top();
-				unaryExpressionStack.pop();
-			}
-			else
-			{
-				//traitement des erreurs
-				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
-			}
-
-			//ajout à la définition de la règle courante
+			//définition du type
 			subRuleDefinition.type = subRuleDefinitionType;
-			subRuleDefinition.unaryExpression = unaryExpression;
-			subRuleDefinition.repetionSymbol = repetitionSymbol;
-			subRuleDefinition.logicalSymbol = logicalSymbol;
-			currentRuleDefinition.push_front(subRuleDefinition);
 
-			return true;
-		}
-		else
-		{
-			//si il y a un un symbole logique
-			_parseUnnecessaryCharacters();
+			//si le type est une expression optionel ou une expression de groupe
+			if ((subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION) ||
+				(subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION))
+			{
+				//on récupert la dernière definition de règle
+				if (ruleDefinitionStack.size() >= 2)
+				{
+					ruleDefinition = ruleDefinitionStack.top();
+					ruleDefinitionStack.pop();
+				}
+				else
+				{
+					//traitement des erreurs
+					throw LanguageException(_parameters.getLanguage(), tr("euh1 ..."));
+				}
 
-			if (_parseRuleDefinition())
+				//définition de la définition de règle
+			}
+			else //si le type est une expression unaire
 			{
 				//on récupert la dernière expression unaire
 				if (unaryExpressionStack.size() >= 1)
@@ -321,15 +323,70 @@ namespace ayeaye
 				else
 				{
 					//traitement des erreurs
-					throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+					throw LanguageException(_parameters.getLanguage(), tr("euh2 ..."));
+				}
+
+				//définition de l'expression unaire
+				subRuleDefinition.unaryExpression = unaryExpression;
+			}
+
+			//ajout à la définition de la règle courante
+			subRuleDefinition.repetionSymbol = repetitionSymbol;
+			subRuleDefinition.logicalSymbol = logicalSymbol;
+			ruleDefinitionStack.top().push_front(subRuleDefinition);
+
+			return true;
+		}
+		else
+		{
+			//si il y a un un symbole logique
+			_parseUnnecessaryCharacters();
+
+			if (_parseRuleDefinition())
+			{
+				//définition du type
+				subRuleDefinition.type = subRuleDefinitionType;
+
+				//si le type est une expression optionel ou une expression de groupe
+				if ((subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION) ||
+					(subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION))
+				{
+					//on récupert la dernière definition de règle
+					if (ruleDefinitionStack.size() >= 2)
+					{
+						ruleDefinition = ruleDefinitionStack.top();
+						ruleDefinitionStack.pop();
+					}
+					else
+					{
+						//traitement des erreurs
+						throw LanguageException(_parameters.getLanguage(), tr("euh3 ..."));
+					}
+
+					//définition de la définition de règle
+				}
+				else //si le type est une expression unaire
+				{
+					//on récupert la dernière expression unaire
+					if (unaryExpressionStack.size() >= 1)
+					{
+						unaryExpression = unaryExpressionStack.top();
+						unaryExpressionStack.pop();
+					}
+					else
+					{
+						//traitement des erreurs
+						throw LanguageException(_parameters.getLanguage(), tr("euh4 ..."));
+					}
+
+					//définition de l'expression unaire
+					subRuleDefinition.unaryExpression = unaryExpression;
 				}
 
 				//ajout à la définition de la règle courante
-				subRuleDefinition.type = subRuleDefinitionType;
-				subRuleDefinition.unaryExpression = unaryExpression;
 				subRuleDefinition.repetionSymbol = repetitionSymbol;
 				subRuleDefinition.logicalSymbol = logicalSymbol;
-				currentRuleDefinition.push_front(subRuleDefinition);
+				ruleDefinitionStack.top().push_front(subRuleDefinition);
 
 				return true;
 			}
@@ -342,13 +399,19 @@ namespace ayeaye
 		return true;
 	}
 
-    /*bool Language::_parseOptionalExpression() throw(LanguageException)
+    bool Language::_parseOptionalExpression() throw(LanguageException)
 	{
 		//EBNF => optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']';
+
+		//variable
+		LSRuleDefinition ruleDefinition;
 
 		if (_parseCharacter('['))
 		{
 			_parseUnnecessaryCharacters();
+
+			//ajout d'une définition de règle
+			ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -376,9 +439,15 @@ namespace ayeaye
 	{
 		//EBNF => group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')';
 
+		//variable
+		LSRuleDefinition ruleDefinition;
+
 		if (_parseCharacter('('))
 		{
 			_parseUnnecessaryCharacters();
+
+			//ajout d'une définition de règle
+			ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -400,7 +469,7 @@ namespace ayeaye
 		}
 
 		return false;
-	}*/
+	}
 
     bool Language::_parseUnaryExpression() throw(LanguageException)
 	{
