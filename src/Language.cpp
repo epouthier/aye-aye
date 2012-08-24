@@ -50,7 +50,7 @@ namespace ayeaye
 
 	//debug
 	//===================================================================================
-	void printRuleDefinition(LSRuleDefinition ruleDefinition)
+	/*void printRuleDefinition(LSRuleDefinition ruleDefinition)
 	{
 		LSRuleDefinition::iterator itRuleDefinition;
 
@@ -104,7 +104,7 @@ namespace ayeaye
 					break;
 			}
 		}
-	}
+	}*/
 	//===================================================================================
 
 	void Language::_parseLanguage() throw(LanguageException)
@@ -124,14 +124,14 @@ namespace ayeaye
 
 		//debug
 		//======================================================
-		LSRules::iterator itRules;
+		/*LSRules::iterator itRules;
 		
-		for (itRules = rules.begin(); itRules != rules.end(); itRules++)
+		for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
 		{
 			cout << itRules->first << " := ";
 			printRuleDefinition(itRules->second);
 			cout << ";" << endl;
-		}
+		}*/
 		//======================================================
 	}
 
@@ -174,7 +174,7 @@ namespace ayeaye
 				_parseUnnecessaryCharacters();
 
 				//ajout d'une définition de règle
-				ruleDefinitionStack.push(ruleDefinition);
+				_ruleDefinitionStack.push(ruleDefinition);
 
 				if (_parseRuleDefinition())
 				{
@@ -183,10 +183,10 @@ namespace ayeaye
 					if (_parseString(";"))
 					{
 						//on récupert le dernier identifiant de règle
-						if (ruleIdentifierStack.size() >= 1)
+						if (_ruleIdentifierStack.size() >= 1)
 						{
-							ruleIdentifier = ruleIdentifierStack.top();
-							ruleIdentifierStack.pop();
+							ruleIdentifier = _ruleIdentifierStack.top();
+							_ruleIdentifierStack.pop();
 						}
 						else
 						{
@@ -195,10 +195,10 @@ namespace ayeaye
 						}
 
 						//on récupert la dernière definition de la règle
-						if (ruleDefinitionStack.size() >= 1)
+						if (_ruleDefinitionStack.size() >= 1)
 						{
-							ruleDefinition = ruleDefinitionStack.top();
-							ruleDefinitionStack.pop();
+							ruleDefinition = _ruleDefinitionStack.top();
+							_ruleDefinitionStack.pop();
 						}
 						else
 						{
@@ -207,7 +207,7 @@ namespace ayeaye
 						}
 
 						//ajout de la règle dans le tableau des règles
-						rules[ruleIdentifier] = ruleDefinition;
+						_rules[ruleIdentifier] = ruleDefinition;
 
 						return true;
 					}
@@ -264,7 +264,7 @@ namespace ayeaye
 		}
 
 		//ajout à la pile d'indentifiants de règles
-		ruleIdentifierStack.push(ruleIdentifier);
+		_ruleIdentifierStack.push(ruleIdentifier);
 
 		//tout c'est bien passé !!!
 		return true;
@@ -305,21 +305,19 @@ namespace ayeaye
 			(subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION))
 		{
 			//on récupert la dernière definition de règle
-			if (ruleDefinitionStack.size() >= 2)
+			if (_ruleDefinitionStack.size() >= 2)
 			{
-				ruleDefinition = ruleDefinitionStack.top();
-				ruleDefinitionStack.pop();
+				ruleDefinition = _ruleDefinitionStack.top();
+				_ruleDefinitionStack.pop();
 			}
 			else
 			{
 				//traitement des erreurs
-				throw LanguageException(_parameters.getLanguage(), tr("euh1 ..."));
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
 			}
 
 			//définition de la définition de règle
 			subRuleDefinition.ruleDefinition = ruleDefinition;
-
-			//printRuleDefinition(ruleDefinition); cout << endl;
 		}
 
 		_parseUnnecessaryCharacters();
@@ -349,15 +347,15 @@ namespace ayeaye
 		if (subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION)
 		{
 			//on récupert la dernière expression unaire
-			if (unaryExpressionStack.size() >= 1)
+			if (_unaryExpressionStack.size() >= 1)
 			{
-				unaryExpression = unaryExpressionStack.top();
-				unaryExpressionStack.pop();
+				unaryExpression = _unaryExpressionStack.top();
+				_unaryExpressionStack.pop();
 			}
 			else
 			{
 				//traitement des erreurs
-				throw LanguageException(_parameters.getLanguage(), tr("euh2 ..."));
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
 			}
 
 			//définition de l'expression unaire
@@ -368,7 +366,7 @@ namespace ayeaye
 		subRuleDefinition.type = subRuleDefinitionType;
 		subRuleDefinition.repetionSymbol = repetitionSymbol;
 		subRuleDefinition.logicalSymbol = logicalSymbol;
-		ruleDefinitionStack.top().push_front(subRuleDefinition);
+		_ruleDefinitionStack.top().push_front(subRuleDefinition);
 
 		return true;
 	}
@@ -385,7 +383,7 @@ namespace ayeaye
 			_parseUnnecessaryCharacters();
 
 			//ajout d'une définition de règle
-			ruleDefinitionStack.push(ruleDefinition);
+			_ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -421,7 +419,7 @@ namespace ayeaye
 			_parseUnnecessaryCharacters();
 
 			//ajout d'une définition de règle
-			ruleDefinitionStack.push(ruleDefinition);
+			_ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -458,10 +456,10 @@ namespace ayeaye
 		if (_parseRuleIdentifier())
 		{
 			//on récupert le dernier identifiant de règle
-			if (ruleIdentifierStack.size() >= 1)
+			if (_ruleIdentifierStack.size() >= 1)
 			{
-				ruleIdentifier = ruleIdentifierStack.top();
-				ruleIdentifierStack.pop();
+				ruleIdentifier = _ruleIdentifierStack.top();
+				_ruleIdentifierStack.pop();
 			}
 			else
 			{
@@ -472,17 +470,17 @@ namespace ayeaye
 			//ajout à la pile d'expression unaire
 			unaryExpression.type = LSUnaryExpressionType::LSUET_RULE_IDENTIFIER;
 			unaryExpression.ruleIdentifier = ruleIdentifier;
-			unaryExpressionStack.push(unaryExpression);
+			_unaryExpressionStack.push(unaryExpression);
 
 			return true;
 		}
 		else if (_parseTerminalSymbol())
         {
 			//on récupert le dernier symbole terminal
-			if (terminalSymbolStack.size() >= 1)
+			if (_terminalSymbolStack.size() >= 1)
 			{
-				terminalSymbol = terminalSymbolStack.top();
-				terminalSymbolStack.pop();
+				terminalSymbol = _terminalSymbolStack.top();
+				_terminalSymbolStack.pop();
 			}
 			else
 			{
@@ -493,7 +491,7 @@ namespace ayeaye
 			//ajout à la pile d'expression unaire
 			unaryExpression.type = LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL;
 			unaryExpression.terminalSymbol = terminalSymbol;
-			unaryExpressionStack.push(unaryExpression);
+			_unaryExpressionStack.push(unaryExpression);
 
 			return true;
         }
@@ -565,7 +563,7 @@ namespace ayeaye
 			}
 
 			//ajout à la pile de symbole terminal
-			terminalSymbolStack.push(terminalSymbol);
+			_terminalSymbolStack.push(terminalSymbol);
 
 			return true;
 		}
@@ -589,7 +587,7 @@ namespace ayeaye
 			}
 
 			//ajout à la pile de symbole terminal
-			terminalSymbolStack.push(terminalSymbol);
+			_terminalSymbolStack.push(terminalSymbol);
 
 			return true;
 		}

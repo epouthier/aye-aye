@@ -1,12 +1,25 @@
 
+(* separator *)
+separator ::= " " | "\t" | "\n";
+
+
+(* value *)
+value ::= boolean-value | integral-value | floating-point-value;
+boolean-value ::= "true" | "false";
+integral-value ::= ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )+;
+floating-point-value ::= ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )* . "." . ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )+;
+
+
 (* type *)
 type ::= value-type;
 
 (* value-type *)
-value-type ::= boolean-type | integral-type | floating-point-type | string-type | array-type;
+value-type ::= boolean-type | integral-type | floating-point-type;
 boolean-type ::= "bool";
 integral-type ::= "int";
 floating-point-type ::= "float";
-string-type ::= "string";
-array-type ::= value-type . "[" . integral-value . [ "," . integral-value ]* . "]";
+
+
+(* expression *)
+
 

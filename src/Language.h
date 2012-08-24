@@ -27,17 +27,24 @@
 			Parameters &_parameters;
 			ifstream _languageFile;
 			int _currentLine = 1;
-			stack<LSRuleIdentifier> ruleIdentifierStack;
-			stack<LSRuleDefinition> ruleDefinitionStack;
-			stack<LSUnaryExpression> unaryExpressionStack;
-			stack<LSTerminalSymbol> terminalSymbolStack;
-			LSRules rules;
+			stack<LSRuleIdentifier> _ruleIdentifierStack;
+			stack<LSRuleDefinition> _ruleDefinitionStack;
+			stack<LSUnaryExpression> _unaryExpressionStack;
+			stack<LSTerminalSymbol> _terminalSymbolStack;
+			LSRules _rules;
+
 
 		public:
 			/* Constructeur */
 			Language(Parameters &parameters) throw(LanguageException);
 
+
+			/* Getters */
+			LSRules &getRules() {return _rules;}
+
+
 		private:
+			/* Méthodes privées */
 			void _parseLanguage() throw(LanguageException);
 			bool _parseComment() throw(LanguageException);
 			bool _parseRule() throw(LanguageException);

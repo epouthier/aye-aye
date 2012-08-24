@@ -9,8 +9,9 @@
 	#include <boost/filesystem.hpp>
 
     #include "Language.h"
-    #include "ParserException.h"
+	#include "LanguageStructure.h"
 	#include "Parameters.h"
+	#include "ParserException.h"
 
     using namespace std;
 	using namespace boost::filesystem;
