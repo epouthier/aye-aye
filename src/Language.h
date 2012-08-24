@@ -3,6 +3,7 @@
 #define _AYEAYE_LANGUAGE_H
 
     #include <iostream>
+	#include <iterator>
 	#include <fstream>
 	#include <stack>
     #include <string>
@@ -28,7 +29,9 @@
 			int _currentLine = 1;
 			stack<LSRuleIdentifier> ruleIdentifierStack;
 			stack<LSUnaryExpression> unaryExpressionStack;
-			stack<LSTerminalSymbol> terminalSymbolStack;			
+			stack<LSTerminalSymbol> terminalSymbolStack;
+			LSRuleDefinition currentRuleDefinition;
+			LSRules rules;
 
 		public:
 			/* Constructeur */
@@ -40,8 +43,8 @@
 			bool _parseRule() throw(LanguageException);
 			bool _parseRuleIdentifier() throw(LanguageException);
 			bool _parseRuleDefinition() throw(LanguageException);
-            bool _parseOptionalExpression() throw(LanguageException);
-            bool _parseGroupExpression() throw(LanguageException);
+            //bool _parseOptionalExpression() throw(LanguageException);
+            //bool _parseGroupExpression() throw(LanguageException);
             bool _parseUnaryExpression() throw(LanguageException);
             LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);

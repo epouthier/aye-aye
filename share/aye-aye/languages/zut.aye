@@ -8,5 +8,5 @@ boolean-type ::= "bool";
 integral-type ::= "int";
 floating-point-type ::= "float";
 string-type ::= "string";
-array-type ::= value-type . "[" . integral-value . [ "," . integral-value ]* . "]";
+(* array-type ::= value-type . "[" . integral-value . [ "," . integral-value ]* . "]"; *)
 

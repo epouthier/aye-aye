@@ -3,6 +3,7 @@
 #define _AYEAYE_LANGUAGE_STRUCTURE_H
 
 	#include <iostream>
+	#include <list>
     #include <map>
 	#include <string>
 
@@ -52,12 +53,12 @@
         {
             LSSubRuleDefinitionType type;
             LSUnaryExpression unaryExpression;
-            LSSubRuleDefinition &subRuleDefinition;
             LSRepetitionSymbol repetionSymbol;
+			LSLogicalSymbol logicalSymbol;
         };
 
-        typedef vector<pair<LSLogicalSymbol, LSSubRuleDefinition>> LSRuleDefinition;
-        typedef map<LSRuleIdentifier, LSRuleDefinition> LSRule;
+        typedef list<LSSubRuleDefinition> LSRuleDefinition;
+        typedef map<LSRuleIdentifier, LSRuleDefinition> LSRules;
 	}
 
 #endif
