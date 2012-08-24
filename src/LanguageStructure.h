@@ -49,15 +49,19 @@
             LSSRDT_OPTIONAL_EXPRESSION
         };
 
+		struct LSSubRuleDefinition;
+
+		typedef list<LSSubRuleDefinition> LSRuleDefinition;
+
         struct LSSubRuleDefinition
         {
             LSSubRuleDefinitionType type;
             LSUnaryExpression unaryExpression;
+			LSRuleDefinition ruleDefinition;
             LSRepetitionSymbol repetionSymbol;
 			LSLogicalSymbol logicalSymbol;
         };
 
-        typedef list<LSSubRuleDefinition> LSRuleDefinition;
         typedef map<LSRuleIdentifier, LSRuleDefinition> LSRules;
 	}
 
