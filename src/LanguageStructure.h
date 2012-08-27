@@ -7,6 +7,8 @@
     #include <map>
 	#include <string>
 
+	#include <boost/regex.hpp>
+
 	using namespace std;
 
 	namespace ayeaye
@@ -28,11 +30,13 @@
 
         typedef string LSRuleIdentifier;
 		typedef string LSTerminalSymbol;
+		typedef boost::regex LSRegularExpression;
 
 		enum LSUnaryExpressionType
 		{
 			LSUET_RULE_IDENTIFIER,
-			LSUET_TERMINAL_SYMBOL
+			LSUET_TERMINAL_SYMBOL,
+			LSUET_REGULAR_EXPRESSION
 		};
 
 		struct LSUnaryExpression
@@ -40,6 +44,7 @@
 			LSUnaryExpressionType type;
 			LSRuleIdentifier ruleIdentifier;
 			LSTerminalSymbol terminalSymbol;
+			LSRegularExpression regularExpression;
 		};
 
         enum LSSubRuleDefinitionType

@@ -11,6 +11,7 @@
         <style id="ruleIdentifier" _name="RuleIdentifier" map-to="def:type"/>
         <style id="ruleAffectation" _name="RuleAffectation" map-to="def:constant"/>
         <style id="terminalSymbol" _name="TerminalSymbol" map-to="def:string"/>
+		<style id="regularExpression" _name="RegularExpression" map-to="def:boolean"/>
         <style id="operator" _name="Operator" map-to="def:keyword"/>
 	</styles>
 
@@ -28,14 +29,19 @@
             <match>::=|;</match>
         </context>
 
-        <context id="terminalSymbolDoubleQuote" style-ref="terminalSymbol" class="no-spell-check" end-at-line-end="true">
+        <context id="terminalSymbolDoubleQuote" style-ref="terminalSymbol" class="no-spell-check">
 			<start>"</start>
 			<end>"</end>
 		</context>
 
-        <context id="terminalSymbolSingleQuote" style-ref="terminalSymbol" class="no-spell-check" end-at-line-end="true">
+        <context id="terminalSymbolSingleQuote" style-ref="terminalSymbol" class="no-spell-check">
 			<start>'</start>
 			<end>'</end>
+		</context>
+
+		<context id="regularExpression" style-ref="regularExpression" class="no-spell-chek">
+			<start>{</start>
+			<end>}</end>
 		</context>
 
         <context id="operator" style-ref="operator">
@@ -49,6 +55,7 @@
                 <context ref="ruleAffectation"/>
 				<context ref="terminalSymbolDoubleQuote"/>
                 <context ref="terminalSymbolSingleQuote"/>
+				<context ref="regularExpression"/>
 				<context ref="operator"/>
 			</include>
 		</context>

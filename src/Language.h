@@ -31,6 +31,7 @@
 			stack<LSRuleDefinition> _ruleDefinitionStack;
 			stack<LSUnaryExpression> _unaryExpressionStack;
 			stack<LSTerminalSymbol> _terminalSymbolStack;
+			stack<LSRegularExpression> _regularExpressionStack;
 			LSRules _rules;
 
 
@@ -56,6 +57,7 @@
             LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);
             bool _parseTerminalSymbol() throw(LanguageException);
+			bool _parseRegularExpression() throw(LanguageException);
 			void _parseUnnecessaryCharacters() throw(LanguageException);
 			bool _parseRegex(const string &str, const string &rstr);
 			bool _parseString(const string &str) throw(LanguageException);

@@ -50,7 +50,7 @@ namespace ayeaye
 
 	//debug
 	//===================================================================================
-	/*void printRuleDefinition(LSRuleDefinition ruleDefinition)
+	void printRuleDefinition(LSRuleDefinition ruleDefinition)
 	{
 		LSRuleDefinition::iterator itRuleDefinition;
 
@@ -66,6 +66,9 @@ namespace ayeaye
 							break;
 						case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
 							cout << "\"" << itRuleDefinition->unaryExpression.terminalSymbol << "\"";
+							break;
+						case LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION:
+							cout << "{" << itRuleDefinition->unaryExpression.regularExpression.str() << "}";
 							break;
 					}
 					break;
@@ -104,7 +107,7 @@ namespace ayeaye
 					break;
 			}
 		}
-	}*/
+	}
 	//===================================================================================
 
 	void Language::_parseLanguage() throw(LanguageException)
@@ -124,14 +127,14 @@ namespace ayeaye
 
 		//debug
 		//======================================================
-		/*LSRules::iterator itRules;
+		LSRules::iterator itRules;
 		
 		for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
 		{
 			cout << itRules->first << " := ";
 			printRuleDefinition(itRules->second);
 			cout << ";" << endl;
-		}*/
+		}
 		//======================================================
 	}
 
@@ -451,6 +454,7 @@ namespace ayeaye
 		LSRuleIdentifier ruleIdentifier;
 		LSTerminalSymbol terminalSymbol;
 		LSUnaryExpression unaryExpression;
+		LSRegularExpression regularExpression;
 
 		//parse unary expression
 		if (_parseRuleIdentifier())
@@ -495,6 +499,27 @@ namespace ayeaye
 
 			return true;
         }
+		else if (_parseRegularExpression())
+		{
+			//on récupert la dernière expression régulière
+			if (_regularExpressionStack.size() >= 1)
+			{
+				regularExpression = _regularExpressionStack.top();
+				_regularExpressionStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+			//ajout à la pile d'expression unaire
+			unaryExpression.type = LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION;
+			unaryExpression.regularExpression = regularExpression;
+			_unaryExpressionStack.push(unaryExpression);
+
+			return true;
+		}
 
 		return false;
 	}
@@ -593,6 +618,42 @@ namespace ayeaye
 		}
 
 		return false;
+	}
+
+	bool Language::_parseRegularExpression() throw(LanguageException)
+	{
+		//EBNF => regular-expression ::= "{" . ... . "}";
+
+		//variable
+		LSRegularExpression regularExpression;
+		string regularExpressionStr = "";
+
+		//on parse l'expréssion régulière
+		if (_parseCharacter('{'))
+		{
+			while (!_parseCharacter('}'))
+			{
+				regularExpressionStr += _languageFile.get();
+
+				//traitement des erreurs
+				if (!_languageFile.good())
+				{
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"}\" absent."));
+				}
+			}
+
+			//vérification que l'expression régulière n'est pas vide
+			if (regularExpressionStr.empty())
+			{
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"{\" et \"}\"."));
+			}
+
+			//ajout à la pile de l'expression régulière
+			regularExpression.assign(regularExpressionStr);
+			_regularExpressionStack.push(regularExpression);
+
+			return true;
+		}
 	}
 
 	void Language::_parseUnnecessaryCharacters() throw(LanguageException)

@@ -3,11 +3,17 @@
 separator ::= " " | "\t" | "\n";
 
 
+(* comment *)
+comment ::= line-comment | block-comment;
+line-comment ::= "//" . {.*} . "\n";
+block-comment ::= "/*" . {.*} . "*/";
+
+
 (* value *)
 value ::= boolean-value | integral-value | floating-point-value;
 boolean-value ::= "true" | "false";
-integral-value ::= ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )+;
-floating-point-value ::= ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )* . "." . ( "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" )+;
+integral-value ::= {[0-9]+};
+floating-point-value ::= {[0-9]*} . "." . {[0-9]+};
 
 
 (* type *)
@@ -20,6 +26,10 @@ integral-type ::= "int";
 floating-point-type ::= "float";
 
 
-(* expression *)
+(* symbol *)
+symbol ::= {[a-zA-Z0-9_]+};
 
+
+(* expression *)
+declaration-type-expression ::= type . separator+ . symbol . ";";
 
