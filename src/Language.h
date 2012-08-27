@@ -13,6 +13,7 @@
 
 	#include "LanguageException.h"
 	#include "LanguageStructure.h"
+	#include "Localization.h"
 	#include "Parameters.h"
 
     using namespace std;

@@ -1,6 +1,6 @@
 
-#ifndef _AYEAYE_PARSER_H
-#define _AYEAYE_PARSER_H
+#ifndef _AYEAYE_SOURCE_H
+#define _AYEAYE_SOURCE_H
 
     #include <iostream>
 	#include <fstream>
@@ -10,19 +10,24 @@
 
     #include "Language.h"
 	#include "LanguageStructure.h"
+	#include "Localization.h"
 	#include "Parameters.h"
-	#include "ParserException.h"
+	#include "SourceException.h"
 
     using namespace std;
 	using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Parser
+        class Source
         {
+		private:
+			/* Attributs */
+			ifstream _sourceFile;
+
         public:
             /* Constructeur */
-            Parser(Parameters &parameters, Language &language) throw(ParserException);
+            Source(Parameters &parameters, Language &language) throw(SourceException);
         };
     }
 

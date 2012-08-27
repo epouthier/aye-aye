@@ -14,7 +14,7 @@ namespace ayeaye
 		Language language(parameters);
 
         //parsage des sources
-        Parser parser(parameters, language);
+        Source source(parameters, language);
 
         //analyse sémantique
         
