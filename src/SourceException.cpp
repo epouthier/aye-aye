@@ -16,28 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_SOURCE_EXCEPTION_H
-#define _AYEAYE_SOURCE_EXCEPTION_H
+#include "SourceException.h"
 
-    #include <iostream>
-	#include <sstream>
-    #include <string>
-
-	#include "Exception.h"
-
-    using namespace std;
-
-	namespace ayeaye
+namespace ayeaye
+{
+	SourceException::SourceException(const string &source, const int line, const string &message)
 	{
-		class SourceException : public Exception
-		{
-		public:
-			/* Constructeur */
-			SourceException(const string &source, const int line, const string &message);
-			SourceException(const string &source, const string &message);
-			SourceException(const string &message);
-		};
+		//conversion int en string
+		ostringstream oss;
+    	oss << line;
+
+		//construction du message
+		_message = source + ":" + oss.str() + ": " + message;
 	}
 
-#endif
+	SourceException::SourceException(const string &source, const string &message)
+	{
+		//construction du message
+		_message = source + ": " + message;
+	}
+
+	SourceException::SourceException(const string &message) :
+		Exception(message)
+	{
+	}
+}
 
