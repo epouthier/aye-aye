@@ -12,3 +12,6 @@ iValue = 42;
 float fValue = 26.0;
 fValue = 42.0;
 
+string sValue = "Hello world !!!";
+sValue = "1..2..1..2..Phase de tests";
+

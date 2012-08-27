@@ -10,20 +10,20 @@ block-comment ::= "/*" . {.*} . "*/";
 
 
 (* value *)
-value ::= boolean-value | integral-value | floating-point-value;
+value ::= boolean-value | integral-value | floating-point-value | string-value;
 boolean-value ::= "true" | "false";
 integral-value ::= {[0-9]+};
 floating-point-value ::= {[0-9]*} . "." . {[0-9]+};
+string-value ::= '"' . {.*} . '"';
 
 
 (* type *)
 type ::= value-type;
-
-(* value-type *)
-value-type ::= boolean-type | integral-type | floating-point-type;
+value-type ::= boolean-type | integral-type | floating-point-type | string-type;
 boolean-type ::= "bool";
 integral-type ::= "int";
 floating-point-type ::= "float";
+string-type ::= "string";
 
 
 (* symbol *)
@@ -31,5 +31,10 @@ symbol ::= {[a-zA-Z0-9_]+};
 
 
 (* expression *)
-declaration-type-expression ::= type . separator+ . symbol . ";";
+expression ::= affectation-expression . separator* . ";";
+affectation-expression ::= [ type . separator+ ] . symbol . separator* . "=" . separator* . value;
+
+
+(* zut *)
+zut ::= ( separator* . ( comment | expression ) )*;
 
