@@ -20,10 +20,12 @@
 #define _AYEAYE_SOURCE_H
 
     #include <iostream>
+	#include <iterator>
 	#include <fstream>
     #include <string>
 
 	#include <boost/filesystem.hpp>
+	#include <boost/regex.hpp>
 
     #include "Language.h"
 	#include "LanguageStructure.h"
@@ -53,8 +55,11 @@
 		private:
 			/* Méthodes privées */
 			void _parseSource() throw(SourceException);
-			bool _parseRegularExpression(LSRegularExpression regularExpression) throw(SourceException);
-			bool _parseTerminalSymbol(LSTerminalSymbol terminalSymbol) throw(SourceException);
+			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
+			bool _parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException);
+			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException);
+			bool _parseRegularExpression(const LSRegularExpression &regularExpression) throw(SourceException);
+			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);
 			bool _parseCharacter(const char c) throw(SourceException);
         };
     }

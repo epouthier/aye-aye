@@ -60,12 +60,74 @@ namespace ayeaye
 	{
 	}
 
-	bool Source::_parseRegularExpression(LSRegularExpression regularExpression) throw(SourceException)
+	bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
 	{
+		/*for (LSRuleDefinition::iterator itrRuleDefinition = ruleDefinition.begin(); itrRuleDefinition != ruleDefinition.end(); itrRuleDefinition++)
+		{
+		}*/
+
 		return false;
 	}
 
-	bool Source::_parseTerminalSymbol(LSTerminalSymbol terminalSymbol) throw(SourceException)
+	bool Source::_parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException)
+	{
+		//TODO: parse sous-définition de règle
+		//parse sub rule definition
+		/*switch (subRuleDefinition.type)
+		{
+			case LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION:
+				break;
+			case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
+				break;
+			case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
+				break;
+		}*/
+
+		return false;
+	}
+
+	bool Source::_parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException)
+	{
+		//parse unary expression
+		switch (unaryExpression.type)
+		{
+			case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
+				//TODO: parse rule identifier
+				break;
+			case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
+				return _parseTerminalSymbol(unaryExpression.terminalSymbol);
+				break;
+			case LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION:
+				return _parseRegularExpression(unaryExpression.regularExpression);
+				break;
+		}
+
+		return false;
+	}
+
+	bool Source::_parseRegularExpression(const LSRegularExpression &regularExpression) throw(SourceException)
+	{
+		//TODO: parse regular expression
+
+		//variable
+		/*string tmp = "";
+
+		tmp = _sourceFile.get();
+
+		if (!regex_match(tmp, regularExpression))
+		{
+			for (unsigned int i = 0; i < tmp.size(); i++)
+			{
+				_sourceFile.unget();
+			}
+
+			return false;
+		}*/
+
+		return false;
+	}
+
+	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
 	{
 		//parse terminal symbol
 		for (unsigned int i = 0; i < terminalSymbol.size(); i++)
