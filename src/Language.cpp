@@ -138,6 +138,13 @@ namespace ayeaye
         {
             _checkRuleDefinition(itRules->first, itRules->second);
         }
+
+        //vérification que la règle principale est définie
+        if (_rules.find(_parameters.getLanguage()) == _rules.end())
+        {
+            //traitement des erreurs
+            throw LanguageException(_parameters.getLanguage(), tr("la règle principale \"%0\" n'est pas définie.", _parameters.getLanguage()));
+        }
     }
 
     void Language::_checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException)
