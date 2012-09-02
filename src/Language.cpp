@@ -57,6 +57,7 @@ namespace ayeaye
 		if (_languageFile.is_open())
 		{
 			_parseLanguage();
+            _checkLanguage();
 			_languageFile.close();
 		}
 		else
@@ -67,7 +68,7 @@ namespace ayeaye
 
 	//debug
 	//===================================================================================
-	void printRuleDefinition(LSRuleDefinition ruleDefinition)
+	/*void printRuleDefinition(LSRuleDefinition ruleDefinition)
 	{
 		LSRuleDefinition::iterator itRuleDefinition;
 
@@ -124,8 +125,47 @@ namespace ayeaye
 					break;
 			}
 		}
-	}
+	}*/
 	//===================================================================================
+
+    void Language::_checkLanguage() throw(LanguageException)
+    {
+        //variable
+        LSRules::const_iterator itRules;
+
+        //vérifie si les règles sont toutes définies
+        for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
+        {
+            _checkRuleDefinition(itRules->first, itRules->second);
+        }
+    }
+
+    void Language::_checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException)
+    {
+        //variable
+        LSRuleDefinition::const_iterator itRuleDefinition;
+
+        //check rule definition
+        for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
+		{
+            if (itRuleDefinition->type == LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION)
+            {
+                if (itRuleDefinition->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
+                {
+                    //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
+                    if (_rules.find(itRuleDefinition->unaryExpression.ruleIdentifier) == _rules.end())
+                    {
+                        //traitement des erreurs
+                        throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itRuleDefinition->unaryExpression.ruleIdentifier));
+                    }
+                }
+            }
+            else
+            {
+                _checkRuleDefinition(ruleIdentifier, itRuleDefinition->ruleDefinition);
+            }
+        }
+    }
 
 	void Language::_parseLanguage() throw(LanguageException)
 	{
@@ -144,14 +184,14 @@ namespace ayeaye
 
 		//debug
 		//======================================================
-		LSRules::iterator itRules;
+		/*LSRules::iterator itRules;
 		
 		for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
 		{
 			cout << itRules->first << " := ";
 			printRuleDefinition(itRules->second);
 			cout << ";" << endl;
-		}
+		}*/
 		//======================================================
 	}
 

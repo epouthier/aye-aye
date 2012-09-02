@@ -64,6 +64,8 @@
 
 		private:
 			/* Méthodes privées */
+            void _checkLanguage() throw(LanguageException);
+            void _checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException);
 			void _parseLanguage() throw(LanguageException);
 			bool _parseComment() throw(LanguageException);
 			bool _parseRule() throw(LanguageException);
