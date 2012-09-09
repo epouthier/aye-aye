@@ -18,13 +18,13 @@
 
 
 (* separator *)
-separator ::= " " | "\t" | "\n";
+separator ::= {[\s\t\n]};
 
 
 (* comment *)
 comment ::= line-comment | block-comment;
-line-comment ::= "//" . {.*} . "\n";
-block-comment ::= "/*" . {.*} . "*/";
+line-comment ::= {//.*\n};
+block-comment ::= {/\*.*\*/};
 
 
 (* value *)

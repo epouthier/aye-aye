@@ -43,14 +43,17 @@ namespace ayeaye
 			//récupération du chemin de la source
 			_sourceFilePath = _parameters.getSources()[i];
 
+            //ouverture du fichier source
 			_sourceFile.open(_sourceFilePath.c_str(), ios::in);
-
 			if (_sourceFile.is_open())
 			{
+                //parsage de la source
+                _parseSource();
 				_sourceFile.close();
 			}
 			else
 			{
+                //traitement d'erreur
 				throw SourceException(tr("Le fichier source \"%0\" est invalide.", _sourceFilePath.native()));
 			}
 		}
@@ -58,33 +61,92 @@ namespace ayeaye
 
 	void Source::_parseSource() throw(SourceException)
 	{
+        //parsage de la règle principale
+        if (!_parseRule(_parameters.getLanguage()))
+        {
+            //traitement des erreurs
+            throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, la source ne correspond pas au langage défini."));
+        }
 	}
+
+    bool Source::_parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException)
+    {
+        //parsage de la définition de la règle
+        return (_parseRuleDefinition(_language.getRules()[ruleIdentifier]));
+    }
 
 	bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
 	{
-		/*for (LSRuleDefinition::iterator itrRuleDefinition = ruleDefinition.begin(); itrRuleDefinition != ruleDefinition.end(); itrRuleDefinition++)
-		{
-		}*/
+        //variable
+        LSRuleDefinition::const_iterator itRuleDefinition;
+        bool result = false;
+        bool ignore = false;
 
-		return false;
+        //parse rule definition
+        for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
+        {
+            if (!ignore)
+            {
+                switch (itRuleDefinition->repetionSymbol)
+                {
+                    case LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL:
+                        result = _parseSubRuleDefinition(*itRuleDefinition);
+                        break;
+                    case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                        result = true;
+                        while (_parseSubRuleDefinition(*itRuleDefinition));
+                        break;
+                    case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                        result = _parseSubRuleDefinition(*itRuleDefinition);
+                        while (_parseSubRuleDefinition(*itRuleDefinition));
+                        break;
+                    case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
+                        result = true;
+                        _parseSubRuleDefinition(*itRuleDefinition);
+                        break;
+                }
+            }
+
+            switch (itRuleDefinition->logicalSymbol)
+            {
+                case LSLogicalSymbol::LSLS_AND:
+                    if (!result)
+                    {
+                        ignore = true;
+                    }
+                    break;
+                case LSLogicalSymbol::LSLS_OR:
+                    if (ignore)
+                    {
+                        ignore = false;
+                    }
+                    else if (result)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        return result;
 	}
 
-	bool Source::_parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException)
-	{
-		//TODO: parse sous-définition de règle
-		//parse sub rule definition
-		/*switch (subRuleDefinition.type)
-		{
-			case LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION:
-				break;
-			case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
-				break;
-			case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
-				break;
-		}*/
+    bool Source::_parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException)
+    {
+        //parse sub rule definition
+        switch (subRuleDefinition.type)
+        {
+            case LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION:
+                return _parseUnaryExpression(subRuleDefinition.unaryExpression);
+                break;
+            case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
+            case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
+                return _parseRuleDefinition(subRuleDefinition.ruleDefinition);
+                break;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 	bool Source::_parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException)
 	{
@@ -92,7 +154,7 @@ namespace ayeaye
 		switch (unaryExpression.type)
 		{
 			case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
-				//TODO: parse rule identifier
+				return _parseRule(unaryExpression.ruleIdentifier);
 				break;
 			case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
 				return _parseTerminalSymbol(unaryExpression.terminalSymbol);
@@ -107,24 +169,40 @@ namespace ayeaye
 
 	bool Source::_parseRegularExpression(const LSRegularExpression &regularExpression) throw(SourceException)
 	{
-		//TODO: parse regular expression
-
 		//variable
-		/*string tmp = "";
+		string tmp = "";
 
+        //traitement des erreurs
+		if (_sourceFile.eof())
+		{
+			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+		}
+
+        //récupération d'un caractère dans le fichier source
 		tmp = _sourceFile.get();
 
-		if (!regex_match(tmp, regularExpression))
-		{
-			for (unsigned int i = 0; i < tmp.size(); i++)
-			{
-				_sourceFile.unget();
-			}
+        //vérification s'il est accepté par l'expression régulière
+        if (!regex_match(tmp, regularExpression))
+        {
+            _sourceFile.unget();
+            return false;
+        }
 
-			return false;
-		}*/
+        //on récupert les caractères suivants
+        do
+        {
+            //traitement des erreurs
+    		if (_sourceFile.eof())
+    		{
+    			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+    		}
 
-		return false;
+            tmp = _sourceFile.get();
+        } while (regex_match(tmp, regularExpression));
+
+        _sourceFile.unget();
+
+		return true;
 	}
 
 	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
