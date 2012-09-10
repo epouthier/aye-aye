@@ -206,15 +206,25 @@ namespace ayeaye
 	{
 		//EBNF => comment ::= '(*' . ... . '*)';
 
+        //variable
+        char c;
+
+        //parse comment
 		if (_parseString("(*"))
 		{
 			while (!_parseString("*)"))
 			{
-				_languageFile.get();
+				c = _languageFile.get();
 
 				if (!_languageFile.good())
 				{
 					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"*)\" absent."));
+				}
+
+                //si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
+				if (c == '\n')
+				{
+					_currentLine++;
 				}
 			}
 
