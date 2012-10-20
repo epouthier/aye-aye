@@ -16,27 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AyeAye.h"
+#include "LanguageStructure.h"
 
 namespace ayeaye
 {
-	void AyeAye::run(int argc, char **argv) throw(Exception)
-	{
-		//analyse de paramètres d'éxécutions
-		Parameters parameters(argc, argv);
-        if (parameters.getSources().size() == 0)
-            return;
-
-		//chargement du language
-		Language language(parameters);
-
-        //parsage des sources
-        //Source source(parameters, language);
-
-        //analyse sémantique
-        
-
-        //génération de code
-	}
+    //Interval Symbol
+    LSPresetIntervalArray LSPresetInterval::_presetIntervalArray = 
+        {{"ALPHA-UC", LSIntervalSymbol(0x41, 0x5a)},
+         {"ALPHA-LC", LSIntervalSymbol(0x61, 0x7a)},
+         {"DIGIT", LSIntervalSymbol(0x30, 0x39)},
+         {"SPACE", LSIntervalSymbol(0x20, 0x20)},
+         {"TABULATION-H", LSIntervalSymbol(0x09, 0x09)},
+         {"TABULATION-V", LSIntervalSymbol(0x0b, 0x0b)},
+         {"END-LINE", LSIntervalSymbol(0x0a, 0x0a)},
+         {"JOKER", LSIntervalSymbol(0x00, 0xff)}};
 }
 

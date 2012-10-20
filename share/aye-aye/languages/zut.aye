@@ -18,21 +18,21 @@
 
 
 (* separator *)
-separator ::= {[\s\t\n]};
+separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
 
 
 (* comment *)
 comment ::= line-comment | block-comment;
-line-comment ::= {//.*\n};
-block-comment ::= {/\*.*\*/};
+line-comment ::= "//" . {JOKER}* . {END-LINE};
+block-comment ::= "/*" . {JOKER}* . "*/";
 
 
 (* value *)
 value ::= boolean-value | integral-value | floating-point-value | string-value;
 boolean-value ::= "true" | "false";
-integral-value ::= {[0-9]+};
-floating-point-value ::= {[0-9]*} . "." . {[0-9]+};
-string-value ::= '"' . {.*} . '"';
+integral-value ::= {DIGIT}+;
+floating-point-value ::= {DIGIT}* . "." . {DIGIT}+;
+string-value ::= '"' . {JOKER}* . '"';
 
 
 (* type *)
@@ -45,7 +45,7 @@ string-type ::= "string";
 
 
 (* symbol *)
-symbol ::= {[a-zA-Z0-9_]+};
+symbol ::= ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} )+;
 
 
 (* expression *)

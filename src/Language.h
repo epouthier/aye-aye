@@ -22,6 +22,7 @@
     #include <iostream>
 	#include <iterator>
 	#include <fstream>
+    #include <sstream>
 	#include <stack>
     #include <string>
 
@@ -49,7 +50,8 @@
 			stack<LSRuleDefinition> _ruleDefinitionStack;
 			stack<LSUnaryExpression> _unaryExpressionStack;
 			stack<LSTerminalSymbol> _terminalSymbolStack;
-			stack<LSRegularExpression> _regularExpressionStack;
+            stack<LSIntervalSymbol> _intervalSymbolStack;
+            stack<LSCharacterCode> _characterCodeStack;
 			LSRules _rules;
 
 
@@ -76,8 +78,9 @@
             bool _parseUnaryExpression() throw(LanguageException);
             LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);
+            bool _parseIntervalSymbol() throw(LanguageException);
+            bool _parseCharacterCode() throw(LanguageException);
             bool _parseTerminalSymbol() throw(LanguageException);
-			bool _parseRegularExpression() throw(LanguageException);
 			void _parseUnnecessaryCharacters() throw(LanguageException);
 			bool _parseRegex(const string &str, const string &rstr);
 			bool _parseString(const string &str) throw(LanguageException);

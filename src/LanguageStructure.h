@@ -24,19 +24,20 @@
     #include <map>
 	#include <string>
 
-	#include <boost/regex.hpp>
-
 	using namespace std;
 
 	namespace ayeaye
 	{
-		enum LSLogicalSymbol
+        //Logical symbol
+        enum LSLogicalSymbol
 		{
 			LSLS_NO_LOGICAL_SYMBOL,
 			LSLS_AND,
 			LSLS_OR
 		};
 
+
+        //Repetition symbol
 		enum LSRepetitionSymbol
 		{
 			LSRS_NO_REPETITION_SYMBOL,
@@ -45,15 +46,38 @@
 			LSRS_ZERO_OR_ONE
 		};
 
-        typedef string LSRuleIdentifier;
-		typedef string LSTerminalSymbol;
-		typedef boost::regex LSRegularExpression;
 
+        //Rule indentifier
+        typedef string LSRuleIdentifier;
+
+
+        //Terminal symbol
+		typedef string LSTerminalSymbol;
+
+
+        //Interval Symbol
+        typedef int LSCharacterCode;
+        typedef pair<LSCharacterCode, LSCharacterCode> LSIntervalSymbol;
+        typedef map<string, LSIntervalSymbol> LSPresetIntervalArray;
+
+        class LSPresetInterval
+        {
+        private:
+            /* Attributs */
+            static LSPresetIntervalArray _presetIntervalArray;
+
+        public:
+            /* Getters */
+            static LSPresetIntervalArray& getPresetIntervalArray() {return _presetIntervalArray;}
+        };
+
+
+        //Unary expression
 		enum LSUnaryExpressionType
 		{
 			LSUET_RULE_IDENTIFIER,
 			LSUET_TERMINAL_SYMBOL,
-			LSUET_REGULAR_EXPRESSION
+            LSUET_INTERVAL_SYMBOL
 		};
 
 		struct LSUnaryExpression
@@ -61,9 +85,11 @@
 			LSUnaryExpressionType type;
 			LSRuleIdentifier ruleIdentifier;
 			LSTerminalSymbol terminalSymbol;
-			LSRegularExpression regularExpression;
+            LSIntervalSymbol intervalSymbol;
 		};
 
+
+        //Rule definition
         enum LSSubRuleDefinitionType
         {
             LSSRDT_UNARY_EXPRESSION,
@@ -84,6 +110,8 @@
 			LSLogicalSymbol logicalSymbol;
         };
 
+
+        //Rules
         typedef map<LSRuleIdentifier, LSRuleDefinition> LSRules;
 	}
 

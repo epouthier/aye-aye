@@ -85,9 +85,9 @@ namespace ayeaye
 						case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
 							cout << "\"" << itRuleDefinition->unaryExpression.terminalSymbol << "\"";
 							break;
-						case LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION:
-							cout << "{" << itRuleDefinition->unaryExpression.regularExpression.str() << "}";
-							break;
+                        case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
+                            cout << "{" << itRuleDefinition->unaryExpression.intervalSymbol.first << "," << itRuleDefinition->unaryExpression.intervalSymbol.second << "}";
+                            break;
 					}
 					break;
 				case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
@@ -522,13 +522,13 @@ namespace ayeaye
 
     bool Language::_parseUnaryExpression() throw(LanguageException)
 	{
-		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol );
+		//EBNF => unary-expression ::= ( rule-identifier | terminal-symbol | interval-symbol );
 
 		//variables
 		LSRuleIdentifier ruleIdentifier;
 		LSTerminalSymbol terminalSymbol;
+        LSIntervalSymbol intervalSymbol;
 		LSUnaryExpression unaryExpression;
-		LSRegularExpression regularExpression;
 
 		//parse unary expression
 		if (_parseRuleIdentifier())
@@ -573,13 +573,13 @@ namespace ayeaye
 
 			return true;
         }
-		else if (_parseRegularExpression())
-		{
-			//on récupert la dernière expression régulière
-			if (_regularExpressionStack.size() >= 1)
+        else if (_parseIntervalSymbol())
+        {
+			//on récupert le dernier symbole interval
+			if (_intervalSymbolStack.size() >= 1)
 			{
-				regularExpression = _regularExpressionStack.top();
-				_regularExpressionStack.pop();
+				intervalSymbol = _intervalSymbolStack.top();
+				_intervalSymbolStack.pop();
 			}
 			else
 			{
@@ -588,12 +588,12 @@ namespace ayeaye
 			}
 
 			//ajout à la pile d'expression unaire
-			unaryExpression.type = LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION;
-			unaryExpression.regularExpression = regularExpression;
+			unaryExpression.type = LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL;
+			unaryExpression.intervalSymbol = intervalSymbol;
 			_unaryExpressionStack.push(unaryExpression);
 
 			return true;
-		}
+        }
 
 		return false;
 	}
@@ -632,6 +632,150 @@ namespace ayeaye
 		}
 
         return LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL;
+    }
+
+    bool Language::_parseIntervalSymbol() throw(LanguageException)
+    {
+        //EBNF => interval-symbol ::= "{" . unnecessary-character . ( intervalePredefini | ( character-code . ( unnecessary-character . "," . unnecessary-character . character-code )? ) . unnecessary-character . "}"
+
+        //variable
+        LSIntervalSymbol intervalSymbol = LSIntervalSymbol(0x00, 0x00);
+        LSPresetIntervalArray::iterator itPresetIntervalArray;
+        bool isPresetInterval = false;
+
+        //on parse le symbole intervale
+        if (_parseCharacter('{'))
+        {
+            _parseUnnecessaryCharacters();
+
+            //si c'est un intervale prédéfini
+            for (itPresetIntervalArray = LSPresetInterval::getPresetIntervalArray().begin(); itPresetIntervalArray != LSPresetInterval::getPresetIntervalArray().end(); itPresetIntervalArray++)
+            {
+                if (_parseString(itPresetIntervalArray->first))
+                {
+                    //ajout à la pile du symbole intervale
+                    intervalSymbol = itPresetIntervalArray->second;
+
+                    isPresetInterval = true;
+                    break;
+                }
+            }
+
+            //si c'est un code de caractère
+            if (!isPresetInterval)
+            {
+                if (_parseCharacterCode())
+                {
+                    _parseUnnecessaryCharacters();
+
+                    //caractère séparateur
+                    if (_parseCharacter(','))
+                    {
+                        _parseUnnecessaryCharacters();
+
+                        if (_parseCharacterCode())
+                        {
+                            //on récupert les deux derniers code de caractères
+                            if (_characterCodeStack.size() >= 2)
+                            {
+                                intervalSymbol.second = _characterCodeStack.top();
+                                _characterCodeStack.pop();
+                                intervalSymbol.first = _characterCodeStack.top();
+                                _characterCodeStack.pop();
+                            }
+                			else
+                			{
+                				//traitement des erreurs
+                				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+                			}
+                        }
+                        else
+                        {
+                            throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, code du caractère de fin d'intervale manquant après le symbole \",\"."));
+                        }
+                    }
+                    else
+                    {
+                        //on récupert le dernier code de caractère
+                        if (_characterCodeStack.size() >= 1)
+                        {
+                            intervalSymbol.first = _characterCodeStack.top();
+                            intervalSymbol.second = _characterCodeStack.top();                            
+                            _characterCodeStack.pop();
+                        }
+                        else
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+                        }
+                    }
+                }
+                else
+                {
+                    throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, intervale ou constante d'intervale non défini entre les symboles \"{\" et \"}\"."));
+                }
+            }
+            
+            _parseUnnecessaryCharacters();
+
+            //caractère de fin
+            if (_parseCharacter('}'))
+            {
+                //ajout à la pile du symbole intervale
+                _intervalSymbolStack.push(intervalSymbol);
+
+                return true;
+            }
+            else
+            {
+                throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"}\" absent."));
+            }
+        }
+    }
+
+    bool Language::_parseCharacterCode() throw(LanguageException)
+    {
+        //EBNF => character-identifier ::= regex([0-9]+);
+
+		//variables
+        LSCharacterCode characterCode = 0x00;
+        string str = "";
+		char c;
+
+		//on parse le code du caractère
+		while (true)
+		{
+			str += _languageFile.get();
+
+			if (!_parseRegex(str, "[0-9]+"))
+			{
+				str = str.substr(0, str.size() - 1);
+				_languageFile.unget();
+				break;
+			}
+		}
+
+		//vérification que le code du caractère n'est pas vide
+		if (str.empty())
+		{
+			return false;
+		}
+
+		//vérification que le code du caractère est correcte
+		if (!_parseRegex(str, "[0-9]+"))
+		{
+			throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, \"%0\", la convention de nommage des codes de caractères est un ensemble de chiffres, ex: \"123\".", str));
+		}
+
+        //conversion chaine de caractères vers entier
+        istringstream iss(str);
+        iss >> characterCode;
+
+		//ajout à la pile de codes de caractères
+		_characterCodeStack.push(characterCode);
+
+		//tout c'est bien passé !!!
+		return true;
     }
 
     bool Language::_parseTerminalSymbol() throw(LanguageException)
@@ -692,42 +836,6 @@ namespace ayeaye
 		}
 
 		return false;
-	}
-
-	bool Language::_parseRegularExpression() throw(LanguageException)
-	{
-		//EBNF => regular-expression ::= "{" . ... . "}";
-
-		//variable
-		LSRegularExpression regularExpression;
-		string regularExpressionStr = "";
-
-		//on parse l'expréssion régulière
-		if (_parseCharacter('{'))
-		{
-			while (!_parseCharacter('}'))
-			{
-				regularExpressionStr += _languageFile.get();
-
-				//traitement des erreurs
-				if (!_languageFile.good())
-				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"}\" absent."));
-				}
-			}
-
-			//vérification que l'expression régulière n'est pas vide
-			if (regularExpressionStr.empty())
-			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"{\" et \"}\"."));
-			}
-
-			//ajout à la pile de l'expression régulière
-			regularExpression.assign(regularExpressionStr);
-			_regularExpressionStack.push(regularExpression);
-
-			return true;
-		}
 	}
 
 	void Language::_parseUnnecessaryCharacters() throw(LanguageException)
