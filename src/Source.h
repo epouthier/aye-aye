@@ -19,14 +19,13 @@
 #ifndef _AYEAYE_SOURCE_H
 #define _AYEAYE_SOURCE_H
 
-    /*#include <iostream>
+    #include <iostream>
 	#include <iterator>
 	#include <fstream>
     #include <sstream>
     #include <string>
 
 	#include <boost/filesystem.hpp>
-	#include <boost/regex.hpp>
 
     #include "Language.h"
 	#include "LanguageStructure.h"
@@ -35,36 +34,36 @@
 	#include "SourceException.h"
 
     using namespace std;
-	using namespace boost::filesystem;*/
+	using namespace boost::filesystem;
 
-    //namespace ayeaye
-    //{
-        //class Source
-        //{
-		//private:
+    namespace ayeaye
+    {
+        class Source
+        {
+		private:
 			/* Attributs */
-			/*Parameters &_parameters;
+			Parameters &_parameters;
 			Language &_language;
 			path _sourceFilePath;
 			ifstream _sourceFile;
-			int _currentLine = 1;*/
+			int _currentLine = 1;
 
-        //public:
+        public:
             /* Constructeur */
-            //Source(Parameters &parameters, Language &language) throw(SourceException);
+            Source(Parameters &parameters, Language &language) throw(SourceException);
 
-		//private:
+		private:
 			/* Méthodes privées */
-			/*void _parseSource() throw(SourceException);
+			void _parseSource() throw(SourceException);
             bool _parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException);
 			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
             bool _parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException);
 			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException);
-			bool _parseRegularExpression(const LSRegularExpression &regularExpression) throw(SourceException);
+            bool _parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException);
 			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);
-			bool _parseCharacter(const char c) throw(SourceException);*/
-        //};
-    //}
+			bool _parseCharacter(const char c) throw(SourceException);
+        };
+    }
 
 #endif
 

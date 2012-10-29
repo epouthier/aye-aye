@@ -77,7 +77,8 @@
 		{
 			LSUET_RULE_IDENTIFIER,
 			LSUET_TERMINAL_SYMBOL,
-            LSUET_INTERVAL_SYMBOL
+            LSUET_INTERVAL_SYMBOL,
+            LSUET_JOKER_SYMBOL
 		};
 
 		struct LSUnaryExpression

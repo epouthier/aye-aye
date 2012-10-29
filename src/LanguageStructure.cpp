@@ -28,7 +28,6 @@ namespace ayeaye
          {"SPACE", LSIntervalSymbol(0x20, 0x20)},
          {"TABULATION-H", LSIntervalSymbol(0x09, 0x09)},
          {"TABULATION-V", LSIntervalSymbol(0x0b, 0x0b)},
-         {"END-LINE", LSIntervalSymbol(0x0a, 0x0a)},
-         {"JOKER", LSIntervalSymbol(0x00, 0xff)}};
+         {"END-LINE", LSIntervalSymbol(0x0a, 0x0a)}};
 }
 

@@ -23,16 +23,15 @@ separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
 
 (* comment *)
 comment ::= line-comment | block-comment;
-line-comment ::= "//" . {JOKER}* . {END-LINE};
-block-comment ::= "/*" . {JOKER}* . "*/";
-
+line-comment ::= "//" . _* . {END-LINE};
+block-comment ::= "/*" . _* . "*/";
 
 (* value *)
 value ::= boolean-value | integral-value | floating-point-value | string-value;
 boolean-value ::= "true" | "false";
 integral-value ::= {DIGIT}+;
 floating-point-value ::= {DIGIT}* . "." . {DIGIT}+;
-string-value ::= '"' . {JOKER}* . '"';
+string-value ::= '"' . _* . '"';
 
 
 (* type *)

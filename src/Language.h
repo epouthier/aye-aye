@@ -78,6 +78,7 @@
             bool _parseUnaryExpression() throw(LanguageException);
             LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);
+            bool _parseJoker() throw(LanguageException);
             bool _parseIntervalSymbol() throw(LanguageException);
             bool _parseCharacterCode() throw(LanguageException);
             bool _parseTerminalSymbol() throw(LanguageException);

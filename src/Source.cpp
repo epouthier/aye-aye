@@ -18,7 +18,7 @@
 
 #include "Source.h"
 
-/*namespace ayeaye
+namespace ayeaye
 {
     Source::Source(Parameters &parameters, Language &language) throw(SourceException) :
 		_parameters(parameters),
@@ -98,7 +98,10 @@
                         break;
                     case LSRepetitionSymbol::LSRS_ONE_TO_N:
                         result = _parseSubRuleDefinition(*itRuleDefinition);
-                        while (_parseSubRuleDefinition(*itRuleDefinition));
+                        if (result)
+                        {
+                            while (_parseSubRuleDefinition(*itRuleDefinition));
+                        }
                         break;
                     case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
                         result = true;
@@ -106,6 +109,8 @@
                         break;
                 }
             }
+
+            cout << "result = " << result << ", ignore = " << ignore << endl;
 
             switch (itRuleDefinition->logicalSymbol)
             {
@@ -159,18 +164,20 @@
 			case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
 				return _parseTerminalSymbol(unaryExpression.terminalSymbol);
 				break;
-			case LSUnaryExpressionType::LSUET_REGULAR_EXPRESSION:
-				return _parseRegularExpression(unaryExpression.regularExpression);
+			case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
+				return _parseIntervalSymbol(unaryExpression.intervalSymbol);
 				break;
 		}
 
 		return false;
 	}
 
-	bool Source::_parseRegularExpression(const LSRegularExpression &regularExpression) throw(SourceException)
-	{
-		//variable
-		string tmp = "";
+    bool Source::_parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException)
+    {
+        cout << "_parseIntervalSymbol(" << intervalSymbol.first << ", " << intervalSymbol.second << ")" << endl; //debug
+
+        //variable
+        char c;
 
         //traitement des erreurs
 		if (_sourceFile.eof())
@@ -178,35 +185,22 @@
 			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
 		}
 
-        //récupération d'un caractère dans le fichier source
-		tmp = _sourceFile.get();
+        //parse interval symbol
+        c = _sourceFile.get();
 
-        //vérification s'il est accepté par l'expression régulière
-        if (!regex_match(tmp, regularExpression))
+        if (!((c >= intervalSymbol.first) && (c <= intervalSymbol.second)))
         {
             _sourceFile.unget();
             return false;
         }
 
-        //on récupert les caractères suivants
-        do
-        {
-            //traitement des erreurs
-    		if (_sourceFile.eof())
-    		{
-    			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
-    		}
-
-            tmp = _sourceFile.get();
-        } while (regex_match(tmp, regularExpression));
-
-        _sourceFile.unget();
-
-		return true;
-	}
+        return true;
+    }
 
 	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
 	{
+        cout << "_parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
+
 		//parse terminal symbol
 		for (unsigned int i = 0; i < terminalSymbol.size(); i++)
 		{
@@ -240,5 +234,5 @@
 
 		return true;
 	}
-}*/
+}
 

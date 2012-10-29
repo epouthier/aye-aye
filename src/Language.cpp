@@ -594,6 +594,14 @@ namespace ayeaye
 
 			return true;
         }
+        else if (_parseJoker())
+        {
+            //ajout à la pile d'expression unaire
+			unaryExpression.type = LSUnaryExpressionType::LSUET_JOKER_SYMBOL;
+			_unaryExpressionStack.push(unaryExpression);
+
+            return true;
+        }
 
 		return false;
 	}
@@ -634,6 +642,19 @@ namespace ayeaye
         return LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL;
     }
 
+    bool Language::_parseJoker() throw(LanguageException)
+    {
+        //EBNF => joker-symbol ::= "_";
+
+        //on parse le symbole joker
+        if (_parseCharacter('_'))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     bool Language::_parseIntervalSymbol() throw(LanguageException)
     {
         //EBNF => interval-symbol ::= "{" . unnecessary-character . ( intervalePredefini | ( character-code . ( unnecessary-character . "," . unnecessary-character . character-code )? ) . unnecessary-character . "}"
@@ -661,9 +682,9 @@ namespace ayeaye
                 }
             }
 
-            //si c'est un code de caractère
             if (!isPresetInterval)
             {
+                //si c'est un code de caractère
                 if (_parseCharacterCode())
                 {
                     _parseUnnecessaryCharacters();
@@ -682,6 +703,12 @@ namespace ayeaye
                                 _characterCodeStack.pop();
                                 intervalSymbol.first = _characterCodeStack.top();
                                 _characterCodeStack.pop();
+
+                                //traitement des erreurs
+                                if (intervalSymbol.first > intervalSymbol.second)
+                                {
+                                    throw LanguageException(_parameters.getLanguage(), _currentLine, tr("semantique incorrecte, l'intervale est incorrecte, le premier code de caractère est supérieur au deuxième."));
+                                }
                             }
                 			else
                 			{
@@ -691,6 +718,7 @@ namespace ayeaye
                         }
                         else
                         {
+                            //traitement des erreurs
                             throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, code du caractère de fin d'intervale manquant après le symbole \",\"."));
                         }
                     }
@@ -731,6 +759,8 @@ namespace ayeaye
                 throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"}\" absent."));
             }
         }
+
+        return false;
     }
 
     bool Language::_parseCharacterCode() throw(LanguageException)
