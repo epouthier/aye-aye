@@ -81,37 +81,102 @@ namespace ayeaye
         LSRuleDefinition::const_iterator itRuleDefinition;
         bool result = false;
         bool ignore = false;
+        bool joker = false;
+        bool jokerZeroOrOne = false;
+        int loop = 0;
 
         //parse rule definition
         for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
         {
+            //traitement la sous-définition de la règle
             if (!ignore)
             {
-                switch (itRuleDefinition->repetionSymbol)
+                //initialisation des variables
+                joker = false;
+                jokerZeroOrOne = false;
+                loop = 0;
+
+                //traitement du joker
+                if (itRuleDefinition->type == LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION)
                 {
-                    case LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL:
-                        result = _parseSubRuleDefinition(*itRuleDefinition);
-                        break;
-                    case LSRepetitionSymbol::LSRS_ZERO_TO_N:
-                        result = true;
-                        while (_parseSubRuleDefinition(*itRuleDefinition));
-                        break;
-                    case LSRepetitionSymbol::LSRS_ONE_TO_N:
-                        result = _parseSubRuleDefinition(*itRuleDefinition);
+                    if (itRuleDefinition->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
+                    {
+                        //traitement des symboles de répétition
+                        switch (itRuleDefinition->repetionSymbol)
+                        {
+                            case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                                joker = true;
+                                itRuleDefinition++;
+                                break;
+                            case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                                _parseJokerSymbol();
+                                joker = true;
+                                itRuleDefinition++;
+                                break;
+                            case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
+                                joker = true;
+                                jokerZeroOrOne = true;
+                                itRuleDefinition++;
+                                break;
+                        }
+                    }
+                }
+
+                //traitement des symboles de répétition
+                while (loop >= 0)
+                {
+                    switch (itRuleDefinition->repetionSymbol)
+                    {
+                        case LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL:
+                            result = _parseSubRuleDefinition(*itRuleDefinition);
+                            break;
+                        case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                            result = true;
+                            while (_parseSubRuleDefinition(*itRuleDefinition));
+                            break;
+                        case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                            result = _parseSubRuleDefinition(*itRuleDefinition);
+                            if (result)
+                            {
+                                while (_parseSubRuleDefinition(*itRuleDefinition));
+                            }
+                            break;
+                        case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
+                            result = true;
+                            _parseSubRuleDefinition(*itRuleDefinition);
+                            break;
+                    }
+
+                    //traitement du joker
+                    if (joker)
+                    {
                         if (result)
                         {
-                            while (_parseSubRuleDefinition(*itRuleDefinition));
+                            loop = -1;
                         }
-                        break;
-                    case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
-                        result = true;
-                        _parseSubRuleDefinition(*itRuleDefinition);
-                        break;
+                        else
+                        {
+                            if (jokerZeroOrOne && (loop == 1))
+                            {
+                                loop = -1;
+                            }
+                            else
+                            {
+                                _parseJokerSymbol();
+                                loop++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        loop = -1;
+                    }
                 }
             }
 
-            cout << "result = " << result << ", ignore = " << ignore << endl;
+            cout << "result = " << result << ", ignore = " << ignore << endl; //debug
 
+            //traitement des symboles logiques
             switch (itRuleDefinition->logicalSymbol)
             {
                 case LSLogicalSymbol::LSLS_AND:
@@ -167,10 +232,29 @@ namespace ayeaye
 			case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
 				return _parseIntervalSymbol(unaryExpression.intervalSymbol);
 				break;
+            case LSUnaryExpressionType::LSUET_JOKER_SYMBOL:
+				return _parseJokerSymbol();
+				break;
 		}
 
 		return false;
 	}
+
+    bool Source::_parseJokerSymbol() throw(SourceException)
+    {
+        cout << "_parseJokerSymbol()" << endl; //debug
+
+        //traitement des erreurs
+		if (_sourceFile.eof())
+		{
+			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+		}
+
+        //parse joker symbol
+        _sourceFile.get();
+
+        return true;
+    }
 
     bool Source::_parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException)
     {

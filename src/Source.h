@@ -59,6 +59,7 @@
 			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
             bool _parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException);
 			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException);
+            bool _parseJokerSymbol() throw(SourceException);
             bool _parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException);
 			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);
 			bool _parseCharacter(const char c) throw(SourceException);

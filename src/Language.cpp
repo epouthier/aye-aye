@@ -166,6 +166,15 @@ namespace ayeaye
                         throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itRuleDefinition->unaryExpression.ruleIdentifier));
                     }
                 }
+                else if (itRuleDefinition->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
+                {
+                    //si il n'y a pas de symbole logique AND
+                    if (itRuleDefinition->logicalSymbol != LSLogicalSymbol::LSLS_AND)
+                    {
+                        //traitement des erreurs
+                        throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker non suivi d'un symbole logique \".\".", ruleIdentifier));
+                    }
+                }
             }
             else
             {
