@@ -27,19 +27,17 @@ line-comment ::= "//" . _* . {END-LINE};
 block-comment ::= "/*" . _* . "*/";
 
 (* value *)
-value ::= boolean-value | integral-value | floating-point-value | string-value;
+value ::= boolean-value | number-value | string-value;
 boolean-value ::= "true" | "false";
-integral-value ::= {DIGIT}+;
-floating-point-value ::= {DIGIT}* . "." . {DIGIT}+;
+number-value ::= {DIGIT}+ . [ "." . {DIGIT}+ ];
 string-value ::= '"' . _* . '"';
 
 
 (* type *)
 type ::= value-type;
-value-type ::= boolean-type | integral-type | floating-point-type | string-type;
+value-type ::= boolean-type | number-type | string-type;
 boolean-type ::= "bool";
-integral-type ::= "int";
-floating-point-type ::= "float";
+number-type ::= "int" | "float";
 string-type ::= "string";
 
 

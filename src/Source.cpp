@@ -210,8 +210,11 @@ namespace ayeaye
                 return _parseUnaryExpression(subRuleDefinition.unaryExpression);
                 break;
             case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
-            case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
                 return _parseRuleDefinition(subRuleDefinition.ruleDefinition);
+                break;
+            case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
+                _parseRuleDefinition(subRuleDefinition.ruleDefinition);
+                return true;
                 break;
         }
 
