@@ -174,7 +174,7 @@ namespace ayeaye
                 }
             }
 
-            cout << "result = " << result << ", ignore = " << ignore << endl; //debug
+            //cout << "result = " << result << ", ignore = " << ignore << endl; //debug
 
             //traitement des symboles logiques
             switch (itRuleDefinition->logicalSymbol)
@@ -245,7 +245,7 @@ namespace ayeaye
 
     bool Source::_parseJokerSymbol() throw(SourceException)
     {
-        cout << "_parseJokerSymbol()" << endl; //debug
+        //cout << "_parseJokerSymbol()" << endl; //debug
 
         //traitement des erreurs
 		if (_sourceFile.eof())
@@ -261,7 +261,7 @@ namespace ayeaye
 
     bool Source::_parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException)
     {
-        cout << "_parseIntervalSymbol(" << intervalSymbol.first << ", " << intervalSymbol.second << ")" << endl; //debug
+        //cout << "_parseIntervalSymbol(" << intervalSymbol.first << ", " << intervalSymbol.second << ")" << endl; //debug
 
         //variable
         char c;
@@ -286,7 +286,7 @@ namespace ayeaye
 
 	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
 	{
-        cout << "_parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
+        //cout << "_parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
 
 		//parse terminal symbol
 		for (unsigned int i = 0; i < terminalSymbol.size(); i++)

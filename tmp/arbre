@@ -1,0 +1,54 @@
+
+> affectation-expression
+    > boolean-type
+    > symbol
+        > bValue
+    > boolean-value
+        > true
+
+> affectation-expression
+    > symbol
+        > bValue
+    > false
+
+> affectation-expression
+    > number-type
+        > int
+    > symbol
+        > iValue
+    > number-value
+        > 26
+
+> affectation-expression
+    > symbol
+        > iValue
+    > number-value
+        > 42
+
+> affectation-expression
+    > number-type
+        > float
+    > symbol
+        > fValue
+    > number-value
+        > 26.0
+
+> affectation-expression
+    > symbol
+        > fValue
+    > number-value
+        > 42.0
+
+> affectation-expression
+    > string-type
+    > symbol
+        > sValue
+    > string-value
+        > "Hello world !!!"
+
+> affectation-expression
+    > symbol
+        > sValue
+    > string-value
+        > "1..2..1..2..Phase de tests"
+
