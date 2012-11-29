@@ -17,39 +17,46 @@
 *)
 
 
-(* separator *)
+
+(* zut *)
+zut ::= ( separator* . ( comment | statement ) )*;
+
 separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
 
-
-(* comment *)
 comment ::= line-comment | block-comment;
 line-comment ::= "//" . _* . {END-LINE};
 block-comment ::= "/*" . _* . "*/";
 
-(* value *)
-value ::= boolean-value | number-value | string-value;
-boolean-value ::= "true" | "false";
-number-value ::= {DIGIT}+ . [ "." . {DIGIT}+ ];
-string-value ::= '"' . _* . '"';
 
 
-(* type *)
-type ::= value-type;
-value-type ::= boolean-type | number-type | string-type;
-boolean-type ::= "bool";
-number-type ::= "int" | "float";
-string-type ::= "string";
 
+(* statement *)
+statement ::= variable-statement | enum-statement | if-statement | while-statement | do-while-statement | for-statement | foreach-statement | switch-statement;
 
-(* symbol *)
-symbol ::= ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} )+;
+block-statement ::= "{" . ( separator* . statement )* . separator* . "}";
+
+variable-statement ::= "var" . separator+ . variable-identifier . separator* . ;
+enum-statement ::= "enum" . separator+ . variable-identifier . separator* . "{" . separator* . ;
+
+if-statement ::= "if" . separator* . ;
+else-if-statement ::= "else" . separator+ . "if" . separator* . ;
+else-statement ::= "else" . separator* . block-statement;
+
+while-statement ::= "while" . separator* . ;
+do-while-statement ::= "do" . separator* . ;
+for-statement ::= "for" . separator* . ;
+foreach-statement ::= "foreach" . separator* . ;
+
+switch-statement ::= "switch" . separator* . "(" . separator* . variable-identifier . separator* . ")" . separator* . "{" . ( separator* . case-statement )* . [ separator* . default-statement ] . separator* . "}";
+case-statement ::= "case" . separator+ . ;
+default-statement ::= "default" . separator+ . ;
+
+namespace-statement ::= "namespace" . separator+ . ;
+using-statement ::= "using" . separator+ . ;
+
 
 
 (* expression *)
-expression ::= affectation-expression . separator* . ";";
-affectation-expression ::= [ type . separator+ ] . symbol . separator* . "=" . separator* . value;
 
-
-(* zut *)
-zut ::= ( separator* . ( comment | expression ) )*;
+(* modifier *)
 
