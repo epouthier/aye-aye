@@ -148,20 +148,6 @@ namespace ayeaye
             //traitement des erreurs
             throw LanguageException(_parameters.getLanguage(), tr("la règle principale \"%0\" n'est pas définie.", _parameters.getLanguage()));
         }
-
-        //vérification que la règle separator est définie
-        if (_rules.find("separator") == _rules.end())
-        {
-            //traitement des erreurs
-            throw LanguageException(_parameters.getLanguage(), tr("la règle \"separator\" n'est pas définie."));
-        }
-
-        //vérification que la règle comment est définie
-        if (_rules.find("comment") == _rules.end())
-        {
-            //traitement des erreurs
-            throw LanguageException(_parameters.getLanguage(), tr("la règle \"comment\" n'est pas définie."));
-        }
     }
 
     void Language::_checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException)
@@ -180,11 +166,15 @@ namespace ayeaye
                     //vérification que chaque ne contient pas une règle non définie
                     if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
                     {
-                        //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
-                        if (_rules.find(itExpression->unaryExpression.ruleIdentifier) == _rules.end())
+                        //si l'identifiant de la règle n'est pas "separator"
+                        if (itExpression->unaryExpression.ruleIdentifier != "separator")
                         {
-                            //traitement des erreurs
-                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itExpression->unaryExpression.ruleIdentifier));
+                            //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
+                            if (_rules.find(itExpression->unaryExpression.ruleIdentifier) == _rules.end())
+                            {
+                                //traitement des erreurs
+                                throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itExpression->unaryExpression.ruleIdentifier));
+                            }
                         }
                     }
                     else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL) //vérication que tous les joker sont bien suivi

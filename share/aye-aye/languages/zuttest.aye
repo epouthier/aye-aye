@@ -16,13 +16,10 @@
 *)
 
 
-(* separator *)
-separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
-
-
 (* comment *)
 comment ::= line-comment | block-comment;
-line-comment ::= "//" .* {END-LINE};
+(* line-comment ::= "//" .* {END-LINE}; *)
+line-comment ::= "//" .* "//";
 block-comment ::= "/*" .* "*/";
 
 (* value *)
@@ -50,5 +47,5 @@ affectation-expression ::= [ type separator ] symbol "=" value;
 
 
 (* zuttest *)
-zuttest ::= expression*;
+zuttest ::= ( comment | expression )*;
 

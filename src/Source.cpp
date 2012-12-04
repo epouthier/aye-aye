@@ -17,7 +17,7 @@
  */
 
 #include "Source.h"
-/*
+
 namespace ayeaye
 {
     Source::Source(Parameters &parameters, Language &language) throw(SourceException) :
@@ -71,11 +71,18 @@ namespace ayeaye
 
     bool Source::_parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException)
     {
+        //cout << "_parseRule(" << ruleIdentifier << ")" << endl; //debug
+
         //parsage de la définition de la règle
+        if (ruleIdentifier == "separator")
+        {
+            return _parseSeparator();
+        }
+
         return (_parseRuleDefinition(_language.getRules()[ruleIdentifier]));
     }
 
-	bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
+	/*bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
 	{
         //variable
         LSRuleDefinition::const_iterator itRuleDefinition;
@@ -199,30 +206,135 @@ namespace ayeaye
         }
 
         return result;
-	}
+	}*/
 
-    bool Source::_parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException)
+    bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
     {
-        //parse sub rule definition
-        switch (subRuleDefinition.type)
+        //cout << " _parseRuleDefinition()" << endl; //debug
+
+        //variables
+        LSRuleDefinition::const_iterator itRuleDefinition;
+
+        //parse rule definition
+        for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
         {
-            case LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION:
-                return _parseUnaryExpression(subRuleDefinition.unaryExpression);
-                break;
-            case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
-                return _parseRuleDefinition(subRuleDefinition.ruleDefinition);
-                break;
-            case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
-                _parseRuleDefinition(subRuleDefinition.ruleDefinition);
+            if (_parseExpressionList(*itRuleDefinition))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool Source::_parseExpressionList(const LSExpressionList &expressionList) throw(SourceException)
+    {
+        //cout << "  _parseExpressionList()" << endl; //debug
+
+        //variables
+        LSExpressionList::const_iterator itExpression;
+        bool result, joker = false;
+
+        //parse expression list
+        for (itExpression = expressionList.begin(); itExpression != expressionList.end(); itExpression++)
+        {
+            //initialisation des variables
+            joker = false;
+
+            //traitement du joker
+            if (itExpression->type == LSExpressionType::LSET_UNARY_EXPRESSION)
+            {
+                if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
+                {
+                    //traitement des symboles de répétition
+                    switch (itExpression->repetitionSymbol)
+                    {
+                        case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                            joker = true;
+                            itExpression++;
+                            break;
+                        case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                            _parseJokerSymbol();
+                            joker = true;
+                            itExpression++;
+                            break;
+                    }
+                }
+            }
+
+            //traitement des symboles de répétition
+            do
+            {
+                switch (itExpression->repetitionSymbol)
+                {
+                    case LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL:
+                        result = _parseExpression(*itExpression);
+                        break;
+                    case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                        result = true;
+                        while (_parseExpression(*itExpression));
+                        break;
+                    case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                        result = _parseExpression(*itExpression);
+                        if (result)
+                        {
+                            while (_parseExpression(*itExpression));
+                        }
+                        break;
+                }
+
+                //traitement du joker
+                if (joker)
+                {
+                    if (result)
+                    {
+                        joker = false;
+                    }
+                    else
+                    {
+                        _parseJokerSymbol();
+                    }
+                }
+            } while (joker);
+
+            if (!result)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool Source::_parseExpression(const LSExpression &expression) throw(SourceException)
+    {
+        //cout << "   _parseExpression()" << endl; //debug
+
+        //parse expression
+        switch (expression.type)
+	    {
+            case LSExpressionType::LSET_OPTIONAL_EXPRESSION:
+                _parseRuleDefinition(expression.ruleDefinition);
                 return true;
                 break;
-        }
+            case LSExpressionType::LSET_GROUP_EXPRESSION:
+                return _parseRuleDefinition(expression.ruleDefinition);
+			    break;
+		    case LSExpressionType::LSET_UNARY_EXPRESSION:
+			    return _parseUnaryExpression(expression.unaryExpression);
+		        break;
+	    }
 
         return false;
     }
 
 	bool Source::_parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException)
 	{
+        //cout << "    _parseUnaryExpression()" << endl; //debug
+
+        //parse separator
+        while (_parseSeparator());
+
 		//parse unary expression
 		switch (unaryExpression.type)
 		{
@@ -245,7 +357,7 @@ namespace ayeaye
 
     bool Source::_parseJokerSymbol() throw(SourceException)
     {
-        //cout << "_parseJokerSymbol()" << endl; //debug
+        //cout << "     _parseJokerSymbol()" << endl; //debug
 
         //traitement des erreurs
 		if (_sourceFile.eof())
@@ -261,7 +373,7 @@ namespace ayeaye
 
     bool Source::_parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException)
     {
-        //cout << "_parseIntervalSymbol(" << intervalSymbol.first << ", " << intervalSymbol.second << ")" << endl; //debug
+        //cout << "     _parseIntervalSymbol(" << intervalSymbol.first << ", " << intervalSymbol.second << ")" << endl; //debug
 
         //variable
         char c;
@@ -286,7 +398,7 @@ namespace ayeaye
 
 	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
 	{
-        //cout << "_parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
+        //cout << "     _parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
 
 		//parse terminal symbol
 		for (unsigned int i = 0; i < terminalSymbol.size(); i++)
@@ -305,6 +417,42 @@ namespace ayeaye
 		return true;
 	}
 
+    bool Source::_parseSeparator() throw(SourceException)
+    {
+        //cout << "_parseSeparator()" << endl; //debug
+
+        //traitement du separator custom
+        if (_language.getRules().find("separator") != _language.getRules().end())
+        {
+            cout << "separator custom" << endl; //debug
+            return (_parseRuleDefinition(_language.getRules()["separator"]));
+        }
+
+        //traitement des erreurs
+		if (_sourceFile.eof())
+		{
+			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+		}
+
+        //traitement du separator default
+    	if ((!_parseCharacter(' ')) &&
+    		(!_parseCharacter('\t')))
+    	{
+    		//si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
+    		if (_parseCharacter('\n'))
+    		{
+    			_currentLine++;
+                return true;
+            }
+        }
+        else
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 	bool Source::_parseCharacter(const char c) throw(SourceException)
 	{
 		//traitement des erreurs
@@ -322,4 +470,4 @@ namespace ayeaye
 		return true;
 	}
 }
-*/
+
