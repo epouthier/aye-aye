@@ -42,19 +42,19 @@
         {
 		private:
 			/* Attributs */
-			Parameters &_parameters;
+			/*Parameters &_parameters;
 			Language &_language;
 			path _sourceFilePath;
 			ifstream _sourceFile;
-			int _currentLine = 1;
+			int _currentLine = 1;*/
 
         public:
             /* Constructeur */
-            Source(Parameters &parameters, Language &language) throw(SourceException);
+            /*Source(Parameters &parameters, Language &language) throw(SourceException);*/
 
 		private:
 			/* Méthodes privées */
-			void _parseSource() throw(SourceException);
+			/*void _parseSource() throw(SourceException);
             bool _parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException);
 			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
             bool _parseSubRuleDefinition(const LSSubRuleDefinition &subRuleDefinition) throw(SourceException);
@@ -62,7 +62,7 @@
             bool _parseJokerSymbol() throw(SourceException);
             bool _parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException);
 			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);
-			bool _parseCharacter(const char c) throw(SourceException);
+			bool _parseCharacter(const char c) throw(SourceException);*/
         };
     }
 

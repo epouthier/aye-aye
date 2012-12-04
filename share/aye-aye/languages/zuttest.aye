@@ -1,4 +1,3 @@
-
 (*
  Copyright (C) 2012 Emmanuel Pouthier
 
@@ -23,14 +22,14 @@ separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
 
 (* comment *)
 comment ::= line-comment | block-comment;
-line-comment ::= "//" . _* . {END-LINE};
-block-comment ::= "/*" . _* . "*/";
+line-comment ::= "//" .* {END-LINE};
+block-comment ::= "/*" .* "*/";
 
 (* value *)
 value ::= boolean-value | number-value | string-value;
 boolean-value ::= "true" | "false";
-number-value ::= {DIGIT}+ . [ "." . {DIGIT}+ ];
-string-value ::= '"' . _* . '"';
+number-value ::= {DIGIT}+ [ "." {DIGIT}+ ];
+string-value ::= '"' .* '"';
 
 
 (* type *)
@@ -46,10 +45,10 @@ symbol ::= ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} )+;
 
 
 (* expression *)
-expression ::= affectation-expression . separator* . ";";
-affectation-expression ::= [ type . separator+ ] . symbol . separator* . "=" . separator* . value;
+expression ::= affectation-expression ";";
+affectation-expression ::= [ type separator ] symbol "=" value;
 
 
 (* zuttest *)
-zuttest ::= ( separator* . ( comment | expression ) )*;
+zuttest ::= expression*;
 

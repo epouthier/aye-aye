@@ -71,59 +71,62 @@ namespace ayeaye
 	/*void printRuleDefinition(LSRuleDefinition ruleDefinition)
 	{
 		LSRuleDefinition::iterator itRuleDefinition;
+        LSExpressionList::iterator itExpression;
 
-		for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
+		for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); )
 		{
-			switch (itRuleDefinition->type)
-			{
-				case LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION:
-					switch (itRuleDefinition->unaryExpression.type)
-					{
-						case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
-							cout << itRuleDefinition->unaryExpression.ruleIdentifier;
-							break;
-						case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
-							cout << "\"" << itRuleDefinition->unaryExpression.terminalSymbol << "\"";
-							break;
-                        case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
-                            cout << "{" << itRuleDefinition->unaryExpression.intervalSymbol.first << "," << itRuleDefinition->unaryExpression.intervalSymbol.second << "}";
-                            break;
-					}
-					break;
-				case LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION:
-					cout << "( ";
-					printRuleDefinition(itRuleDefinition->ruleDefinition);
-					cout << " )";
-					break;
-				case LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION:
-					cout << "[ ";
-					printRuleDefinition(itRuleDefinition->ruleDefinition);
-					cout << " ]";
-					break;
-			}
+            for (itExpression = itRuleDefinition->begin(); itExpression != itRuleDefinition->end(); itExpression++)
+            {
+                cout << " ";
 
-			switch (itRuleDefinition->repetionSymbol)
-			{
-				case LSRepetitionSymbol::LSRS_ZERO_TO_N:
-					cout << "*";
-					break;
-				case LSRepetitionSymbol::LSRS_ONE_TO_N:
-					cout << "+";
-					break;
-				case LSRepetitionSymbol::LSRS_ZERO_OR_ONE:
-					cout << "?";
-					break;
-			}
+			    switch (itExpression->type)
+			    {
+				    case LSExpressionType::LSET_UNARY_EXPRESSION:
+					    switch (itExpression->unaryExpression.type)
+					    {
+						    case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
+							    cout << itExpression->unaryExpression.ruleIdentifier;
+							    break;
+						    case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
+							    cout << "\"" << itExpression->unaryExpression.terminalSymbol << "\"";
+							    break;
+                            case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
+                                cout << "{" << itExpression->unaryExpression.intervalSymbol.first << "," << itExpression->unaryExpression.intervalSymbol.second << "}";
+                                break;
+                            case LSUnaryExpressionType::LSUET_JOKER_SYMBOL:
+                                cout << ".";
+                                break;
+					    }
+					    break;
+				    case LSExpressionType::LSET_GROUP_EXPRESSION:
+					    cout << "(";
+					    printRuleDefinition(itExpression->ruleDefinition);
+					    cout << " )";
+					    break;
+				    case LSExpressionType::LSET_OPTIONAL_EXPRESSION:
+					    cout << "[";
+					    printRuleDefinition(itExpression->ruleDefinition);
+					    cout << " ]";
+					    break;
+			    }
 
-			switch (itRuleDefinition->logicalSymbol)
-			{
-				case LSLogicalSymbol::LSLS_AND:
-					cout << " . ";
-					break;
-				case LSLogicalSymbol::LSLS_OR:
-					cout << " | ";
-					break;
-			}
+			    switch (itExpression->repetitionSymbol)
+			    {
+				    case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+					    cout << "*";
+					    break;
+				    case LSRepetitionSymbol::LSRS_ONE_TO_N:
+					    cout << "+";
+					    break;
+			    }
+            }
+
+            itRuleDefinition++;
+
+            if (itRuleDefinition != ruleDefinition.end())
+            {
+                cout << " |";
+            }
 		}
 	}*/
 	//===================================================================================
@@ -145,40 +148,62 @@ namespace ayeaye
             //traitement des erreurs
             throw LanguageException(_parameters.getLanguage(), tr("la règle principale \"%0\" n'est pas définie.", _parameters.getLanguage()));
         }
+
+        //vérification que la règle separator est définie
+        if (_rules.find("separator") == _rules.end())
+        {
+            //traitement des erreurs
+            throw LanguageException(_parameters.getLanguage(), tr("la règle \"separator\" n'est pas définie."));
+        }
+
+        //vérification que la règle comment est définie
+        if (_rules.find("comment") == _rules.end())
+        {
+            //traitement des erreurs
+            throw LanguageException(_parameters.getLanguage(), tr("la règle \"comment\" n'est pas définie."));
+        }
     }
 
     void Language::_checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException)
     {
         //variable
         LSRuleDefinition::const_iterator itRuleDefinition;
+        LSExpressionList::const_iterator itExpression;
 
         //check rule definition
         for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
 		{
-            if (itRuleDefinition->type == LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION)
+            for (itExpression = itRuleDefinition->begin(); itExpression != itRuleDefinition->end(); itExpression++)
             {
-                if (itRuleDefinition->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
+                if (itExpression->type == LSExpressionType::LSET_UNARY_EXPRESSION)
                 {
-                    //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
-                    if (_rules.find(itRuleDefinition->unaryExpression.ruleIdentifier) == _rules.end())
+                    //vérification que chaque ne contient pas une règle non définie
+                    if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
                     {
-                        //traitement des erreurs
-                        throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itRuleDefinition->unaryExpression.ruleIdentifier));
+                        //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
+                        if (_rules.find(itExpression->unaryExpression.ruleIdentifier) == _rules.end())
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle non définie : \"%1\".", ruleIdentifier, itExpression->unaryExpression.ruleIdentifier));
+                        }
+                    }
+                    else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL) //vérication que tous les joker sont bien suivi
+                    {
+                        itExpression++;
+
+                        if (itExpression == itRuleDefinition->end())
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker non suivi.", ruleIdentifier));
+                        }
+
+                        itExpression--;
                     }
                 }
-                else if (itRuleDefinition->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
+                else
                 {
-                    //si il n'y a pas de symbole logique AND
-                    if (itRuleDefinition->logicalSymbol != LSLogicalSymbol::LSLS_AND)
-                    {
-                        //traitement des erreurs
-                        throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker non suivi d'un symbole logique \".\".", ruleIdentifier));
-                    }
+                    _checkRuleDefinition(ruleIdentifier, itExpression->ruleDefinition);
                 }
-            }
-            else
-            {
-                _checkRuleDefinition(ruleIdentifier, itRuleDefinition->ruleDefinition);
             }
         }
     }
@@ -196,6 +221,7 @@ namespace ayeaye
 				_parseRule();
 			}
 		}
+        
 
 
 		//debug
@@ -204,7 +230,7 @@ namespace ayeaye
 		
 		for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
 		{
-			cout << itRules->first << " := ";
+			cout << itRules->first << " ::=";
 			printRuleDefinition(itRules->second);
 			cout << ";" << endl;
 		}*/
@@ -258,9 +284,6 @@ namespace ayeaye
 			if (_parseString("::="))
 			{
 				_parseUnnecessaryCharacters();
-
-				//ajout d'une définition de règle
-				_ruleDefinitionStack.push(ruleDefinition);
 
 				if (_parseRuleDefinition())
 				{
@@ -357,41 +380,168 @@ namespace ayeaye
 	}
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
-	{
-		//EBNF => rule-definition ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . repetition-symbol ] . [ unnecessary-character . logical-symbol . rule-definition ];
+    {
+        //EBNF => ruleDefinition ::= expression-list . ( unnecessary-character . "|" . unnecessary-character . expression-list )*;
 
-		//variables
-		LSSubRuleDefinitionType subRuleDefinitionType;
-		LSRepetitionSymbol repetitionSymbol;
-		LSLogicalSymbol logicalSymbol;
+        //variables
+        LSRuleDefinition ruleDefinition;
+        LSExpressionList expressionList;
+
+        //parse rule definition
+        if (_parseExpressionList())
+        {
+            //on récupert la dernière liste d'expression
+			if (_expressionListStack.size() >= 1)
+			{
+				expressionList = _expressionListStack.top();
+				_expressionListStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+            //ajout de l'expression à la liste d'expression
+            ruleDefinition.push_back(expressionList);
+        }
+        else
+        {
+            return false;
+        }
+
+        _parseUnnecessaryCharacters();
+
+        while (_parseCharacter('|'))
+        {
+            _parseUnnecessaryCharacters();
+
+            if (_parseExpressionList())
+            {
+                //on récupert la dernière liste d'expression
+			    if (_expressionListStack.size() >= 1)
+			    {
+			    	expressionList = _expressionListStack.top();
+			    	_expressionListStack.pop();
+			    }
+			    else
+			    {
+			    	//traitement des erreurs
+				    throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			    }
+
+                //ajout de l'expression à la liste d'expression
+                ruleDefinition.push_back(expressionList);
+            }
+            else
+            {
+                throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, sous-règle non défini après un symbole logique \"|\"."));
+                return false;
+            }
+
+            _parseUnnecessaryCharacters();
+        }
+
+        //ajout à la pile de définition de règle
+		_ruleDefinitionStack.push(ruleDefinition);
+
+        return true;
+    }
+
+    bool Language::_parseExpressionList() throw(LanguageException)
+    {
+        //EBNF => expression-list ::= expression . ( unnecessary-character . expression )*;
+
+        //variables
+        LSExpressionList expressionList;
+        LSExpression expression;
+
+        //parse expression list
+        if (_parseExpression())
+        {
+            //on récupert la dernière expression
+			if (_expressionStack.size() >= 1)
+			{
+				expression = _expressionStack.top();
+				_expressionStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+            //ajout de l'expression à la liste d'expression
+            expressionList.push_back(expression);
+        }
+        else
+        {
+            return false;
+        }
+
+        _parseUnnecessaryCharacters();
+
+        while (_parseExpression())
+        {
+            //on récupert la dernière expression
+			if (_expressionStack.size() >= 1)
+			{
+				expression = _expressionStack.top();
+				_expressionStack.pop();
+			}
+			else
+			{
+				//traitement des erreurs
+				throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
+			}
+
+            //ajout de l'expression à la liste d'expression
+            expressionList.push_back(expression);
+
+            _parseUnnecessaryCharacters();
+        }
+
+        //ajout à la pile de liste d'expression
+		_expressionListStack.push(expressionList);
+
+        return true;
+    }
+
+    bool Language::_parseExpression() throw(LanguageException)
+    {
+        //EBNF => expression ::= ( optional-expression | group-expression | unary-expression ) . [ unnecessary-character . repetition-symbol ];
+
+        //variables
+        LSExpressionType expressionType;
+        LSRepetitionSymbol repetitionSymbol;
 		LSUnaryExpression unaryExpression;
-		LSSubRuleDefinition subRuleDefinition;
+		LSExpression expression;
 		LSRuleDefinition ruleDefinition;
 
-		//parse rule definition
+        //parse expression
 		if (_parseOptionalExpression())
 		{
-			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION;
+			expressionType = LSExpressionType::LSET_OPTIONAL_EXPRESSION;
 		}
 		else if (_parseGroupExpression())
 		{
-			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION;
+			expressionType = LSExpressionType::LSET_GROUP_EXPRESSION;
 		}
 		else if (_parseUnaryExpression())
 		{
-			subRuleDefinitionType = LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION;
+			expressionType = LSExpressionType::LSET_UNARY_EXPRESSION;
 		}
 		else
 		{
 			return false;
 		}
 
-		//si le type est une expression optionel ou une expression de groupe
-		if ((subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_OPTIONAL_EXPRESSION) ||
-			(subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_GROUP_EXPRESSION))
+        //si le type est une expression optionel ou une expression de groupe
+		if ((expressionType == LSExpressionType::LSET_OPTIONAL_EXPRESSION) ||
+			(expressionType == LSExpressionType::LSET_GROUP_EXPRESSION))
 		{
 			//on récupert la dernière definition de règle
-			if (_ruleDefinitionStack.size() >= 2)
+			if (_ruleDefinitionStack.size() >= 1)
 			{
 				ruleDefinition = _ruleDefinitionStack.top();
 				_ruleDefinitionStack.pop();
@@ -403,34 +553,9 @@ namespace ayeaye
 			}
 
 			//définition de la définition de règle
-			subRuleDefinition.ruleDefinition = ruleDefinition;
+			expression.ruleDefinition = ruleDefinition;
 		}
-
-		_parseUnnecessaryCharacters();
-
-		//on récupert le symbole de répétition s'il y en a un
-		repetitionSymbol = _parseRepetitionSymbol();
-
-        _parseUnnecessaryCharacters();
-
-		//on récupert le symbole logique
-		logicalSymbol = _parseLogicalSymbol();
-
-		//si il y a pas de symbole logique
-		if (logicalSymbol != LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL)
-		{
-			_parseUnnecessaryCharacters();
-
-			//et qu'il n'y a pas de définition de règle après, alors il y une erreur
-			if (!_parseRuleDefinition())
-			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, sous-règle non défini après un symbole logique (\"|\" ou \".\")."));
-				return false;
-			}
-		}
-
-		//si le type est une expression unaire
-		if (subRuleDefinitionType == LSSubRuleDefinitionType::LSSRDT_UNARY_EXPRESSION)
+        else if (expressionType == LSExpressionType::LSET_UNARY_EXPRESSION) //si le type est une expression unaire
 		{
 			//on récupert la dernière expression unaire
 			if (_unaryExpressionStack.size() >= 1)
@@ -445,31 +570,30 @@ namespace ayeaye
 			}
 
 			//définition de l'expression unaire
-			subRuleDefinition.unaryExpression = unaryExpression;
+			expression.unaryExpression = unaryExpression;
 		}
 
-		//ajout à la définition de la règle courante
-		subRuleDefinition.type = subRuleDefinitionType;
-		subRuleDefinition.repetionSymbol = repetitionSymbol;
-		subRuleDefinition.logicalSymbol = logicalSymbol;
-		_ruleDefinitionStack.top().push_front(subRuleDefinition);
+		_parseUnnecessaryCharacters();
+
+		//on récupert le symbole de répétition s'il y en a un
+		repetitionSymbol = _parseRepetitionSymbol();
+		
+        //ajout à la pile d'expression
+		expression.type = expressionType;
+		expression.repetitionSymbol = repetitionSymbol;
+        _expressionStack.push(expression);
 
 		return true;
-	}
+    }
 
     bool Language::_parseOptionalExpression() throw(LanguageException)
 	{
 		//EBNF => optional-expression ::= '[' . unnecessary-character . rule-definition . unnecessary-character . ']';
 
-		//variable
-		LSRuleDefinition ruleDefinition;
-
+        //pârse optional expression
 		if (_parseCharacter('['))
 		{
 			_parseUnnecessaryCharacters();
-
-			//ajout d'une définition de règle
-			_ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -497,15 +621,10 @@ namespace ayeaye
 	{
 		//EBNF => group-expression ::= '(' . unnecessary-character . rule-definition . unnecessary-character . ')';
 
-		//variable
-		LSRuleDefinition ruleDefinition;
-
+        //parse group expression
 		if (_parseCharacter('('))
 		{
 			_parseUnnecessaryCharacters();
-
-			//ajout d'une définition de règle
-			_ruleDefinitionStack.push(ruleDefinition);
 
 			if (_parseRuleDefinition())
 			{
@@ -615,25 +734,9 @@ namespace ayeaye
 		return false;
 	}
 
-    LSLogicalSymbol Language::_parseLogicalSymbol() throw(LanguageException)
-    {
-		//EBNF => logical-symbol ::= '.' | '|';
-
-        if (_parseCharacter('.'))
-		{
-			return LSLogicalSymbol::LSLS_AND;
-		}
-		else if (_parseCharacter('|'))
-		{
-            return LSLogicalSymbol::LSLS_OR;
-		}
-
-        return LSLogicalSymbol::LSLS_NO_LOGICAL_SYMBOL;
-    }
-
     LSRepetitionSymbol Language::_parseRepetitionSymbol() throw(LanguageException)
     {
-		//EBNF => repetition-symbol ::= '*' | '+' | '?';
+		//EBNF => repetition-symbol ::= '*' | '+';
 
         if (_parseCharacter('*'))
 		{
@@ -643,20 +746,16 @@ namespace ayeaye
 		{
 			return LSRepetitionSymbol::LSRS_ONE_TO_N;
 		}
-		else if (_parseCharacter('?'))
-		{
-            return LSRepetitionSymbol::LSRS_ZERO_OR_ONE;
-		}
 
         return LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL;
     }
 
     bool Language::_parseJoker() throw(LanguageException)
     {
-        //EBNF => joker-symbol ::= "_";
+        //EBNF => joker-symbol ::= ".";
 
         //on parse le symbole joker
-        if (_parseCharacter('_'))
+        if (_parseCharacter('.'))
         {
             return true;
         }
@@ -670,7 +769,7 @@ namespace ayeaye
 
         //variable
         LSIntervalSymbol intervalSymbol = LSIntervalSymbol(0x00, 0x00);
-        LSPresetIntervalArray::iterator itPresetIntervalArray;
+        LSPresetIntervalArray::const_iterator itPresetIntervalArray;
         bool isPresetInterval = false;
 
         //on parse le symbole intervale

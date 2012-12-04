@@ -17,7 +17,7 @@
  */
 
 #include "Source.h"
-
+/*
 namespace ayeaye
 {
     Source::Source(Parameters &parameters, Language &language) throw(SourceException) :
@@ -322,4 +322,4 @@ namespace ayeaye
 		return true;
 	}
 }
-
+*/

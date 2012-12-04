@@ -28,22 +28,12 @@
 
 	namespace ayeaye
 	{
-        //Logical symbol
-        enum LSLogicalSymbol
-		{
-			LSLS_NO_LOGICAL_SYMBOL,
-			LSLS_AND,
-			LSLS_OR
-		};
-
-
         //Repetition symbol
 		enum LSRepetitionSymbol
 		{
 			LSRS_NO_REPETITION_SYMBOL,
 			LSRS_ZERO_TO_N,
-			LSRS_ONE_TO_N,
-			LSRS_ZERO_OR_ONE
+			LSRS_ONE_TO_N
 		};
 
 
@@ -90,25 +80,25 @@
 		};
 
 
-        //Rule definition
-        enum LSSubRuleDefinitionType
+        //Rule definition and expression
+        enum LSExpressionType
         {
-            LSSRDT_UNARY_EXPRESSION,
-            LSSRDT_GROUP_EXPRESSION,
-            LSSRDT_OPTIONAL_EXPRESSION
+            LSET_UNARY_EXPRESSION,
+            LSET_GROUP_EXPRESSION,
+            LSET_OPTIONAL_EXPRESSION
         };
 
-		struct LSSubRuleDefinition;
+        struct LSExpression;
 
-		typedef list<LSSubRuleDefinition> LSRuleDefinition;
+        typedef list<LSExpression> LSExpressionList;
+        typedef list<LSExpressionList> LSRuleDefinition;
 
-        struct LSSubRuleDefinition
+        struct LSExpression
         {
-            LSSubRuleDefinitionType type;
+            LSExpressionType type;
             LSUnaryExpression unaryExpression;
-			LSRuleDefinition ruleDefinition;
-            LSRepetitionSymbol repetionSymbol;
-			LSLogicalSymbol logicalSymbol;
+            LSRuleDefinition ruleDefinition;
+            LSRepetitionSymbol repetitionSymbol;
         };
 
 

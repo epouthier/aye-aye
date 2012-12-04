@@ -48,6 +48,8 @@
 			int _currentLine = 1;
 			stack<LSRuleIdentifier> _ruleIdentifierStack;
 			stack<LSRuleDefinition> _ruleDefinitionStack;
+            stack<LSExpressionList> _expressionListStack;
+            stack<LSExpression> _expressionStack;
 			stack<LSUnaryExpression> _unaryExpressionStack;
 			stack<LSTerminalSymbol> _terminalSymbolStack;
             stack<LSIntervalSymbol> _intervalSymbolStack;
@@ -73,10 +75,11 @@
 			bool _parseRule() throw(LanguageException);
 			bool _parseRuleIdentifier() throw(LanguageException);
 			bool _parseRuleDefinition() throw(LanguageException);
+            bool _parseExpressionList() throw(LanguageException);
+            bool _parseExpression() throw(LanguageException);
             bool _parseOptionalExpression() throw(LanguageException);
             bool _parseGroupExpression() throw(LanguageException);
             bool _parseUnaryExpression() throw(LanguageException);
-            LSLogicalSymbol _parseLogicalSymbol() throw(LanguageException);
             LSRepetitionSymbol _parseRepetitionSymbol() throw(LanguageException);
             bool _parseJoker() throw(LanguageException);
             bool _parseIntervalSymbol() throw(LanguageException);

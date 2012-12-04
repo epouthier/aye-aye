@@ -62,11 +62,11 @@
 		</context>
 
         <context id="jokerSymbol" style-ref="jokerSymbol">
-            <match>_</match>
+            <match>.</match>
         </context>
 
         <context id="operator" style-ref="operator">
-            <match>\.|\||\*|\+|\?|\(|\)|\[|\]</match>
+            <match>\||\*|\+|\(|\)|\[|\]</match>
         </context>
 
 		<context id="ayeaye">

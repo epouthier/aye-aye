@@ -19,41 +19,41 @@
 
 
 (* zut *)
-zut ::= ( separator* . ( comment | statement ) )*;
+zut ::= ( comment | statement )*;
 
 separator ::= {SPACE} | {TABULATION-H} | {END-LINE};
 
 comment ::= line-comment | block-comment;
-line-comment ::= "//" . _* . {END-LINE};
-block-comment ::= "/*" . _* . "*/";
+line-comment ::= "//" .* {END-LINE};
+block-comment ::= "/*" .* "*/";
 
 
 
 
 (* statement *)
-statement ::= variable-statement | enum-statement | if-statement | while-statement | do-while-statement | for-statement | foreach-statement | switch-statement;
+statement ::= variable-statement | affectation-statement | enum-statement | if-statement | while-statement | do-while-statement | for-statement | foreach-statement | switch-statement;
 
-block-statement ::= "{" . ( separator* . statement )* . separator* . "}";
+block-statement ::= "{" statement* "}";
 
-variable-statement ::= "var" . separator+ . variable-identifier . separator* . ;
-enum-statement ::= "enum" . separator+ . variable-identifier . separator* . "{" . separator* . ;
+variable-statement ::= "var" separator variable-identifier [ "=" expression ] ";";
+affectation-statement ::= variable-identifier "=" expression ";";
+enum-statement ::= "enum" separator variable-identifier "{" ( constante-identifier "=" . value-identifier )* "}";
 
-if-statement ::= "if" . separator* . ;
-else-if-statement ::= "else" . separator+ . "if" . separator* . ;
-else-statement ::= "else" . separator* . block-statement;
+if-statement ::= "if" "(" expression ")" block-statement else-if-statement* [ else-statement ];
+else-if-statement ::= "else" "if" "(" expression ")" block-statement;
+else-statement ::= "else" block-statement;
 
-while-statement ::= "while" . separator* . ;
-do-while-statement ::= "do" . separator* . ;
-for-statement ::= "for" . separator* . ;
-foreach-statement ::= "foreach" . separator* . ;
+while-statement ::= "while" "(" expression ")" block-statement;
+do-while-statement ::= "do" block-statement "while" "(" expression ")" ";";
+for-statement ::= "for" "(" [ "var" separator ] variable-identifier [ "=" expression ] ";" expression ";" variable-identifier "=" expression ")" block-statement;
+foreach-statement ::= "foreach" ;
 
-switch-statement ::= "switch" . separator* . "(" . separator* . variable-identifier . separator* . ")" . separator* . "{" . ( separator* . case-statement )* . [ separator* . default-statement ] . separator* . "}";
-case-statement ::= "case" . separator+ . ;
-default-statement ::= "default" . separator+ . ;
+switch-statement ::= "switch" "(" variable-identifier ")" "{" case-statement* [ default-statement ] "}";
+case-statement ::= "case" separator;
+default-statement ::= "default" separator;
 
-namespace-statement ::= "namespace" . separator+ . ;
-using-statement ::= "using" . separator+ . ;
-
+break-statement ::= "break" ";";
+continue-statement ::= "continue" ";";
 
 
 (* expression *)
