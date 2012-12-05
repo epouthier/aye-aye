@@ -167,7 +167,12 @@ namespace ayeaye
                     if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
                     {
                         //si l'identifiant de la règle n'est pas "separator"
-                        if (itExpression->unaryExpression.ruleIdentifier != "separator")
+                        if (itExpression->unaryExpression.ruleIdentifier == "separator")
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient une règle \"separator\", c'est interdit.", ruleIdentifier));
+                        }
+                        else
                         {
                             //si l'identifiant de la règle n'est pas trouvé dans le tableau des règles
                             if (_rules.find(itExpression->unaryExpression.ruleIdentifier) == _rules.end())
@@ -194,12 +199,12 @@ namespace ayeaye
                         else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
                         {
                             //traitement des erreurs
-                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un joker.", ruleIdentifier));
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un joker, c'est interdit.", ruleIdentifier));
                         }
                         else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
                         {
                             //traitement des erreurs
-                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un identifiant de règle.", ruleIdentifier));
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un identifiant de règle, c'est interdit.", ruleIdentifier));
                         }
 
                         itExpression--;
