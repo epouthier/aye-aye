@@ -186,6 +186,21 @@ namespace ayeaye
                             //traitement des erreurs
                             throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker non suivi.", ruleIdentifier));
                         }
+                        else if (itExpression->type != LSExpressionType::LSET_UNARY_EXPRESSION)
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker non suivi d'une expression simple.", ruleIdentifier));
+                        }
+                        else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_JOKER_SYMBOL)
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un joker.", ruleIdentifier));
+                        }
+                        else if (itExpression->unaryExpression.type == LSUnaryExpressionType::LSUET_RULE_IDENTIFIER)
+                        {
+                            //traitement des erreurs
+                            throw LanguageException(_parameters.getLanguage(), tr("la règle \"%0\" contient un joker suivi d'un identifiant de règle.", ruleIdentifier));
+                        }
 
                         itExpression--;
                     }

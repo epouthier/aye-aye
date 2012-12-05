@@ -58,8 +58,8 @@
             bool _parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException);
 			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
             bool _parseExpressionList(const LSExpressionList &expressionList) throw(SourceException);
-            bool _parseExpression(const LSExpression &expression) throw(SourceException);
-			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression) throw(SourceException);
+            bool _parseExpression(const LSExpression &expression, bool withSeparator = true) throw(SourceException);
+			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression, bool withSeparator = true) throw(SourceException);
             bool _parseJokerSymbol() throw(SourceException);
             bool _parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException);
 			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);

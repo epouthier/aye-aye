@@ -18,8 +18,7 @@
 
 (* comment *)
 comment ::= line-comment | block-comment;
-(* line-comment ::= "//" .* {END-LINE}; *)
-line-comment ::= "//" .* "//";
+line-comment ::= "//" .* {END-LINE};
 block-comment ::= "/*" .* "*/";
 
 (* value *)

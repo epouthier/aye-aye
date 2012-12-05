@@ -1,7 +1,7 @@
 
 /* ceci est un commentaire multi-ligne */
 
-// ceci est commentaire sur une seule ligne //
+// ceci est commentaire sur une seule ligne
 
 bool bValue = true;
 bValue = false;
