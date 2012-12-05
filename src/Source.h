@@ -47,6 +47,7 @@
 			path _sourceFilePath;
 			ifstream _sourceFile;
 			int _currentLine = 1;
+            bool _separatorParsing = false;
 
         public:
             /* Constructeur */

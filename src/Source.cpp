@@ -208,7 +208,7 @@ namespace ayeaye
         //cout << "    _parseUnaryExpression()" << endl; //debug
 
         //parse separator
-        if (withSeparator)
+        if (withSeparator && !_separatorParsing)
         {
             while (_parseSeparator());
         }
@@ -299,36 +299,46 @@ namespace ayeaye
     {
         //cout << "_parseSeparator()" << endl; //debug
 
+        //variable
+        bool result = false;
+
+        //lock separator parsing
+        _separatorParsing = true;
+
         //traitement du separator custom
         if (_language.getRules().find("separator") != _language.getRules().end())
         {
-            cout << "separator custom" << endl; //debug
-            return (_parseRuleDefinition(_language.getRules()["separator"]));
+            result = _parseRuleDefinition(_language.getRules()["separator"]);
         }
-
-        //traitement des erreurs
-		if (_sourceFile.eof())
-		{
-			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
-		}
-
-        //traitement du separator default
-    	if ((!_parseCharacter(' ')) &&
-    		(!_parseCharacter('\t')))
-    	{
-    		//si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
-    		if (_parseCharacter('\n'))
+        else //traitement du separator default
+        {
+            //traitement des erreurs
+    		if (_sourceFile.eof())
     		{
-    			_currentLine++;
-                return true;
+    			throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+    		}
+
+            //parsage du separator default
+        	if ((!_parseCharacter(' ')) &&
+        		(!_parseCharacter('\t')))
+        	{
+        		//si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
+        		if (_parseCharacter('\n'))
+        		{
+        			_currentLine++;
+                    result = true;
+                }
+            }
+            else
+            {
+                result = true;
             }
         }
-        else
-        {
-            return true;
-        }
 
-        return false;
+        //unlock separator parsing
+        _separatorParsing = false;
+
+        return result;
     }
 
 	bool Source::_parseCharacter(const char c) throw(SourceException)
