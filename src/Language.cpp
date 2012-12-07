@@ -943,14 +943,14 @@ namespace ayeaye
 				//traitement des erreurs
 				if (!_languageFile.good())
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"\'\" absent."));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \"'\" absent."));
 				}
 			}
 
 			//vérification que le symbole terminal n'est pas vide
 			if (terminalSymbol.empty())
 			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"\'\"."));
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"'\"."));
 			}
 
 			//ajout à la pile de symbole terminal
@@ -967,14 +967,14 @@ namespace ayeaye
 				//traitement des erreurs
 				if (!_languageFile.good())
 				{
-					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \'\"\' absent."));
+					throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole '\"' absent."));
 				}
 			}
 
             //vérification que le symbole terminal n'est pas vide
 			if (terminalSymbol.empty())
 			{
-				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \'\"\'."));
+				throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles '\"'."));
 			}
 
 			//ajout à la pile de symbole terminal

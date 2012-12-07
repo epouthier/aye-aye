@@ -1,0 +1,202 @@
+#
+# Copyright (C) 2012 Emmanuel Pouthier
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: AYE-AYE 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-12-07 17:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/Language.cpp:149
+msgid "la règle principale \"%0\" n'est pas définie."
+msgstr ""
+
+#: ../src/Parameters.cpp:34
+msgid "Affiche le numéro de version"
+msgstr ""
+
+#: ../src/Parameters.cpp:41
+msgid "Options pour les sources"
+msgstr ""
+
+#: ../src/Language.cpp:1040 ../src/Source.cpp:237 ../src/Source.cpp:256 ../src/Source.cpp:312 ../src/Source.cpp:343
+msgid "syntaxe incorrecte, fin de fichier inattendu."
+msgstr ""
+
+#: ../src/Language.cpp:840
+msgid "syntaxe incorrecte, code du caractère de fin d'intervale manquant après le symbole \",\"."
+msgstr ""
+
+#: ../src/Language.cpp:953
+msgid "syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"'\"."
+msgstr ""
+
+#: ../src/Language.cpp:181
+msgid "la règle \"%0\" contient une règle non définie : \"%1\"."
+msgstr ""
+
+#: ../src/Language.cpp:382
+msgid "syntaxe incorrecte, \"%0\", la convention de nommage des identifiants des règles est un ensemble de mots (composé de une ou plusieurs lettres minuscules de a à z) séparé par des traits d'unions, ex: \"rule-identifier\"."
+msgstr ""
+
+#: ../src/Language.cpp:345
+msgid "syntaxe incorrecte, symbole \"::=\" absent."
+msgstr ""
+
+#: ../src/Parameters.cpp:36
+msgid "Options pour les langages"
+msgstr ""
+
+#: ../src/Language.cpp:946
+msgid "syntaxe incorrecte, symbole \"'\" absent."
+msgstr ""
+
+#: ../src/Language.cpp:828
+msgid "semantique incorrecte, l'intervale est incorrecte, le premier code de caractère est supérieur au deuxième."
+msgstr ""
+
+#: ../src/Source.cpp:68
+msgid "syntaxe incorrecte, la source ne correspond pas au langage défini."
+msgstr ""
+
+#: ../src/Language.cpp:448
+msgid "syntaxe incorrecte, sous-règle non défini après un symbole logique \"|\"."
+msgstr ""
+
+#: ../src/Language.cpp:266
+msgid "syntaxe incorrecte, symbole \"*)\" absent."
+msgstr ""
+
+#: ../src/Source.cpp:57
+msgid "Le fichier source \"%0\" est invalide."
+msgstr ""
+
+#: ../src/Language.cpp:335
+msgid "syntaxe incorrecte, symbole \";\" absent."
+msgstr ""
+
+#: ../src/Language.cpp:618
+msgid "syntaxe incorrecte, symbole \"]\" absent."
+msgstr ""
+
+#: ../src/Parameters.cpp:31
+msgid "Options génériques"
+msgstr ""
+
+#: ../src/Language.cpp:623
+msgid "syntaxe incorrecte, sous-règle non défini entre les symboles \"[\" et \"]\"."
+msgstr ""
+
+#: ../src/Language.cpp:34
+msgid "Le langage des fichiers sources n'est pas spécifié."
+msgstr ""
+
+#: ../src/Language.cpp:654
+msgid "syntaxe incorrecte, sous-règle non défini entre les symboles \"(\" et \")\"."
+msgstr ""
+
+#: ../src/Parameters.cpp:39
+msgid "Pour indiquer dans quelle répertoire où est le langage"
+msgstr ""
+
+#: ../src/Parameters.cpp:103
+msgid "Il n'y a pas de fichier source spécifié."
+msgstr ""
+
+#: ../src/Language.cpp:861
+msgid "syntaxe incorrecte, intervale ou constante d'intervale non défini entre les symboles \"{\" et \"}\"."
+msgstr ""
+
+#: ../src/Language.cpp:977
+msgid "syntaxe incorrecte, il n'y a pas d'expression entre les symboles '\"'."
+msgstr ""
+
+#: ../src/Parameters.cpp:43
+msgid "Pour indiquer dans quelle répertoire où sont les sources"
+msgstr ""
+
+#: ../src/Language.cpp:202
+msgid "la règle \"%0\" contient un joker suivi d'un joker, c'est interdit."
+msgstr ""
+
+#: ../src/Language.cpp:197
+msgid "la règle \"%0\" contient un joker non suivi d'une expression simple."
+msgstr ""
+
+#: ../src/Language.cpp:313 ../src/Language.cpp:325 ../src/Language.cpp:412 ../src/Language.cpp:440 ../src/Language.cpp:481 ../src/Language.cpp:505 ../src/Language.cpp:562 ../src/Language.cpp:579 ../src/Language.cpp:683 ../src/Language.cpp:704 ../src/Language.cpp:725 ../src/Language.cpp:834 ../src/Language.cpp:855
+msgid "euh ..."
+msgstr ""
+
+#: ../src/Language.cpp:207
+msgid "la règle \"%0\" contient un joker suivi d'un identifiant de règle, c'est interdit."
+msgstr ""
+
+#: ../src/Language.cpp:173
+msgid "la règle \"%0\" contient une règle \"separator\", c'est interdit."
+msgstr ""
+
+#: ../src/Language.cpp:649
+msgid "syntaxe incorrecte, symbole \")\" absent."
+msgstr ""
+
+#: ../src/Language.cpp:915
+msgid "syntaxe incorrecte, \"%0\", la convention de nommage des codes de caractères est un ensemble de chiffres, ex: \"123\"."
+msgstr ""
+
+#: ../src/Language.cpp:340
+msgid "syntaxe incorrecte, règle non défini après le symbole \"::=\"."
+msgstr ""
+
+#: ../src/Language.cpp:192
+msgid "la règle \"%0\" contient un joker non suivi."
+msgstr ""
+
+#: ../src/Language.cpp:50
+msgid "Le langage \"%0\" n'existe pas dans le répertoire des langages."
+msgstr ""
+
+#: ../src/Language.cpp:877
+msgid "syntaxe incorrecte, symbole \"}\" absent."
+msgstr ""
+
+#: ../src/Language.cpp:970
+msgid "syntaxe incorrecte, symbole '\"' absent."
+msgstr ""
+
+#: ../src/Language.cpp:65
+msgid "Le fichier du langage \"%0\" est invalide."
+msgstr ""
+
+#: ../src/Parameters.cpp:72
+msgid "Utilisation: ayeaye [OPTIONS] SOURCES"
+msgstr ""
+
+#: ../src/Source.cpp:36
+msgid "Le fichier source \"%0\" n'existe pas."
+msgstr ""
+
+#: ../src/Parameters.cpp:38
+msgid "Pour indiquer le langage des fichiers sources"
+msgstr ""
+
