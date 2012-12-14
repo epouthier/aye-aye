@@ -46,8 +46,6 @@
             /* Méthodes */
             void attachChildNode(SSNode *childNode);
             void attachValue(const SSValue &value);
-            /*bool containsChildNode(const LSRuleIdentifier &ruleIdentifier);
-            SSNode* getChildNode(const LSRuleIdentifier &ruleIdentifier);*/
 
             /* Getters */
             LSRuleIdentifier& getRuleIdentifier() {return _ruleIdentifier;}

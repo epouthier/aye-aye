@@ -47,20 +47,5 @@ namespace ayeaye
     {
         _value = value;
     }
-
-    /*bool SSNode::containsChildNode(const LSRuleIdentifier &ruleIdentifier)
-    {
-        return (_childNodes.find(ruleIdentifier) != _childNodes.end());
-    }
-
-    SSNode* SSNode::getChildNode(const LSRuleIdentifier &ruleIdentifier)
-    {
-        if (containsChildNode(ruleIdentifier))
-        {
-            return _childNodes[ruleIdentifier];
-        }
-
-        return nullptr;
-    }*/
 }
 
