@@ -111,10 +111,13 @@ namespace ayeaye
         //initialisation du noeud
         ruleNode = new SSNode(ruleIdentifier);
 
-        if (_parseRuleDefinition(ruleNode, ruleValue, _language.getRules()[ruleIdentifier]))
+        if (_parseRuleDefinition(ruleNode, ruleValue, _language.getRules()[ruleIdentifier].ruleDefinition))
         {
             //ajout de la valeur au noeud
-            ruleNode->attachValue(ruleValue);
+            if (_language.getRules()[ruleIdentifier].ruleParameters.isValue)
+            {
+                ruleNode->attachValue(ruleValue);
+            }
 
             //ajout du noeud au noeud parent
             rootNode->attachChildNode(ruleNode);
@@ -375,7 +378,7 @@ namespace ayeaye
         //traitement du separator custom
         if (_language.getRules().find("separator") != _language.getRules().end())
         {
-            result = _parseRuleDefinition(ruleNode, ruleValue, _language.getRules()["separator"]);
+            result = _parseRuleDefinition(ruleNode, ruleValue, _language.getRules()["separator"].ruleDefinition);
         }
         else //traitement du separator default
         {

@@ -61,22 +61,22 @@ affectation-expression ::= increment-decrement-operator | affectation-operator e
 (* operator *)
 operator ::= arythmetic-operator | relational-operator | logical-operator;
 
-arythmetic-operator ::= "+" | "-" | "*" | "/" | "%";
-relational-operator ::= "==" | "!=" | "<=" | ">=" | "<" | ">";
-logical-operator ::= "&&" | "||" | "!";
+arythmetic-operator(value) ::= "+" | "-" | "*" | "/" | "%";
+relational-operator(value) ::= "==" | "!=" | "<=" | ">=" | "<" | ">";
+logical-operator(value) ::= "&&" | "||" | "!";
 
-affectation-operator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
-increment-decrement-operator ::= "++" | "--";
+affectation-operator(value) ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
+increment-decrement-operator(value) ::= "++" | "--";
 
 
 
 (* identifier *)
 identifier ::= value-identifier | variable-identifier;
 
-variable-identifier ::= ( {ALPHA-UC} | {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
+variable-identifier(value) ::= ( {ALPHA-UC} | {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
 
 value-identifier ::= boolean-identifier | number-identifier | string-identifier;
-boolean-identifier ::= "true" | "false";
-number-identifier ::= {DIGIT}+ [ "." {DIGIT}+ ];
-string-identifier ::= '"' .* '"' | "'" .* "'";
+boolean-identifier(value) ::= "true" | "false";
+number-identifier(value) ::= {DIGIT}+ [ "." {DIGIT}+ ];
+string-identifier(value) ::= '"' .* '"' | "'" .* "'";
 

@@ -102,8 +102,21 @@
         };
 
 
-        //Rules
-        typedef map<LSRuleIdentifier, LSRuleDefinition> LSRules;
+        //Rule parameters
+        struct LSRuleParameters
+        {
+            bool isValue = false;
+        };
+
+
+        //Rule
+        struct LSRule
+        {
+            LSRuleParameters ruleParameters;
+            LSRuleDefinition ruleDefinition;
+        };
+
+        typedef map<LSRuleIdentifier, LSRule> LSRules;
 	}
 
 #endif

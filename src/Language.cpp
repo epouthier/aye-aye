@@ -139,7 +139,7 @@ namespace ayeaye
         //vérifie si les règles sont toutes définies
         for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
         {
-            _checkRuleDefinition(itRules->first, itRules->second);
+            _checkRuleDefinition(itRules->first, itRules->second.ruleDefinition);
         }
 
         //vérification que la règle principale est définie
@@ -241,7 +241,7 @@ namespace ayeaye
 		for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
 		{
 			cout << itRules->first << " ::=";
-			printRuleDefinition(itRules->second);
+			printRuleDefinition(itRules->second.ruleDefinition);
 			cout << ";" << endl;
 		}*/
 		//======================================================
@@ -285,16 +285,22 @@ namespace ayeaye
 
 		//variables
 		LSRuleIdentifier ruleIdentifier;
-		LSRuleDefinition ruleDefinition;
+        LSRule rule;
 
 		if (_parseRuleIdentifier())
 		{
 			_parseUnnecessaryCharacters();
 
+            //on parse les paramètres de la règle
+            _parseRuleParameters();
+
+            _parseUnnecessaryCharacters();
+
 			if (_parseString("::="))
 			{
 				_parseUnnecessaryCharacters();
 
+                //on parse la définition de la règle
 				if (_parseRuleDefinition())
 				{
 					_parseUnnecessaryCharacters();
@@ -313,10 +319,17 @@ namespace ayeaye
 							throw LanguageException(_parameters.getLanguage(), tr("euh ..."));
 						}
 
+                        //on récupert les derniers paramètres
+						if (_ruleParametersStack.size() >= 1)
+						{
+							rule.ruleParameters = _ruleParametersStack.top();
+							_ruleParametersStack.pop();
+						}
+
 						//on récupert la dernière definition de la règle
 						if (_ruleDefinitionStack.size() >= 1)
 						{
-							ruleDefinition = _ruleDefinitionStack.top();
+							rule.ruleDefinition = _ruleDefinitionStack.top();
 							_ruleDefinitionStack.pop();
 						}
 						else
@@ -326,7 +339,7 @@ namespace ayeaye
 						}
 
 						//ajout de la règle dans le tableau des règles
-						_rules[ruleIdentifier] = ruleDefinition;
+						_rules[ruleIdentifier] = rule;
 
 						return true;
 					}
@@ -388,6 +401,38 @@ namespace ayeaye
 		//tout c'est bien passé !!!
 		return true;
 	}
+
+    void Language::_parseRuleParameters() throw(LanguageException)
+    {
+        //EBNF => ruleParameters ::= "(" . "value" . ")";
+
+        //variable
+        LSRuleParameters ruleParameters;
+
+        //parse rule parameters
+        if (_parseCharacter('('))
+        {
+            _parseUnnecessaryCharacters();
+
+            if (_parseString("value"))
+            {
+                ruleParameters.isValue = true;
+            }
+
+            _parseUnnecessaryCharacters();
+
+            if (_parseCharacter(')'))
+            {
+                //ajout à la pile de paramètres de règles
+                _ruleParametersStack.push(ruleParameters);
+            }
+            else
+            {
+                //traitement des erreurs
+                throw LanguageException(_parameters.getLanguage(), _currentLine, tr("syntaxe incorrecte, symbole \")\" absent."));
+            }
+        }
+    }
 
 	bool Language::_parseRuleDefinition() throw(LanguageException)
     {

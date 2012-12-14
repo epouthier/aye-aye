@@ -47,6 +47,7 @@
 			ifstream _languageFile;
 			int _currentLine = 1;
 			stack<LSRuleIdentifier> _ruleIdentifierStack;
+            stack<LSRuleParameters> _ruleParametersStack;
 			stack<LSRuleDefinition> _ruleDefinitionStack;
             stack<LSExpressionList> _expressionListStack;
             stack<LSExpression> _expressionStack;
@@ -74,6 +75,7 @@
 			bool _parseComment() throw(LanguageException);
 			bool _parseRule() throw(LanguageException);
 			bool _parseRuleIdentifier() throw(LanguageException);
+            void _parseRuleParameters() throw(LanguageException);
 			bool _parseRuleDefinition() throw(LanguageException);
             bool _parseExpressionList() throw(LanguageException);
             bool _parseExpression() throw(LanguageException);
