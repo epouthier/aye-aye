@@ -16,36 +16,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_SYNTACTIC_NODE_H
-#define _AYEAYE_SYNTACTIC_NODE_H
+#ifndef _AYEAYE_SOURCE_STRUCTURE_H
+#define _AYEAYE_SOURCE_STRUCTURE_H
 
     #include <iostream>
-	#include <list>
+    #include <list>
 
     #include "LanguageStructure.h"
 
     using namespace std;
 
-	namespace ayeaye
+    namespace ayeaye
     {
-        class SyntacticNode
+        typedef string SSValue;
+
+        class SSNode
         {
         private:
-			/* Attributs */
+            /* Attributs */
             LSRuleIdentifier _ruleIdentifier;
-            list<SyntacticNode> _child;
+            list<SSNode*> _childNodes;
+            SSValue _value;
 
+        public:
+            /* Constructeur et destructeur */
+            SSNode(LSRuleIdentifier ruleIdentifier);
+            ~SSNode();
 
-		public:
-			/* Constructeur */
-            SyntacticNode(const LSRuleIdentifier &ruleIdentifier);
-
+            /* Méthodes */
+            void attachChildNode(SSNode *childNode);
+            void attachValue(const SSValue &value);
+            /*bool containsChildNode(const LSRuleIdentifier &ruleIdentifier);
+            SSNode* getChildNode(const LSRuleIdentifier &ruleIdentifier);*/
 
             /* Getters */
-            LSRuleIdentifier &getRuleIdentifier() {return _ruleIdentifier;}
-
-
-            /* Méthodes publiques */
+            LSRuleIdentifier& getRuleIdentifier() {return _ruleIdentifier;}
+            SSValue& getValue() {return _value;}
+            list<SSNode*> &getChildren() {return _childNodes;} //debug
 
         };
     }

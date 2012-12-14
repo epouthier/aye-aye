@@ -22,13 +22,6 @@ v1 %= 5;
 
 v1 = 42 * ( 26 / 02 / 1990 ) + 1 - 1 % v2;
 
-enum e1
-{
-    E1_CONST_1,
-    E2_CONST_2,
-    E3_CONST_3
-}
-
 if (v1 < v2)
 {
 }
@@ -44,10 +37,12 @@ else
 
 while (v1 <= v2)
 {
+    break;
 }
 
 do
 {
+    continue;
 } while (v1 >= v2);
 
 for (var v3 = 42; v3 != v1; v3++)

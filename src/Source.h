@@ -32,6 +32,7 @@
 	#include "Localization.h"
 	#include "Parameters.h"
 	#include "SourceException.h"
+    #include "SourceStructure.h"
 
     using namespace std;
 	using namespace boost::filesystem;
@@ -56,15 +57,15 @@
 		private:
 			/* Méthodes privées */
 			void _parseSource() throw(SourceException);
-            bool _parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException);
-			bool _parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException);
-            bool _parseExpressionList(const LSExpressionList &expressionList) throw(SourceException);
-            bool _parseExpression(const LSExpression &expression, bool withSeparator = true) throw(SourceException);
-			bool _parseUnaryExpression(const LSUnaryExpression &unaryExpression, bool withSeparator = true) throw(SourceException);
+            bool _parseRule(SSNode *rootNode, const LSRuleIdentifier &ruleIdentifier) throw(SourceException);
+			bool _parseRuleDefinition(SSNode *ruleNode, const LSRuleDefinition &ruleDefinition) throw(SourceException);
+            bool _parseExpressionList(SSNode *ruleNode, const LSExpressionList &expressionList) throw(SourceException);
+            bool _parseExpression(SSNode *ruleNode, const LSExpression &expression, bool withSeparator = true) throw(SourceException);
+			bool _parseUnaryExpression(SSNode *ruleNode, const LSUnaryExpression &unaryExpression, bool withSeparator = true) throw(SourceException);
             bool _parseJokerSymbol() throw(SourceException);
             bool _parseIntervalSymbol(const LSIntervalSymbol &intervalSymbol) throw(SourceException);
 			bool _parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException);
-            bool _parseSeparator() throw(SourceException);
+            bool _parseSeparator(SSNode *ruleNode) throw(SourceException);
 			bool _parseCharacter(const char c) throw(SourceException);
         };
     }

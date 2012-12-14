@@ -29,13 +29,12 @@ block-comment ::= "/*" .* "*/";
 
 
 (* statement *)
-statement ::= variable-statement | affectation-statement | enum-statement | if-statement | while-statement | do-while-statement | for-statement;
+statement ::= variable-statement | affectation-statement | if-statement | while-statement | do-while-statement | for-statement | break-statement | continue-statement;
 
 block-statement ::= "{" statement* "}";
 
 variable-statement ::= "var " variable-identifier [ "=" expression ] ( "," variable-identifier [ "=" expression ] )* ";";
 affectation-statement ::= variable-identifier affectation-expression ";";
-enum-statement ::= "enum " variable-identifier "{" constante-identifier [ "=" value-identifier ] ( "," constante-identifier [ "=" value-identifier ] )* "}";
 
 if-statement ::= "if" "(" expression ")" block-statement else-if-statement* [ else-statement ];
 else-if-statement ::= "else" "if" "(" expression ")" block-statement;
@@ -45,10 +44,13 @@ while-statement ::= "while" "(" expression ")" block-statement;
 do-while-statement ::= "do" block-statement "while" "(" expression ")" ";";
 for-statement ::= "for" "(" [ "var " ] variable-identifier [ "=" expression ] ";" expression ";" variable-identifier affectation-expression ")" block-statement;
 
+break-statement ::= "break" ";";
+continue-statement ::= "continue" ";";
+
 
 
 (* expression *)
-expression ::= group-expression | identifier ( operator identifier )*;
+expression ::= ( group-expression | identifier ) ( operator ( group-expression | identifier ) )*;
 
 group-expression ::= "(" expression ")";
 
@@ -57,11 +59,11 @@ affectation-expression ::= increment-decrement-operator | affectation-operator e
 
 
 (* operator *)
-operator ::= arythmetic-operator | logical-operator | relational-operator;
+operator ::= arythmetic-operator | relational-operator | logical-operator;
 
 arythmetic-operator ::= "+" | "-" | "*" | "/" | "%";
-logical-operator ::= "&&" | "||" | "!";
 relational-operator ::= "==" | "!=" | "<=" | ">=" | "<" | ">";
+logical-operator ::= "&&" | "||" | "!";
 
 affectation-operator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
 increment-decrement-operator ::= "++" | "--";
@@ -69,11 +71,9 @@ increment-decrement-operator ::= "++" | "--";
 
 
 (* identifier *)
-identifier ::= value-identifier | variable-identifier | constante-identifier;
+identifier ::= value-identifier | variable-identifier;
 
 variable-identifier ::= ( {ALPHA-UC} | {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
-
-constante-identifier ::= ( {ALPHA-UC} | "_" ) ( {ALPHA-UC} | {DIGIT} | "_" )*;
 
 value-identifier ::= boolean-identifier | number-identifier | string-identifier;
 boolean-identifier ::= "true" | "false";

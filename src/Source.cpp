@@ -49,7 +49,7 @@ namespace ayeaye
 			{
                 //parsage de la source
                 _parseSource();
-				_sourceFile.close();
+	    		_sourceFile.close();
 			}
 			else
 			{
@@ -59,24 +59,70 @@ namespace ayeaye
 		}
     }
 
+    //debug
+	//===================================================================================
+	void printRootNode(SSNode *rootNode, unsigned int heightNode)
+	{
+        for (unsigned int i = heightNode; i > 0; i--) { cout << " "; }
+        cout << rootNode->getRuleIdentifier();
+        if (! rootNode->getValue().empty()) { cout << " = \"" << rootNode->getValue() << "\""; }
+        cout << endl;
+
+        list<SSNode*>::iterator itrNode;
+        for (itrNode = rootNode->getChildren().begin(); itrNode != rootNode->getChildren().end(); itrNode++)
+        {
+            printRootNode(*itrNode, heightNode + 1);
+        }
+	}
+	//===================================================================================
+
 	void Source::_parseSource() throw(SourceException)
 	{
+        //variable
+        SSNode* rootNode = nullptr;
+
+        //initialisation du noeud principale
+        rootNode = new SSNode(_sourceFilePath.native());
+
         //parsage de la règle principale
-        if (!_parseRule(_parameters.getLanguage()))
+        if (!_parseRule(rootNode, _parameters.getLanguage()))
         {
             //traitement des erreurs
             throw SourceException(_sourceFilePath.native(), _currentLine, tr("syntaxe incorrecte, la source ne correspond pas au langage défini."));
         }
+
+        //debug
+		//======================================================
+        printRootNode(rootNode, 0);
+		//======================================================
+
+        //destruction du noeud principale
+        delete rootNode;
 	}
 
-    bool Source::_parseRule(const LSRuleIdentifier &ruleIdentifier) throw(SourceException)
+    bool Source::_parseRule(SSNode *rootNode, const LSRuleIdentifier &ruleIdentifier) throw(SourceException)
     {
         //cout << "_parseRule(" << ruleIdentifier << ")" << endl; //debug
 
-        return (_parseRuleDefinition(_language.getRules()[ruleIdentifier]));
+        //variable
+        SSNode *ruleNode = nullptr;
+
+        //initialisation du noeud
+        ruleNode = new SSNode(ruleIdentifier);
+
+        if (_parseRuleDefinition(ruleNode, _language.getRules()[ruleIdentifier]))
+        {
+            rootNode->attachChildNode(ruleNode);
+            return true;
+        }
+
+        //destruction du noeud
+        delete ruleNode;
+
+        return false;
     }
 
-    bool Source::_parseRuleDefinition(const LSRuleDefinition &ruleDefinition) throw(SourceException)
+    bool Source::_parseRuleDefinition(SSNode *ruleNode, const LSRuleDefinition &ruleDefinition) throw(SourceException)
     {
         //cout << " _parseRuleDefinition()" << endl; //debug
 
@@ -86,7 +132,7 @@ namespace ayeaye
         //parse rule definition
         for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); itRuleDefinition++)
         {
-            if (_parseExpressionList(*itRuleDefinition))
+            if (_parseExpressionList(ruleNode, *itRuleDefinition))
             {
                 return true;
             }
@@ -95,13 +141,17 @@ namespace ayeaye
         return false;
     }
 
-    bool Source::_parseExpressionList(const LSExpressionList &expressionList) throw(SourceException)
+    bool Source::_parseExpressionList(SSNode *ruleNode, const LSExpressionList &expressionList) throw(SourceException)
     {
         //cout << "  _parseExpressionList()" << endl; //debug
 
         //variables
         LSExpressionList::const_iterator itExpression;
         bool result, joker = false;
+        streampos positionSourceFileSave;
+
+        //sauvegarde de la position dans le fichier
+        positionSourceFileSave = _sourceFile.tellg();
 
         //parse expression list
         for (itExpression = expressionList.begin(); itExpression != expressionList.end(); itExpression++)
@@ -136,17 +186,17 @@ namespace ayeaye
                 switch (itExpression->repetitionSymbol)
                 {
                     case LSRepetitionSymbol::LSRS_NO_REPETITION_SYMBOL:
-                        result = _parseExpression(*itExpression, !joker);
+                        result = _parseExpression(ruleNode, *itExpression, !joker);
                         break;
                     case LSRepetitionSymbol::LSRS_ZERO_TO_N:
                         result = true;
-                        while (_parseExpression(*itExpression, !joker));
+                        while (_parseExpression(ruleNode, *itExpression, !joker));
                         break;
                     case LSRepetitionSymbol::LSRS_ONE_TO_N:
-                        result = _parseExpression(*itExpression, !joker);
+                        result = _parseExpression(ruleNode, *itExpression, !joker);
                         if (result)
                         {
-                            while (_parseExpression(*itExpression, !joker));
+                            while (_parseExpression(ruleNode, *itExpression, !joker));
                         }
                         break;
                 }
@@ -168,6 +218,9 @@ namespace ayeaye
             //si on a pas arrivé à parser une expression, alors continuer le parsage des autres expressions ne sert à rien
             if (!result)
             {
+                //retour à la position sauvegardé dans le fichier
+                _sourceFile.seekg(positionSourceFileSave);
+
                 return false;
             }
         }
@@ -175,7 +228,7 @@ namespace ayeaye
         return true;
     }
 
-    bool Source::_parseExpression(const LSExpression &expression, bool withSeparator) throw(SourceException)
+    bool Source::_parseExpression(SSNode *ruleNode, const LSExpression &expression, bool withSeparator) throw(SourceException)
     {
         //cout << "   _parseExpression()" << endl; //debug
 
@@ -183,35 +236,35 @@ namespace ayeaye
         switch (expression.type)
 	    {
             case LSExpressionType::LSET_OPTIONAL_EXPRESSION:
-                _parseRuleDefinition(expression.ruleDefinition);
+                _parseRuleDefinition(ruleNode, expression.ruleDefinition);
                 return true;
                 break;
             case LSExpressionType::LSET_GROUP_EXPRESSION:
-                return _parseRuleDefinition(expression.ruleDefinition);
+                return _parseRuleDefinition(ruleNode, expression.ruleDefinition);
 			    break;
 		    case LSExpressionType::LSET_UNARY_EXPRESSION:
-			    return _parseUnaryExpression(expression.unaryExpression, withSeparator);
+			    return _parseUnaryExpression(ruleNode, expression.unaryExpression, withSeparator);
 		        break;
 	    }
 
         return false;
     }
 
-	bool Source::_parseUnaryExpression(const LSUnaryExpression &unaryExpression, bool withSeparator) throw(SourceException)
+	bool Source::_parseUnaryExpression(SSNode *ruleNode, const LSUnaryExpression &unaryExpression, bool withSeparator) throw(SourceException)
 	{
         //cout << "    _parseUnaryExpression()" << endl; //debug
 
         //parse separator
         if (withSeparator && !_separatorParsing)
         {
-            while (_parseSeparator());
+            while (_parseSeparator(ruleNode));
         }
 
 		//parse unary expression
 		switch (unaryExpression.type)
 		{
 			case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
-				return _parseRule(unaryExpression.ruleIdentifier);
+				return _parseRule(ruleNode, unaryExpression.ruleIdentifier);
 				break;
 			case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
 				return _parseTerminalSymbol(unaryExpression.terminalSymbol);
@@ -271,6 +324,7 @@ namespace ayeaye
 	bool Source::_parseTerminalSymbol(const LSTerminalSymbol &terminalSymbol) throw(SourceException)
 	{
         //cout << "     _parseTerminalSymbol(\"" << terminalSymbol << "\")" << endl; //debug
+        //cout << "      " << (char) _sourceFile.get() << endl; _sourceFile.unget(); //debug;
 
 		//parse terminal symbol
 		for (unsigned int i = 0; i < terminalSymbol.size(); i++)
@@ -289,7 +343,7 @@ namespace ayeaye
 		return true;
 	}
 
-    bool Source::_parseSeparator() throw(SourceException)
+    bool Source::_parseSeparator(SSNode *ruleNode) throw(SourceException)
     {
         //cout << "_parseSeparator()" << endl; //debug
 
@@ -302,7 +356,7 @@ namespace ayeaye
         //traitement du separator custom
         if (_language.getRules().find("separator") != _language.getRules().end())
         {
-            result = _parseRuleDefinition(_language.getRules()["separator"]);
+            result = _parseRuleDefinition(ruleNode, _language.getRules()["separator"]);
         }
         else //traitement du separator default
         {
