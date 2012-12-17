@@ -1,9 +1,11 @@
 build/
 ayeaye
 *~
-doc/*~
-share/aye-aye/languages/*~
-share/gtksourceview-3.0/language-specs/*~
+docs/*~
+share/*~
+share/*/*~
+share/*/*/*~
 src/*~
 test/*~
+tools/*~
 

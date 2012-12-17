@@ -1,12 +1,3 @@
 
-paquet linux
-------------
 
-build-essential
-
-cmake
-ccmake
-
-boost
-gettext
 

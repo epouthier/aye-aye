@@ -22,8 +22,8 @@
 zut ::= ( comment | statement )*;
 
 comment ::= line-comment | block-comment;
-line-comment ::= "//" .* {END-LINE};
-block-comment ::= "/*" .* "*/";
+line-comment(value) ::= "//" .* {END-LINE};
+block-comment(value) ::= "/*" .* "*/";
 
 
 
@@ -46,6 +46,9 @@ for-statement ::= "for" "(" [ "var " ] variable-identifier [ "=" expression ] ";
 
 break-statement ::= "break" ";";
 continue-statement ::= "continue" ";";
+
+using-statement ::= "using" namespace-identifier ";";
+namespace-statement ::= "namespace" namespace-identifier block-statement;
 
 
 
@@ -74,6 +77,8 @@ increment-decrement-operator(value) ::= "++" | "--";
 identifier ::= value-identifier | variable-identifier;
 
 variable-identifier(value) ::= ( {ALPHA-UC} | {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
+
+namespace-identifier(value) ::= {ALPHA-LC}+ ( "." {ALPHA-LC}+ )*;
 
 value-identifier ::= boolean-identifier | number-identifier | string-identifier;
 boolean-identifier(value) ::= "true" | "false";

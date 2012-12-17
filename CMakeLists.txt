@@ -16,61 +16,123 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-#vérification cmake
+
+
+#========== CMAKE ===================================================================================
+
+#version de cmake
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(VERSION 2.8)
 
+#====================================================================================================
+
+
+
+
+
+#========== PROJET ==================================================================================
+
 #déclaration du projet
-project("Aye-Aye" CXX)
+project("Aye-Aye")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
 #options du projet
 set(AYEAYE_LANGUAGE_DIRECTORY "/usr/share/aye-aye/languages" CACHE STRING "Language directory")
 set(AYEAYE_LANGUAGE_DIRECTORY_DEFINE "-DAYEAYE_LANGUAGE_DIRECTORY=\"${AYEAYE_LANGUAGE_DIRECTORY}\"")
 
-#vérification de boost
-#set(Boost_USE_STATIC_LIBS ON)
+#====================================================================================================
+
+
+
+
+
+#========== LIBRAIRIES ==============================================================================
+
+#Boost
+set(Boost_USE_STATIC_LIBS ON)
 include(FindBoost)
 find_package(
     Boost
+    1.49
+    COMPONENTS filesystem program_options regex system
     REQUIRED
-	filesystem
-	program_options
-	regex
-	system
 )
 
-#vérification de gettext
+#liblzma
+include(FindLibLZMA)
+find_package(
+    LibLZMA
+    5.1
+    REQUIRED
+)
+
+#gettext
 include(FindGettext)
 find_package(
     Gettext
+    0.18
     REQUIRED
 )
 
-#ajout des définitions
+#====================================================================================================
+
+
+
+
+
+#========== OPTIONS DU COMPILATEUR ==================================================================
+
+#-D
 add_definitions(${AYEAYE_LANGUAGE_DIRECTORY_DEFINE})
 
-#ajout des librairies
+#-I et -L
 include_directories(
     ${Boost_INCLUDE_DIRS}
+    ${LibLZMA_INCLUDE_DIRS}
     ${Gettext_INCLUDE_DIRS}
 )
+
 link_directories(
     ${Boost_LIBRARY_DIRS}
+    ${LibLZMA_INCLUDE_DIRS}
     ${Gettext_LIBRARY_DIRS}
 )
 
-#option du compilateur
+#autres options
 set(CMAKE_CXX_FLAGS "--std=c++0x")
 
-#génération de la liste des fichiers sources
+#====================================================================================================
+
+
+
+
+
+#========== FICHIERS ================================================================================
+
+#les sources
 file(
 	GLOB_RECURSE
 	Sources
 	src/*
 )
 
-#déclaration de l'exécutable
+#les outils
+add_custom_target(pot)
+add_custom_command(
+    SOURCE pot
+    TARGET pot
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/pot.sh
+)
+
+#====================================================================================================
+
+
+
+
+
+#========== CONSTRUCTION ============================================================================
+
+#compilation
 add_executable(
 	ayeaye
 	${Sources}
@@ -80,5 +142,9 @@ add_executable(
 target_link_libraries(
 	ayeaye
 	${Boost_LIBRARIES}
+    ${LibLZMA_LIBRARIES}
+    ${Gettext_LIBRARIES}
 )
+
+#====================================================================================================
 
