@@ -27,16 +27,24 @@ if [ "$1" = "--ayeaye-comment" ]
 then
     COMMENT_TYPE=2; #0 => no comment, 1 => line comment, 2 => block comment
     COMMENT_START="(*";
+    COMMENT_START_LINE=""
     COMMENT_END="*)";
 elif [ "$1" = "--c-comment" ]
 then
     COMMENT_TYPE=2;
     COMMENT_START="/*";
-    COMMENT_END="*/";
+    COMMENT_START_LINE=" *"
+    COMMENT_END=" */";
+elif [ "$1" = "--xml-comment" ]
+then
+    COMMENT_TYPE=2;
+    COMMENT_START="<!--";
+    COMMENT_START_LINE=""
+    COMMENT_END="-->";
 elif [ "$1" = "--shell-comment" ]
 then
     COMMENT_TYPE=1;
-    COMMENT_START="#";
+    COMMENT_START_LINE="#";
 elif [ "$1" = "--help" ]
 then
     echo "Utilisation: ./copyright.sh [COMMENT_TYPE]";
@@ -44,6 +52,7 @@ then
     echo "COMMENT_TYPE:";
     echo -e "  --ayeaye-comment\t\tl'avis est dans un block commentaire de type ayeaye";
     echo -e "  --c-comment\t\t\tl'avis est dans un block commentaire de type c";
+    echo -e "  --xml-comment\t\t\tl'avis est dans un block commentaire de type xml";
     echo -e "  --shell-comment\t\tl'avis est dans des lignes de commentaires de type shell";
     exit 0;
 else
@@ -54,13 +63,13 @@ fi
 if [ $COMMENT_TYPE -eq 2 ]
 then
     echo "$COMMENT_START";
-    sed "s/^/ /" "$PATH_EXEC/../COPYRIGHT"
+    sed "s/^/$COMMENT_START_LINE /" "$PATH_EXEC/../COPYRIGHT"
     echo "$COMMENT_END";
 elif [ $COMMENT_TYPE -eq 1 ]
 then
-    echo "$COMMENT_START";
-    sed "s/^/$COMMENT_START /" "$PATH_EXEC/../COPYRIGHT"
-    echo "$COMMENT_START";
+    echo "$COMMENT_START_LINE";
+    sed "s/^/$COMMENT_START_LINE /" "$PATH_EXEC/../COPYRIGHT"
+    echo "$COMMENT_START_LINE";
 else
     cat "$PATH_EXEC/../COPYRIGHT";
 fi
