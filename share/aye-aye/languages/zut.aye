@@ -31,11 +31,14 @@ block-comment(value) ::= "/*" .* "*/";
 
 
 (* statement *)
-statement ::= variable-statement | affectation-statement | if-statement | while-statement | do-while-statement | for-statement | break-statement | continue-statement;
+statement ::= variable-statement | affectation-statement |
+              if-statement | while-statement | do-while-statement | for-statement |
+              break-statement | continue-statement |
+              function-statement | call-function-statement | return-statement;
 
 block-statement ::= "{" statement* "}";
 
-variable-statement ::= "var " variable-identifier [ "=" expression ] ( "," variable-identifier [ "=" expression ] )* ";";
+variable-statement ::= "var " variable-identifier initialization-expression ( "," variable-identifier initialization-expression )* ";";
 affectation-statement ::= variable-identifier affectation-expression ";";
 
 if-statement ::= "if" "(" expression ")" block-statement else-if-statement* [ else-statement ];
@@ -44,43 +47,48 @@ else-statement ::= "else" block-statement;
 
 while-statement ::= "while" "(" expression ")" block-statement;
 do-while-statement ::= "do" block-statement "while" "(" expression ")" ";";
-for-statement ::= "for" "(" [ "var " ] variable-identifier [ "=" expression ] ";" expression ";" variable-identifier affectation-expression ")" block-statement;
+for-statement ::= "for" "(" variable-identifier initialization-expression ";" expression ";" variable-identifier affectation-expression ")" block-statement;
 
 break-statement ::= "break" ";";
 continue-statement ::= "continue" ";";
 
-using-statement ::= "using" namespace-identifier ";";
-namespace-statement ::= "namespace" namespace-identifier block-statement;
+function-statement ::= "function" function-identifier "(" [ variable-identifier initialization-expression ( "," variable-identifier initialization-expression )* ] ")" block-statement;
+call-function-statement ::= function-identifier "(" [ expression ( "," expression )* ] ")" ";";
+return-statement ::= "return" "(" expression ( "," expression )* ")" ";";
 
 
 
 (* expression *)
-expression ::= ( group-expression | identifier ) ( operator ( group-expression | identifier ) )*;
+expression ::= unary-expression ( operator unary-expression )*;
+unary-expression ::= [ pre-operator ] ( group-expression | value-identifier | variable-identifier );
 
 group-expression ::= "(" expression ")";
 
+initialization-expression ::= [ "=" expression ];
 affectation-expression ::= increment-decrement-operator | affectation-operator expression;
 
 
 
 (* operator *)
+pre-operator ::= arythmetic-pre-operator | logical-pre-operator;
 operator ::= arythmetic-operator | relational-operator | logical-operator;
+
+arythmetic-pre-operator(value) ::= "+" | "-";
+logical-pre-operator(value) ::= "!";
 
 arythmetic-operator(value) ::= "+" | "-" | "*" | "/" | "%";
 relational-operator(value) ::= "==" | "!=" | "<=" | ">=" | "<" | ">";
-logical-operator(value) ::= "&&" | "||" | "!";
+logical-operator(value) ::= "&&" | "||";
 
-affectation-operator(value) ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
 increment-decrement-operator(value) ::= "++" | "--";
+affectation-operator(value) ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
 
 
 
 (* identifier *)
-identifier ::= value-identifier | variable-identifier;
+variable-identifier(value) ::= ( {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
 
-variable-identifier(value) ::= ( {ALPHA-UC} | {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
-
-namespace-identifier(value) ::= {ALPHA-LC}+ ( "." {ALPHA-LC}+ )*;
+function-identifier(value) ::= ( {ALPHA-LC} | "_" ) ( {ALPHA-UC} | {ALPHA-LC} | {DIGIT} | "_" )*;
 
 value-identifier ::= boolean-identifier | number-identifier | string-identifier;
 boolean-identifier(value) ::= "true" | "false";
