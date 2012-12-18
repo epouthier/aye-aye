@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2013 Emmanuel Pouthier
+
+ This file is part of Aye-Aye.
+
+ Aye-Aye is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Aye-Aye is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<language id="ayeaye-structure" _name="Aye-Aye Structure" version="2.0" _section="Others">
+	<metadata>
+		<property name="globs">structure.ayeaye</property>
+		<property name="block-comment-start">(*</property>
+        <property name="block-comment-end">*)</property>
+	</metadata>
+
+	<styles>
+        <style id="ayeaye-comment-style" _name="Aye-Aye comment style" map-to="def:comment"/>
+        <style id="ayeaye-operator-style" _name="Aye-Aye operator style" map-to="def:operator" />
+
+        <style id="ayeaye-structure-operator-style" _name="Aye-Aye Structure operator style" map-to="def:operator" />
+
+        <style id="ayeaye-structure-rule-identifier-style" _name="Aye-Aye Structure rule identifier style" map-to="def:identifier" />
+        <style id="ayeaye-structure-terminal-symbol-style" _name="Aye-Aye Structure terminal symbol style" map-to="def:string" />
+        <style id="ayeaye-structure-interval-symbol-style" _name="Aye-Aye Structure interval symbol style" map-to="def:string" />
+	</styles>
+
+	<definitions>
+        <context id="ayeaye-comment" style-ref="ayeaye-comment-style" class="no-spell-check">
+            <start>\(\*</start>
+            <end>\*\)</end>
+        </context>
+
+        <context id="ayeaye-operator" style-ref="ayeaye-operator-style">
+            <match>::=|;</match>
+        </context>
+
+        <context id="ayeaye-structure-operator" style-ref="ayeaye-structure-operator-style">
+            <match>\||\*|\+|\(|\)|\[|\]|\.</match>
+        </context>
+
+        <context id="ayeaye-structure-rule-identifier" style-ref="ayeaye-structure-rule-identifier-style">
+            <match>[a-z]+(-[a-z]+)*</match>
+        </context>
+
+        <context id="ayeaye-structure-terminal-symbol-double-quote" style-ref="ayeaye-structure-terminal-symbol-style" class="no-spell-check">
+            <start>"</start>
+			<end>"</end>
+        </context>
+
+        <context id="ayeaye-structure-terminal-symbol-quote" style-ref="ayeaye-structure-terminal-symbol-style" class="no-spell-check">
+            <start>'</start>
+			<end>'</end>
+        </context>
+
+        <context id="ayeaye-structure-interval-symbol" style-ref="ayeaye-structure-interval-symbol-style" class="no-spell-check">
+            <start>{</start>
+			<end>}</end>
+        </context>
+
+		<context id="ayeaye-structure">
+			<include>
+				<context ref="ayeaye-comment" />
+                <context ref="ayeaye-operator" />
+                <context ref="ayeaye-structure-operator" />
+                <context ref="ayeaye-structure-rule-identifier" />     
+                <context ref="ayeaye-structure-terminal-symbol-double-quote" />
+                <context ref="ayeaye-structure-terminal-symbol-quote" />
+                <context ref="ayeaye-structure-interval-symbol" />
+			</include>
+		</context>
+	</definitions>
+</language>
+

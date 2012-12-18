@@ -1,0 +1,60 @@
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                       !!
+!!                                       !!
+!!                 TODO                  !!
+!!                                       !!
+!!                                       !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+null
+
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                       !!
+!!                                       !!
+!! BUT : réaliser aye-aye en langage zut !!
+!!                                       !!
+!!                                       !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+paramètres de aye-aye :
+-----------------------
+
+--help
+-h
+
+--version
+-v
+
+--language-directory
+-L
+
+--source-directory
+-S
+
+--debug-language
+
+
+
+outils du projet :
+------------------
+
+-> réaliser un outil permettant de mettre à jour l'avis du copyright dans les fichiers sources spécifié
+
+
+
+share :
+-------
+
+-> réaliser un fichier pour la coloration syntaxique des fichiers aye-aye
+
+
+
+
+
