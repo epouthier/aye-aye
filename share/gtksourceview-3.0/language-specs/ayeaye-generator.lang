@@ -19,7 +19,7 @@
 -->
 <language id="ayeaye-generator" _name="Aye-Aye Generator" version="2.0" _section="Others">
 	<metadata>
-		<property name="globs">generator.ayeaye</property>
+		<property name="globs">*-generator.ayeaye</property>
 		<property name="block-comment-start">(*</property>
         <property name="block-comment-end">*)</property>
 	</metadata>

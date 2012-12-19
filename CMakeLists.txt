@@ -35,7 +35,7 @@ cmake_policy(VERSION 2.8)
 #========== PROJET ==================================================================================
 
 #déclaration du projet
-project("Aye-Aye")
+project("Aye-Aye" CXX)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
 #options du projet
@@ -55,16 +55,16 @@ set(Boost_USE_STATIC_LIBS ON)
 include(FindBoost)
 find_package(
     Boost
-    1.49
+    1.49.0
     COMPONENTS filesystem program_options regex system
     REQUIRED
 )
 
-#liblzma
-include(FindLibLZMA)
+#LibArchive
+include(FindLibArchive)
 find_package(
-    LibLZMA
-    5.1
+    LibArchive
+    3.0.4
     REQUIRED
 )
 
@@ -72,7 +72,7 @@ find_package(
 include(FindGettext)
 find_package(
     Gettext
-    0.18
+    0.18.1
     REQUIRED
 )
 
@@ -90,13 +90,13 @@ add_definitions(${AYEAYE_LANGUAGE_DIRECTORY_DEFINE})
 #-I et -L
 include_directories(
     ${Boost_INCLUDE_DIRS}
-    ${LibLZMA_INCLUDE_DIRS}
+    ${LibArchive_INCLUDE_DIRS}
     ${Gettext_INCLUDE_DIRS}
 )
 
 link_directories(
     ${Boost_LIBRARY_DIRS}
-    ${LibLZMA_INCLUDE_DIRS}
+    ${LibArchive_INCLUDE_DIRS}
     ${Gettext_LIBRARY_DIRS}
 )
 
@@ -144,7 +144,7 @@ add_executable(
 target_link_libraries(
 	ayeaye
 	${Boost_LIBRARIES}
-    ${LibLZMA_LIBRARIES}
+    ${LibArchive_LIBRARIES}
     ${Gettext_LIBRARIES}
 )
 

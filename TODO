@@ -23,8 +23,38 @@ null
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+src :
+-----
+
+main.cpp
+AyeAye.cpp AyeAye.h
+
+Exception.h
+Localization.cpp Localization.hpp Localization.h
+
+Parameters.cpp Parameters.h
+ParametersException.cpp ParametersException.h
+
+Language.cpp Language.h
+LanguageException.cpp LanguageException.h
+LanguageStructure.cpp LanguageStructure.h
+LanguageGenerator.cpp LanguageGenerator.h
+LanguageStructureParser.cpp LanguageStructureParser.h
+LanguageGeneratorParser.cpp LanguageGeneratorParser.h
+
+Source.cpp Source.h
+SourceException.cpp SourceException.h
+SourceNode.cpp SourceNode.h
+
+Generator.cpp Generator.h
+GeneratorException.cpp GeneratorException.h
+
+
+
 paramètres de aye-aye :
 -----------------------
+
+ayeaye [OPTIONS] SOURCES
 
 --help
 -h
@@ -37,6 +67,12 @@ paramètres de aye-aye :
 
 --source-directory
 -S
+
+--language
+-l
+
+--generator
+-g
 
 --debug-language
 
