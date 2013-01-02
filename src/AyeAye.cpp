@@ -30,12 +30,9 @@ namespace ayeaye
             return;
 
 		//chargement du language
-		Language language(parameters);
+		
 
         //parsage des sources
-        Source source(parameters, language);
-
-        //analyse sémantique
         
 
         //génération de code

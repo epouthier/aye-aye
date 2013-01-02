@@ -21,10 +21,6 @@
 #ifndef _AYEAYE_AYEAYE_H
 #define _AYEAYE_AYEAYE_H
 
-	#include "Language.h"
-	#include "Parameters.h"
-    #include "Source.h"
-
 	namespace ayeaye
 	{
 		class AyeAye
