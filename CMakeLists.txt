@@ -36,10 +36,16 @@ cmake_policy(VERSION 2.8)
 
 #déclaration du projet
 project("Aye-Aye" CXX)
+set(AYEAYE_VERSION "1.0")
+
+#configuration du projet
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
 #options du projet
 set(AYEAYE_LANGUAGE_DIRECTORY "/usr/share/aye-aye/languages" CACHE STRING "Language directory")
+
+#define du projet
+set(AYEAYE_VERSION_DEFINE "-DAYEAYE_VERSION=\"${AYEAYE_VERSION}\"")
 set(AYEAYE_LANGUAGE_DIRECTORY_DEFINE "-DAYEAYE_LANGUAGE_DIRECTORY=\"${AYEAYE_LANGUAGE_DIRECTORY}\"")
 
 #====================================================================================================
@@ -85,7 +91,10 @@ find_package(
 #========== OPTIONS DU COMPILATEUR ==================================================================
 
 #-D
-add_definitions(${AYEAYE_LANGUAGE_DIRECTORY_DEFINE})
+add_definitions(
+    ${AYEAYE_VERSION_DEFINE}
+    ${AYEAYE_LANGUAGE_DIRECTORY_DEFINE}
+)
 
 #-I et -L
 include_directories(

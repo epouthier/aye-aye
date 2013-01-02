@@ -26,8 +26,6 @@ namespace ayeaye
 	{
 		//analyse de paramètres d'éxécutions
 		Parameters parameters(argc, argv);
-        if (parameters.getSources().size() == 0)
-            return;
 
 		//chargement du language
 		

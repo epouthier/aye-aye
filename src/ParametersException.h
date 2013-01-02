@@ -18,21 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_AYEAYE_H
-#define _AYEAYE_AYEAYE_H
+#ifndef _AYEAYE_PARAMETERS_EXCEPTION_H
+#define _AYEAYE_PARAMETERS_EXCEPTION_H
+
+    #include <iostream>
+    #include <string>
 
     #include "Exception.h"
-    #include "Parameters.h"
 
-	namespace ayeaye
-	{
-		class AyeAye
-		{
-		public:
-			/* Méthode statique */
-			static void run(int argc, char **argv) throw(Exception);
-		};
-	}
+    using namespace std;
+
+    namespace ayeaye
+    {
+        class ParametersException : public Exception
+        {
+        public:
+            /* Constructeur */
+            ParametersException(const string &message) : Exception(message) {}
+        };
+    }
 
 #endif
 

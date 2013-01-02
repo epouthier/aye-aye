@@ -33,7 +33,7 @@ Exception.h
 Localization.cpp Localization.hpp Localization.h
 
 Parameters.cpp Parameters.h
-ParametersException.cpp ParametersException.h
+ParametersException.h
 
 Language.cpp Language.h
 LanguageException.cpp LanguageException.h
