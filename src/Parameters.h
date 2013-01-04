@@ -25,12 +25,14 @@
     #include <string>
     #include <vector>
 
+    #include <boost/filesystem.hpp>
     #include <boost/program_options.hpp>
 
     #include "Localization.h"
     #include "ParametersException.h"
 
     using namespace std;
+    using namespace boost::filesystem;
     using namespace boost::program_options;
 
     namespace ayeaye
@@ -41,6 +43,7 @@
             /* Attributs */
             string _sourceDirectory = "";
             vector<string> _sources;
+            string _languageDirectory = "";
 
 
         public:
@@ -51,11 +54,13 @@
             /* Getters */
             string &getSourceDirectory() {return _sourceDirectory;}
             vector<string> &getSources() {return _sources;}
+            string &getLanguageDirectory() {return _languageDirectory;}
 
 
         private:
             /* Méthodes privées */
             void _showHelp();
+            void _showVersion();
 
         };
     }
