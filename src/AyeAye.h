@@ -22,6 +22,7 @@
 #define _AYEAYE_AYEAYE_H
 
     #include "Exception.h"
+    #include "Language.h"
     #include "Parameters.h"
 
 	namespace ayeaye

@@ -18,50 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_PARAMETERS_H
-#define _AYEAYE_PARAMETERS_H
+#ifndef _AYEAYE_FILE_BUFFER_H
+#define _AYEAYE_FILE_BUFFER_H
 
-    #include <iostream>
-    #include <string>
-    #include <vector>
-
-    #include <getopt.h>
-
-    #include <boost/filesystem.hpp>
-
+    #include "Exception.h"
     #include "Localization.h"
-    #include "ParametersException.h"
-
-    using namespace std;
-    using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Parameters
+        class FileBuffer
         {
         private:
             /* Attributs */
-            string _sourceDirectory = "";
-            vector<string> _sources;
-            string _languageDirectory = "";
-
+            size_t _bufferSize = 0;
+            char *_buffer = nullptr;
+            unsigned long _bufferIndex = 0;
+            unsigned int _bufferLine = 1;
 
         public:
-            /* Constructeur */
-            Parameters(int argc, char **argv) throw(ParametersException);
-
+            /* Constructeur et destructeur */
+            FileBuffer(size_t bufferSize) throw(Exception);
+            ~FileBuffer();
 
             /* Getters */
-            string &getSourceDirectory() {return _sourceDirectory;}
-            vector<string> &getSources() {return _sources;}
-            string &getLanguageDirectory() {return _languageDirectory;}
+            size_t getBufferSize() {return _bufferSize;}
+            char *getBufferPtr() {return _buffer;}
+            unsigned int getCurrentLine() {return _bufferLine;}
 
-
-        private:
-            /* Méthodes privées */
-            void _showHelp();
-            void _showVersion();
-
+            /* Méthodes publiques */
+            bool hasData();
+            char nextData();
+            void decrementIndex();
+            void reset();
         };
     }
 

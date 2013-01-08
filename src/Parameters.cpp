@@ -24,89 +24,65 @@ namespace ayeaye
 {
     Parameters::Parameters(int argc, char **argv) throw(ParametersException) :
         _sourceDirectory(""),
-        _languageDirectory("")
+        _languageDirectory(AYEAYE_LANGUAGE_DIRECTORY)
     {
-        //variable
-        bool withoutParams = true;
+        //variables
+        const option longOptions[] = {{"help", no_argument, nullptr, 'h'},
+                                      {"version", no_argument, nullptr, 'v'},
+                                      {"source-directory", required_argument, nullptr, 'S'},
+                                      {"language-directory", required_argument, nullptr, 'L'},
+                                      {nullptr, 0, nullptr, 0}};
 
-        //analyse des paramètres
-        try
+        const char *longOptionsStr = "hvS: L: ";
+
+        int longOptionsIndex = 0, opt = 0;
+
+        //aucune option
+        if (argc <= 1)
         {
-            //les sources
-            options_description sources ("Sources");
-            sources.add_options()
-                ("sources", value<vector<string>>(), "Sources");
+            _showHelp();
+            exit(0);
+        }
 
+        //analyse des options
+        while (true)
+        {
+            opt = getopt_long(argc, argv, longOptionsStr, longOptions, &longOptionsIndex);
 
-            //les options
-            options_description options("Options");
-            options.add_options()
-                ("help,h", "")
-                ("version,v", "")
-                ("source-directory,S", value<string>(), "")
-                ("language-directory,L", value<string>(), "");
-
-
-            //configuration des paramètres
-            options_description params;
-            params.add(sources);
-            params.add(options);
-
-            positional_options_description positional;
-            positional.add("sources", -1);
-
-
-            //récupération des paramètres
-            variables_map variablesMap;
-            store(command_line_parser(argc, argv).options(params).positional(positional).run(), variablesMap);
-            notify(variablesMap);
-
-
-            //analyse des paramètres
-            if (variablesMap.count("help")) //--help ou -h
+            if (opt == (-1))
             {
-                _showHelp();
-                exit(0);
+                break;
             }
-            else if (variablesMap.count("version")) //--version ou -v
-            {
-                _showVersion();
-                exit(0);
-            }
-            else
-            {
-                if (variablesMap.count("source-directory")) //--source-directory=<directory> ou -S<directory>
-                {
-                    _sourceDirectory = variablesMap["source-directory"].as<string>();
-                    withoutParams = false;
-                }
-                
-                if (variablesMap.count("sources")) //SOURCES
-                {
-                    _sources = variablesMap["sources"].as<vector<string>>();
-                    withoutParams = false;
-                }
 
-                if (variablesMap.count("language-directory")) //--language-directory=<directory> ou -L<directory>
-                {
-                    _languageDirectory = variablesMap["language-directory"].as<string>();
-                    withoutParams = false;
-                }
-                else
-                {
-                    _languageDirectory = AYEAYE_LANGUAGE_DIRECTORY;
-                }
-
-                if (withoutParams)
-                {
+            switch (opt)
+            {
+                case 'h': //--help ou -h
                     _showHelp();
                     exit(0);
-                }
+                break;
+                case 'v': //--version ou -v
+                    _showVersion();
+                    exit(0);
+                break;
+                case 'S': //--source-directory=<directory> ou -S<directory>
+                    _sourceDirectory = optarg;
+                break;
+                case 'L': //--language-directory=<directory> ou -L<directory>
+                    _languageDirectory = optarg;
+                break;
+                case 0:
+                break;
+                default:
+                    exit(1);
+                break;
             }
         }
-        catch (error &e) //traitement des exceptions
+
+        //analyse des sources
+        while (optind < argc)
         {
-            throw ParametersException(e.what());
+            _sources.push_back(argv[optind]);
+            optind++;
         }
     }
 

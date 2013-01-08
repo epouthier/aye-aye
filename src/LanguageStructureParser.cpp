@@ -22,68 +22,86 @@
 
 namespace ayeaye
 {
-    LanguageStructureParser::LanguageStructureParser(Parameters &parameters) throw(LanguageException) :
-        _parameters(parameters),
+    LanguageStructureParser::LanguageStructureParser() :
         _languageIdentifier(""),
-        _currentLine(1)
+        _languageStructureBuffer(nullptr)
     {
     }
 
-    void LanguageStructureParser::parse(const string &language) throw(LanguageException)
+    void LanguageStructureParser::parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException)
     {
-        //initialisation ou réinitialisation des variables
-        _languageIdentifier = language;
-        _currentLine = 1;
+        //initialisation des variables
+        _languageIdentifier = languageIdentifier;
+        _languageStructureBuffer = languageStructureBuffer;
 
-        while (! _ruleIdentifierStack.empty())
+        //initialisation et réinitialisation des piles
+        while (_ruleIdentifierStack.empty())
         {
             _ruleIdentifierStack.pop();
         }
 
-        while (! _ruleParametersStack.empty())
+        while (_ruleParametersStack.empty())
         {
             _ruleParametersStack.pop();
         }
 
-        while (! _ruleDefinitionStack.empty())
+        while (_ruleDefinitionStack.empty())
         {
             _ruleDefinitionStack.pop();
         }
 
-        while (! _expressionListStack.empty())
+        while (_expressionListStack.empty())
         {
             _expressionListStack.pop();
         }
 
-        while (! _expressionStack.empty())
+        while (_expressionStack.empty())
         {
             _expressionStack.pop();
         }
 
-        while (! _unaryExpressionStack.empty())
+        while (_unaryExpressionStack.empty())
         {
-            _expressionStack.pop();
+            _unaryExpressionStack.pop();
         }
 
-        while (! _terminalSymbolStack.empty())
+        while (_terminalSymbolStack.empty())
         {
             _terminalSymbolStack.pop();
         }
 
-        while (! _intervalSymbolStack.empty())
+        while (_intervalSymbolStack.empty())
         {
             _intervalSymbolStack.pop();
         }
 
-        while (! _characterCodeStack.empty())
+        while (_characterCodeStack.empty())
         {
             _characterCodeStack.pop();
         }
 
-        _rules.clear();
+        //parsage de la structure du langage
+        _parseLanguageStructure();
+        _checkLanguageStructure();
+    }
 
+    void LanguageStructureParser::_checkLanguageStructure() throw(LanguageException)
+    {
+        //variable
+        LSRules::const_iterator itRules;
 
-        //...
+        //vérifie si les règles sont toutes définies
+        for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
+        {
+            _checkRuleDefinition(itRules->first, itRules->second.ruleDefinition);
+        }
+
+        //vérification que la règle principale est définie
+        if (_rules.find(_languageIdentifier) == _rules.end())
+        {
+            //traitement des erreurs
+            throw LanguageException(_languageIdentifier, tr("la règle principale \"%0\" n'est pas définie.", _languageIdentifier));
+        }
     }
 
     void LanguageStructureParser::_checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException)
@@ -150,36 +168,16 @@ namespace ayeaye
         }
     }
 
-    bool LanguageStructureParser::_parseComment() throw(LanguageException)
+    void LanguageStructureParser::_parseLanguageStructure() throw(LanguageException)
     {
-        //comment ::= '(*' .* '*)';
+        //on parse les règles
+        _languageStructureBuffer->reset();
 
-        //variable
-        char c;
-
-        //parse comment
-        if (_parseString("(*"))
+        while (_languageStructureBuffer->hasData())
         {
-            while (!_parseString("*)"))
-            {
-                c = _languageFile.get();
-
-                if (!_languageFile.good())
-                {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \"*)\" absent."));
-                }
-
-                //si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
-                if (c == '\n')
-                {
-                    _currentLine++;
-                }
-            }
-
-            return true;
+            _parseUnnecessaryCharacters();
+            _parseRule();
         }
-
-        return false;
     }
 
     bool LanguageStructureParser::_parseRule() throw(LanguageException)
@@ -248,17 +246,17 @@ namespace ayeaye
                     }
                     else
                     {
-                        throw LanguageException(_languageIdentifier, _currentLine - 1, tr("syntaxe incorrecte, symbole \";\" absent."));
+                        throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine() - 1, tr("syntaxe incorrecte, symbole \";\" absent."));
                     }
                 }
                 else
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, règle non défini après le symbole \"::=\"."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, règle non défini après le symbole \"::=\"."));
                 }
             }
             else
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \"::=\" absent."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \"::=\" absent."));
             }
         }
 
@@ -274,14 +272,14 @@ namespace ayeaye
         char c;
 
         //on parse l'identifiant de la règle
-        while (true)
+        while (_languageStructureBuffer->hasData())
         {
-            ruleIdentifier += _languageFile.get();
+            ruleIdentifier += _languageStructureBuffer->nextData();
 
             if (!_parseRegex(ruleIdentifier, "[a-z-]+"))
             {
                 ruleIdentifier = ruleIdentifier.substr(0, ruleIdentifier.size() - 1);
-                _languageFile.unget();
+                _languageStructureBuffer->decrementIndex();
                 break;
             }
         }
@@ -295,7 +293,7 @@ namespace ayeaye
         //vérification que l'identifiant est correcte
         if (!_parseRegex(ruleIdentifier, "[a-z]+(-[a-z]+)*"))
         {
-            throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, \"%0\", la convention de nommage des identifiants des règles est un ensemble de mots (composé de une ou plusieurs lettres minuscules de a à z) séparé par des traits d'unions, ex: \"rule-identifier\".", ruleIdentifier));
+            throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, \"%0\", la convention de nommage des identifiants des règles est un ensemble de mots (composé de une ou plusieurs lettres minuscules de a à z) séparé par des traits d'unions, ex: \"rule-identifier\".", ruleIdentifier));
         }
 
         //ajout à la pile d'indentifiants de règles
@@ -331,7 +329,7 @@ namespace ayeaye
             else
             {
                 //traitement des erreurs
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \")\" absent."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \")\" absent."));
             }
         }
     }
@@ -392,7 +390,7 @@ namespace ayeaye
             }
             else
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, sous-règle non défini après un symbole logique \"|\"."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, sous-règle non défini après un symbole logique \"|\"."));
             }
 
             _parseUnnecessaryCharacters();
@@ -561,12 +559,12 @@ namespace ayeaye
                 }
                 else
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \"]\" absent."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \"]\" absent."));
                 }
             }
             else
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"[\" et \"]\"."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"[\" et \"]\"."));
             }
         }
 
@@ -592,12 +590,12 @@ namespace ayeaye
                 }
                 else
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \")\" absent."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \")\" absent."));
                 }
             }
             else
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"(\" et \")\"."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, sous-règle non défini entre les symboles \"(\" et \")\"."));
             }
         }
 
@@ -771,7 +769,7 @@ namespace ayeaye
                                 //traitement des erreurs
                                 if (intervalSymbol.first > intervalSymbol.second)
                                 {
-                                    throw LanguageException(_languageIdentifier, _currentLine, tr("semantique incorrecte, l'intervale est incorrecte, le premier code de caractère est supérieur au deuxième."));
+                                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("semantique incorrecte, l'intervale est incorrecte, le premier code de caractère est supérieur au deuxième."));
                                 }
                             }
                             else
@@ -783,7 +781,7 @@ namespace ayeaye
                         else
                         {
                             //traitement des erreurs
-                            throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, code du caractère de fin d'intervale manquant après le symbole \",\"."));
+                            throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, code du caractère de fin d'intervale manquant après le symbole \",\"."));
                         }
                     }
                     else
@@ -804,7 +802,7 @@ namespace ayeaye
                 }
                 else
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, intervale ou constante d'intervale non défini entre les symboles \"{\" et \"}\"."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, intervale ou constante d'intervale non défini entre les symboles \"{\" et \"}\"."));
                 }
             }
 
@@ -820,7 +818,7 @@ namespace ayeaye
             }
             else
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \"}\" absent."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \"}\" absent."));
             }
         }
 
@@ -837,14 +835,14 @@ namespace ayeaye
         char c;
 
         //on parse le code du caractère
-        while (true)
+        while (_languageStructureBuffer->hasData())
         {
-            str += _languageFile.get();
+            str += _languageStructureBuffer->nextData();
 
             if (!_parseRegex(str, "[0-9]+"))
             {
                 str = str.substr(0, str.size() - 1);
-                _languageFile.unget();
+                _languageStructureBuffer->decrementIndex();
                 break;
             }
         }
@@ -858,7 +856,7 @@ namespace ayeaye
         //vérification que le code du caractère est correcte
         if (!_parseRegex(str, "[0-9]+"))
         {
-            throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, \"%0\", la convention de nommage des codes de caractères est un ensemble de chiffres, ex: \"123\".", str));
+            throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, \"%0\", la convention de nommage des codes de caractères est un ensemble de chiffres, ex: \"123\".", str));
         }
 
         //conversion chaine de caractères vers entier
@@ -883,19 +881,18 @@ namespace ayeaye
         {
             while (!_parseCharacter('\''))
             {
-                terminalSymbol += _languageFile.get();
-
-                //traitement des erreurs
-                if (!_languageFile.good())
+                if (!_languageStructureBuffer->hasData())
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole \"'\" absent."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \"'\" absent."));
                 }
+
+                terminalSymbol += _languageStructureBuffer->nextData();
             }
 
             //vérification que le symbole terminal n'est pas vide
             if (terminalSymbol.empty())
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"'\"."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles \"'\"."));
             }
 
             //ajout à la pile de symbole terminal
@@ -907,19 +904,18 @@ namespace ayeaye
         {
             while (!_parseCharacter('"'))
             {
-                terminalSymbol += _languageFile.get();
-
-                //traitement des erreurs
-                if (!_languageFile.good())
+                if (!_languageStructureBuffer->hasData())
                 {
-                    throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, symbole '\"' absent."));
+                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole '\"' absent."));
                 }
+
+                terminalSymbol += _languageStructureBuffer->nextData();
             }
 
             //vérification que le symbole terminal n'est pas vide
             if (terminalSymbol.empty())
             {
-                throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles '\"'."));
+                throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, il n'y a pas d'expression entre les symboles '\"'."));
             }
 
             //ajout à la pile de symbole terminal
@@ -935,21 +931,7 @@ namespace ayeaye
     {
         //unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
 
-        while (_languageFile.good())
-        {
-            if ((!_parseCharacter(' ')) &&
-                (!_parseCharacter('\t')))
-            {
-                //si c'est un caractère de fin de ligne, on incrémente le compteur de ligne
-                if (_parseCharacter('\n'))
-                {
-                    _currentLine++;
-                    continue;
-                }
-
-                break;
-            }
-        }
+        while (_parseCharacter(' ') || _parseCharacter('\t') || _parseCharacter('\n'));
     }
 
     bool LanguageStructureParser::_parseRegex(const string &str, const string &rstr)
@@ -967,7 +949,7 @@ namespace ayeaye
             {
                 for (unsigned int j = 0; j < i; j++)
                 {
-                    _languageFile.unget();
+                    _languageStructureBuffer->decrementIndex();
                 }
 
                 return false;
@@ -979,15 +961,15 @@ namespace ayeaye
 
     bool LanguageStructureParser::_parseCharacter(const char c) throw(LanguageException)
     {
-        //traitement des erreurs
-        if (_languageFile.eof())
+        //parse character
+        if (! _languageStructureBuffer->hasData())
         {
-            throw LanguageException(_languageIdentifier, _currentLine, tr("syntaxe incorrecte, fin de fichier inattendu."));
+            throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, fin de fichier inattendu."));
         }
 
-        if (_languageFile.get() != c)
-        {            
-            _languageFile.unget();
+        if (_languageStructureBuffer->nextData() != c)
+        {
+            _languageStructureBuffer->decrementIndex();
             return false;
         }
 

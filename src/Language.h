@@ -18,49 +18,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_PARAMETERS_H
-#define _AYEAYE_PARAMETERS_H
+#ifndef _AYEAYE_LANGUAGE_H
+#define _AYEAYE_LANGUAGE_H
 
     #include <iostream>
     #include <string>
-    #include <vector>
 
-    #include <getopt.h>
+    #include <archive.h>
+    #include <archive_entry.h>
 
     #include <boost/filesystem.hpp>
 
-    #include "Localization.h"
-    #include "ParametersException.h"
+    #include "FileBuffer.h"
+    #include "LanguageException.h"
+    #include "LanguageStructureParser.h"
+    #include "Parameters.h"
 
     using namespace std;
     using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Parameters
+        class Language
         {
         private:
             /* Attributs */
-            string _sourceDirectory = "";
-            vector<string> _sources;
-            string _languageDirectory = "";
-
+            Parameters &_parameters;
+            string _languageIdentifier = "";
 
         public:
             /* Constructeur */
-            Parameters(int argc, char **argv) throw(ParametersException);
+            Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException);
 
 
             /* Getters */
-            string &getSourceDirectory() {return _sourceDirectory;}
-            vector<string> &getSources() {return _sources;}
-            string &getLanguageDirectory() {return _languageDirectory;}
-
-
-        private:
-            /* Méthodes privées */
-            void _showHelp();
-            void _showVersion();
+            string &getLanguageIdentifier() {return _languageIdentifier;}
 
         };
     }

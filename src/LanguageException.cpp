@@ -22,7 +22,7 @@
 
 namespace ayeaye
 {
-    LanguageException::LanguageException(const string &language, const int line, const string &message)
+    LanguageException::LanguageException(const string &language, const unsigned int line, const string &message)
     {
         //conversion int en string
         ostringstream oss;

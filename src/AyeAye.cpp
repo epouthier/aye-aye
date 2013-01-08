@@ -27,13 +27,9 @@ namespace ayeaye
 		//analyse de paramètres d'éxécutions
 		Parameters parameters(argc, argv);
 
-		//chargement du language
-		
 
-        //parsage des sources
-        
-
-        //génération de code
+        //en cours de construction !!! BUILD !!!
+		Language zutLanguage(parameters, "zut");
 	}
 }
 

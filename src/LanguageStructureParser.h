@@ -23,21 +23,18 @@
 
     #include <iostream>
     #include <iterator>
-    #include <fstream>
     #include <sstream>
     #include <stack>
     #include <string>
 
-    #include <boost/filesystem.hpp>
     #include <boost/regex.hpp>
 
+    #include "FileBuffer.h"
     #include "LanguageException.h"
     #include "LanguageStructure.h"
     #include "Localization.h"
-    #include "Parameters.h"
 
     using namespace std;
-    using namespace boost::filesystem;
 
     namespace ayeaye
     {
@@ -45,10 +42,8 @@
         {
         private:
             /* Attributs */
-            Parameters &_parameters;
             string _languageIdentifier = "";
-            ifstream _languageFile;
-            int _currentLine = 1;
+            FileBuffer *_languageStructureBuffer = nullptr;
             stack<LSRuleIdentifier> _ruleIdentifierStack;
             stack<LSRuleParameters> _ruleParametersStack;
             stack<LSRuleDefinition> _ruleDefinitionStack;
@@ -63,15 +58,18 @@
 
         public:
             /* Constructeur */
-            LanguageStructureParser(Parameters &parameters) throw(LanguageException);
+            LanguageStructureParser();
 
-            void parse(const string &language) throw(LanguageException);
+
+            /* Méthodes */
+            void parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException);
 
 
         private:
             /* Méthodes privées */
+            void _checkLanguageStructure() throw(LanguageException);
             void _checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException);
-            bool _parseComment() throw(LanguageException);
+            void _parseLanguageStructure() throw(LanguageException);
             bool _parseRule() throw(LanguageException);
             bool _parseRuleIdentifier() throw(LanguageException);
             void _parseRuleParameters() throw(LanguageException);
@@ -90,6 +88,7 @@
             bool _parseRegex(const string &str, const string &rstr);
             bool _parseString(const string &str) throw(LanguageException);
             bool _parseCharacter(const char c) throw(LanguageException);
+
         };
     }
 

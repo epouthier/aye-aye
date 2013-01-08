@@ -62,7 +62,7 @@ include(FindBoost)
 find_package(
     Boost
     1.49.0
-    COMPONENTS filesystem program_options regex system
+    COMPONENTS filesystem regex system
     REQUIRED
 )
 

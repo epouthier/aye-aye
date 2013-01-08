@@ -7,6 +7,7 @@
 !!                                       !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+-> ouverture des fichiers de languages (ex: zut.ayeaye) archive
 -> supprimer les tr("euh ...")
 -> pour parser les commentaires dans le LanguageStructureParser faire deux pass : la première on enlève les commentaires, la deuxième on parse les règles
 
