@@ -61,7 +61,7 @@
             LanguageStructureParser();
 
 
-            /* Méthodes */
+            /* Méthodes publiques */
             LSRules parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException);
 
 

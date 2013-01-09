@@ -50,6 +50,7 @@
             bool hasData();
             char nextData();
             void decrementIndex();
+            void seekIndex(unsigned long index);
             void resetIndexAndLine();
 
         };

@@ -18,46 +18,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_LANGUAGE_H
-#define _AYEAYE_LANGUAGE_H
+#ifndef _AYEAYE_SOURCE_NODE_H
+#define _AYEAYE_SOURCE_NODE_H
 
     #include <iostream>
+    #include <iterator>
+    #include <list>
     #include <string>
 
-    #include <archive.h>
-    #include <archive_entry.h>
-
-    #include <boost/filesystem.hpp>
-
-    #include "FileBuffer.h"
-    #include "LanguageException.h"
     #include "LanguageStructure.h"
-    #include "LanguageStructureParser.h"
-    #include "Parameters.h"
 
     using namespace std;
-    using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Language
+        class SourceNode;
+
+        typedef string SourceNodeValue;
+        typedef list<SourceNode*> SourceNodeChildren;
+
+        class SourceNode
         {
         private:
             /* Attributs */
-            static LanguageStructureParser _languageStructureParser;
-            Parameters &_parameters;
-            string _languageIdentifier = "";
-            LSRules _languageStructure;
+            LSRuleIdentifier _ruleIdentifier = "";
+            SourceNodeValue _value = "";
+            SourceNodeChildren _children;
 
         public:
-            /* Constructeur */
-            Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException);
-
+            /* Constructeur et destructeur */
+            SourceNode(LSRuleIdentifier ruleIdentifier);
+            ~SourceNode();
 
             /* Getters */
-            string &getLanguageIdentifier() {return _languageIdentifier;}
-            LSRules &getLanguageStructure() {return _languageStructure;}
+            LSRuleIdentifier &getRuleIdentifier() {return _ruleIdentifier;}
+            SourceNodeValue &getValue() {return _value;}
+            SourceNodeChildren &getChildren() {return _children;}
 
+            /* Méthodes */
+            void attachValue(const SourceNodeValue &value);
+            void attachChild(SourceNode *child);
         };
     }
 

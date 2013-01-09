@@ -86,6 +86,14 @@ namespace ayeaye
         }
     }
 
+    void FileBuffer::seekIndex(unsigned long index)
+    {
+        if ((index >= 0) && (index < _bufferSize))
+        {
+            _bufferIndex = index;
+        }
+    }
+
     void FileBuffer::resetIndexAndLine()
     {
         _bufferIndex = 0;

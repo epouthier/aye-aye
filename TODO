@@ -10,3 +10,7 @@
 -> voir si on peu supprimer les tr("euh ...")
 -> voir si peu supprimer l'allocation dynamique du buffer de structure dans Language.cpp
 
+
+LanguageGenerator.h LanguageGenerator.cpp
+LanguageGeneratorParser.h LanguageGenerator.cpp
+

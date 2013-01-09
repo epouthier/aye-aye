@@ -18,46 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_LANGUAGE_H
-#define _AYEAYE_LANGUAGE_H
+#ifndef _AYEAYE_SOURCE_EXCEPTION_H
+#define _AYEAYE_SOURCE_EXCEPTION_H
 
     #include <iostream>
+    #include <sstream>
     #include <string>
 
-    #include <archive.h>
-    #include <archive_entry.h>
-
-    #include <boost/filesystem.hpp>
-
-    #include "FileBuffer.h"
-    #include "LanguageException.h"
-    #include "LanguageStructure.h"
-    #include "LanguageStructureParser.h"
-    #include "Parameters.h"
+    #include "Exception.h"
 
     using namespace std;
-    using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Language
+        class SourceException : public Exception
         {
-        private:
-            /* Attributs */
-            static LanguageStructureParser _languageStructureParser;
-            Parameters &_parameters;
-            string _languageIdentifier = "";
-            LSRules _languageStructure;
-
         public:
             /* Constructeur */
-            Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException);
-
-
-            /* Getters */
-            string &getLanguageIdentifier() {return _languageIdentifier;}
-            LSRules &getLanguageStructure() {return _languageStructure;}
-
+            SourceException(const string &source, const unsigned int line, const string &message);
+            SourceException(const string &source, const string &message);
+            SourceException(const string &message);
         };
     }
 

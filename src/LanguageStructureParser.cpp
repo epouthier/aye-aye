@@ -87,7 +87,7 @@ namespace ayeaye
         _checkLanguageStructure();
 
         //retourne les règles du language
-        
+        return _rules;
     }
 
     void LanguageStructureParser::_checkLanguageStructure() throw(LanguageException)
@@ -1042,6 +1042,7 @@ namespace ayeaye
     void LanguageStructureParser::_parseUnnecessaryCharacters() throw(LanguageException)
     {
         //unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
+
         while (_languageStructureBuffer->hasData() && (_parseCharacter(' ') || _parseCharacter('\t') || _parseCharacter('\n')));
     }
 
