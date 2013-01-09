@@ -43,13 +43,15 @@
             /* Getters */
             size_t getBufferSize() {return _bufferSize;}
             char *getBufferPtr() {return _buffer;}
+            unsigned long getCurrentIndex() {return _bufferIndex;}
             unsigned int getCurrentLine() {return _bufferLine;}
 
             /* Méthodes publiques */
             bool hasData();
             char nextData();
             void decrementIndex();
-            void reset();
+            void resetIndexAndLine();
+
         };
     }
 

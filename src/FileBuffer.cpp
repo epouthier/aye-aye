@@ -86,7 +86,7 @@ namespace ayeaye
         }
     }
 
-    void FileBuffer::reset()
+    void FileBuffer::resetIndexAndLine()
     {
         _bufferIndex = 0;
         _bufferLine = 1;

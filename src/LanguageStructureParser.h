@@ -62,7 +62,7 @@
 
 
             /* Méthodes */
-            void parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException);
+            LSRules parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException);
 
 
         private:
@@ -70,6 +70,7 @@
             void _checkLanguageStructure() throw(LanguageException);
             void _checkRuleDefinition(const LSRuleIdentifier &ruleIdentifier, const LSRuleDefinition &ruleDefinition) throw(LanguageException);
             void _parseLanguageStructure() throw(LanguageException);
+            bool _parseComment() throw(LanguageException);
             bool _parseRule() throw(LanguageException);
             bool _parseRuleIdentifier() throw(LanguageException);
             void _parseRuleParameters() throw(LanguageException);

@@ -28,61 +28,66 @@ namespace ayeaye
     {
     }
 
-    void LanguageStructureParser::parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException)
+    LSRules LanguageStructureParser::parseLanguageStructure(const string &languageIdentifier, FileBuffer *languageStructureBuffer) throw(LanguageException)
     {
         //initialisation des variables
         _languageIdentifier = languageIdentifier;
         _languageStructureBuffer = languageStructureBuffer;
 
         //initialisation et réinitialisation des piles
-        while (_ruleIdentifierStack.empty())
+        while (! _ruleIdentifierStack.empty())
         {
             _ruleIdentifierStack.pop();
         }
 
-        while (_ruleParametersStack.empty())
+        while (! _ruleParametersStack.empty())
         {
             _ruleParametersStack.pop();
         }
 
-        while (_ruleDefinitionStack.empty())
+        while (! _ruleDefinitionStack.empty())
         {
             _ruleDefinitionStack.pop();
         }
 
-        while (_expressionListStack.empty())
+        while (! _expressionListStack.empty())
         {
             _expressionListStack.pop();
         }
 
-        while (_expressionStack.empty())
+        while (! _expressionStack.empty())
         {
             _expressionStack.pop();
         }
 
-        while (_unaryExpressionStack.empty())
+        while (! _unaryExpressionStack.empty())
         {
             _unaryExpressionStack.pop();
         }
 
-        while (_terminalSymbolStack.empty())
+        while (! _terminalSymbolStack.empty())
         {
             _terminalSymbolStack.pop();
         }
 
-        while (_intervalSymbolStack.empty())
+        while (! _intervalSymbolStack.empty())
         {
             _intervalSymbolStack.pop();
         }
 
-        while (_characterCodeStack.empty())
+        while (! _characterCodeStack.empty())
         {
             _characterCodeStack.pop();
         }
 
+        _rules.clear();
+
         //parsage de la structure du langage
         _parseLanguageStructure();
         _checkLanguageStructure();
+
+        //retourne les règles du language
+        
     }
 
     void LanguageStructureParser::_checkLanguageStructure() throw(LanguageException)
@@ -168,16 +173,123 @@ namespace ayeaye
         }
     }
 
+    //debug
+    //===================================================================================
+    /*void printRuleDefinition(LSRuleDefinition ruleDefinition)
+    {
+        LSRuleDefinition::iterator itRuleDefinition;
+        LSExpressionList::iterator itExpression;
+
+        for (itRuleDefinition = ruleDefinition.begin(); itRuleDefinition != ruleDefinition.end(); )
+        {
+            for (itExpression = itRuleDefinition->begin(); itExpression != itRuleDefinition->end(); itExpression++)
+            {
+                cout << " ";
+
+                switch (itExpression->type)
+                {
+                    case LSExpressionType::LSET_UNARY_EXPRESSION:
+                        switch (itExpression->unaryExpression.type)
+                        {
+                            case LSUnaryExpressionType::LSUET_RULE_IDENTIFIER:
+                                cout << itExpression->unaryExpression.ruleIdentifier;
+                                break;
+                            case LSUnaryExpressionType::LSUET_TERMINAL_SYMBOL:
+                                cout << "\"" << itExpression->unaryExpression.terminalSymbol << "\"";
+                                break;
+                            case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
+                                cout << "{" << itExpression->unaryExpression.intervalSymbol.first << "," << itExpression->unaryExpression.intervalSymbol.second << "}";
+                                break;
+                            case LSUnaryExpressionType::LSUET_JOKER_SYMBOL:
+                                cout << ".";
+                                break;
+                        }
+                        break;
+                    case LSExpressionType::LSET_GROUP_EXPRESSION:
+                        cout << "(";
+                        printRuleDefinition(itExpression->ruleDefinition);
+                        cout << " )";
+                        break;
+                    case LSExpressionType::LSET_OPTIONAL_EXPRESSION:
+                        cout << "[";
+                        printRuleDefinition(itExpression->ruleDefinition);
+                        cout << " ]";
+                        break;
+                }
+
+                switch (itExpression->repetitionSymbol)
+                {
+                    case LSRepetitionSymbol::LSRS_ZERO_TO_N:
+                        cout << "*";
+                        break;
+                    case LSRepetitionSymbol::LSRS_ONE_TO_N:
+                        cout << "+";
+                        break;
+                }
+            }
+
+            itRuleDefinition++;
+
+            if (itRuleDefinition != ruleDefinition.end())
+            {
+                cout << " |";
+            }
+        }
+    }*/
+    //===================================================================================
+
     void LanguageStructureParser::_parseLanguageStructure() throw(LanguageException)
     {
         //on parse les règles
-        _languageStructureBuffer->reset();
+        _languageStructureBuffer->resetIndexAndLine();
 
         while (_languageStructureBuffer->hasData())
         {
             _parseUnnecessaryCharacters();
-            _parseRule();
+
+            if (_languageStructureBuffer->hasData())
+            {
+                if (! _parseComment())
+                {
+                    _parseRule();
+                }
+            }
         }
+
+        //debug
+        //======================================================
+        /*LSRules::iterator itRules;
+
+        for (itRules = _rules.begin(); itRules != _rules.end(); itRules++)
+        {
+            cout << itRules->first << " ::=";
+            printRuleDefinition(itRules->second.ruleDefinition);
+            cout << ";" << endl;
+        }*/
+        //======================================================
+    }
+
+    bool LanguageStructureParser::_parseComment() throw(LanguageException)
+    {
+        //comment ::= '(*' .* '*)';
+
+        //parse comment
+        if (_parseString("(*"))
+        {
+            while (!_parseString("*)"))
+            {
+                if (!_languageStructureBuffer->hasData())
+                {
+                    throw LanguageException(_languageIdentifier, tr("syntaxe incorrecte, symbole \"*)\" absent."));
+                }
+
+                _languageStructureBuffer->nextData();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     bool LanguageStructureParser::_parseRule() throw(LanguageException)
@@ -883,7 +995,7 @@ namespace ayeaye
             {
                 if (!_languageStructureBuffer->hasData())
                 {
-                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole \"'\" absent."));
+                    throw LanguageException(_languageIdentifier, tr("syntaxe incorrecte, symbole \"'\" absent."));
                 }
 
                 terminalSymbol += _languageStructureBuffer->nextData();
@@ -906,7 +1018,7 @@ namespace ayeaye
             {
                 if (!_languageStructureBuffer->hasData())
                 {
-                    throw LanguageException(_languageIdentifier, _languageStructureBuffer->getCurrentLine(), tr("syntaxe incorrecte, symbole '\"' absent."));
+                    throw LanguageException(_languageIdentifier, tr("syntaxe incorrecte, symbole '\"' absent."));
                 }
 
                 terminalSymbol += _languageStructureBuffer->nextData();
@@ -930,8 +1042,7 @@ namespace ayeaye
     void LanguageStructureParser::_parseUnnecessaryCharacters() throw(LanguageException)
     {
         //unnecessary-character ::= ( ' ' | '\t' | '\n' )*;
-
-        while (_parseCharacter(' ') || _parseCharacter('\t') || _parseCharacter('\n'));
+        while (_languageStructureBuffer->hasData() && (_parseCharacter(' ') || _parseCharacter('\t') || _parseCharacter('\n')));
     }
 
     bool LanguageStructureParser::_parseRegex(const string &str, const string &rstr)

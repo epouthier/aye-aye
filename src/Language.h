@@ -31,6 +31,7 @@
 
     #include "FileBuffer.h"
     #include "LanguageException.h"
+    #include "LanguageStructure.h"
     #include "LanguageStructureParser.h"
     #include "Parameters.h"
 
@@ -43,8 +44,10 @@
         {
         private:
             /* Attributs */
+            static LanguageStructureParser _languageStructureParser;
             Parameters &_parameters;
             string _languageIdentifier = "";
+            LSRules _languageStructure;
 
         public:
             /* Constructeur */

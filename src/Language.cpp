@@ -22,6 +22,8 @@
 
 namespace ayeaye
 {
+    LanguageStructureParser Language::_languageStructureParser;
+
     Language::Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException) :
         _parameters(parameters),
         _languageIdentifier(languageIdentifier)
@@ -73,7 +75,7 @@ namespace ayeaye
                 }
 
                 //parsage des données
-                
+                _languageStructure = _languageStructureParser.parseLanguageStructure(_languageIdentifier, languageStructureBuffer);
 
                 //déallocation du buffer
                 delete languageStructureBuffer;

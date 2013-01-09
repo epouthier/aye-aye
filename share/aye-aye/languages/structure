@@ -58,7 +58,7 @@ return-statement ::= "return" "(" expression ( "," expression )* ")" ";";
 
 
 (* expression *)
-expression ::= ( group-expression | value-identifier | variable-identifier] ) ( operator ( group-expression | value-identifier | variable-identifier ) )*;
+expression ::= ( group-expression | value-identifier | variable-identifier ) ( operator ( group-expression | value-identifier | variable-identifier ) )*;
 
 group-expression ::= "(" expression ")";
 
