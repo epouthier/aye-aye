@@ -28,9 +28,11 @@ using namespace ayeaye;
 
 int main(int argc, char **argv)
 {
+    AyeAye ayeaye;
+
 	try
 	{
-		AyeAye::run(argc, argv);
+		ayeaye.run(argc, argv);
 	}
 	catch (const exception &e)
 	{

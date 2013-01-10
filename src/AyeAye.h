@@ -22,17 +22,23 @@
 #define _AYEAYE_AYEAYE_H
 
     #include "Exception.h"
-    #include "Language.h"
-    #include "Source.h"
+    #include "LanguagePool.h"
     #include "Parameters.h"
 
 	namespace ayeaye
 	{
 		class AyeAye
 		{
+        private:
+            /* Attributs */
+            LanguagePool *_languagePool = nullptr;
+
 		public:
+            /* Constructeur */
+            AyeAye();
+
 			/* Méthode statique */
-			static void run(int argc, char **argv) throw(Exception);
+			void run(int argc, char **argv) throw(Exception);
 		};
 	}
 

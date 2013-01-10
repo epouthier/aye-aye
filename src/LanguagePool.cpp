@@ -35,7 +35,7 @@ namespace ayeaye
         //déchargement des languages
         for (itrLanguage = _pool.begin(); itrLanguage != _pool.end(); itrLanguage++)
         {
-            delete itrLanguage;
+            delete itrLanguage->second;
         }
     }
 
@@ -54,11 +54,24 @@ namespace ayeaye
         }
         else
         {
+            //scan du répertoires de langages principales
+            testPath = AYEAYE_LANGUAGE_DIRECTORY;
+            testPath /= languageIdentifier + ".ayeaye";
+
+            //vérification de l'éxistence du langage
+            if (exists(testPath))
+            {
+                nbrLanguage++;
+
+                languageFilePath = testPath;
+                multiPathError += ((nbrLanguage == 1) ? (testPath.native()) : (", " + testPath.native()));
+            }
+            
             //scan des répertoires de langages
-            for (unsigned int i = 0; i < _parameters.getLanguageDirectories(); i++)
+            for (unsigned int i = 0; i < _parameters.getLanguageDirectories().size(); i++)
             {
                 //construction du chemin
-                testPath = AYEAYE_LANGUAGE_DIRECTORY;
+                testPath = _parameters.getLanguageDirectories()[i];
                 testPath /= languageIdentifier + ".ayeaye";
 
                 //vérification de l'éxistence du langage

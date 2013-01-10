@@ -22,10 +22,18 @@
 
 namespace ayeaye
 {
+    AyeAye::AyeAye() :
+        _languagePool(nullptr)
+    {
+    }
+
 	void AyeAye::run(int argc, char **argv) throw(Exception)
 	{
 		//analyse de paramètres d'éxécutions
 		Parameters parameters(argc, argv);
+
+        //création d'une pool à langage
+        _languagePool = new LanguagePool(parameters);
 	}
 }
 
