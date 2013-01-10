@@ -29,6 +29,7 @@
 
     #include "Exception.h"
     #include "FileBuffer.h"
+    #include "Localization.h"
     #include "SourceException.h"
     #include "SourceParser.h"
 

@@ -22,9 +22,7 @@
 
 namespace ayeaye
 {
-    Parameters::Parameters(int argc, char **argv) throw(ParametersException) :
-        _sourceDirectory(""),
-        _languageDirectory(AYEAYE_LANGUAGE_DIRECTORY)
+    Parameters::Parameters(int argc, char **argv) throw(ParametersException)
     {
         //variables
         const option longOptions[] = {{"help", no_argument, nullptr, 'h'},
@@ -65,10 +63,10 @@ namespace ayeaye
                     exit(0);
                 break;
                 case 'S': //--source-directory=<directory> ou -S<directory>
-                    _sourceDirectory = optarg;
+                    _sourceDirectories.push_back(optarg);
                 break;
                 case 'L': //--language-directory=<directory> ou -L<directory>
-                    _languageDirectory = optarg;
+                    _languageDirectories.push_back(optarg);
                 break;
                 case 0:
                 break;
@@ -92,8 +90,8 @@ namespace ayeaye
              << tr("Options :") << endl
              << " -h, --help                                        " << tr("Affiche l'aide") << endl
              << " -v, --version                                     " << tr("Affiche le numéro de version") << endl
-             << " -S<directory>, --source-directory=<directory>     " << tr("Définie le répertoire des sources") << endl
-             << " -L<directory>, --language-directory=<directory>   " << tr("Définie le répertoire des langages") << endl;
+             << " -S<directory>, --source-directory=<directory>     " << tr("Définie un répertoire de sources") << endl
+             << " -L<directory>, --language-directory=<directory>   " << tr("Définie un répertoire de langages") << endl;
     }
 
     void Parameters::_showVersion()

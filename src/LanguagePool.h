@@ -18,49 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_PARAMETERS_H
-#define _AYEAYE_PARAMETERS_H
+#ifndef _AYEAYE_LANGUAGE_POOL_H
+#define _AYEAYE_LANGUAGE_POOL_H
 
     #include <iostream>
+    #include <iterator>
+    #include <map>
     #include <string>
     #include <vector>
 
-    #include <getopt.h>
-
     #include <boost/filesystem.hpp>
 
+    #include "Exception.h"
+    #include "Language.h"
+    #include "LanguageException.h"
     #include "Localization.h"
-    #include "ParametersException.h"
+    #include "Parameters.h"
 
     using namespace std;
     using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class Parameters
+        class LanguagePool
         {
         private:
             /* Attributs */
-            vector<string> _sourceDirectories;
-            vector<string> _sources;
-            vector<string> _languageDirectories;
-
+            Parameters &_parameters;
+            map<string, Language*> _pool;
 
         public:
-            /* Constructeur */
-            Parameters(int argc, char **argv) throw(ParametersException);
+            /* Constructeur et destructeur */
+            LanguagePool(Parameters &parameters);
+            ~LanguagePool();
 
-
-            /* Getters */
-            vector<string> &getSourceDirectories() {return _sourceDirectories;}
-            vector<string> &getSources() {return _sources;}
-            vector<string> &getLanguageDirectories() {return _languageDirectories;}
-
-
-        private:
-            /* Méthodes privées */
-            void _showHelp();
-            void _showVersion();
+            /* Méthodes publiques */
+            Language* getLanguage(const string &languageIdentifier) throw(Exception, LanguageException);
 
         };
     }

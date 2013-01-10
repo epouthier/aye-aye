@@ -24,26 +24,24 @@ namespace ayeaye
 {
     LanguageStructureParser Language::_languageStructureParser;
 
-    Language::Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException) :
-        _parameters(parameters),
-        _languageIdentifier(languageIdentifier)
+    Language::Language(const path &languageFilePath) throw(Exception, LanguageException) :
+        _languageIdentifier("")
     {
         //variables
-        path languageFilePath;
         archive *languageFile = nullptr;
         archive_entry *languageFileEntry = nullptr;
         string filePath = "";
         size_t fileSize = 0;
         FileBuffer *languageStructureBuffer = nullptr;
 
-        //construction du chemin
-        languageFilePath = _parameters.getLanguageDirectory();
-        languageFilePath /= _languageIdentifier + ".ayeaye";
+        //initialisation des variables
+        _languageIdentifier = languageFilePath.filename().native();
+        _languageIdentifier = _languageIdentifier.substr(0, _languageIdentifier.size() - 7);
 
         //vérification de l'existence du fichier
         if (!exists(languageFilePath))
         {
-            throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", _languageIdentifier));
+            throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", languageFilePath.native()));
         }
 
         //ouverture du fichier

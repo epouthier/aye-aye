@@ -34,7 +34,7 @@
     #include "LanguageException.h"
     #include "LanguageStructure.h"
     #include "LanguageStructureParser.h"
-    #include "Parameters.h"
+    #include "Localization.h"
 
     using namespace std;
     using namespace boost::filesystem;
@@ -46,13 +46,12 @@
         private:
             /* Attributs */
             static LanguageStructureParser _languageStructureParser;
-            Parameters &_parameters;
             string _languageIdentifier = "";
             LSRules _languageStructure;
 
         public:
             /* Constructeur */
-            Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException);
+            Language(const path &languageFilePath) throw(Exception, LanguageException);
 
 
             /* Getters */
