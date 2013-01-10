@@ -26,10 +26,6 @@ namespace ayeaye
 	{
 		//analyse de paramètres d'éxécutions
 		Parameters parameters(argc, argv);
-
-
-        //en cours de construction !!! BUILD !!!
-		Language zutLanguage(parameters, "zut");
 	}
 }
 

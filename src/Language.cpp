@@ -52,7 +52,7 @@ namespace ayeaye
         archive_read_support_format_all(languageFile);
         if (archive_read_open_filename(languageFile, languageFilePath.c_str(), 10240) != ARCHIVE_OK)
         {
-            throw LanguageException(tr("Le fichier du langage \"%0\" est invalide.", _languageIdentifier));
+            throw LanguageException(tr("La lecture du fichier du langage \"%0\" a échoué.", _languageIdentifier));
         }
 
         //lecture du fichier de langage

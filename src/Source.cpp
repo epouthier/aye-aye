@@ -23,5 +23,51 @@
 namespace ayeaye
 {
     SourceParser Source::_sourceParser;
+
+    Source::Source(const path &sourceFilePath) throw(SourceException)
+    {
+        //variables
+        ifstream sourceFile;
+        FileBuffer *sourceBuffer = nullptr;
+        size_t sourceFileSize = 0;
+
+        //vérification de l'existence du fichier
+        if (!exists(sourceFilePath))
+        {
+            throw SourceException(tr("Le fichier source \"%0\" n'existe pas.", sourceFilePath.native()));
+        }
+
+        //taille du fichier
+        sourceFileSize = file_size(sourceFilePath);
+
+        //ouverture du fichier
+        sourceFile.open(sourceFilePath.c_str(), ios::in);
+        if (sourceFile.is_open())
+        {
+            //allocation d'un buffer
+            sourceBuffer = new FileBuffer(sourceFileSize);
+
+            //récupération des données dans le fichier source
+            sourceFile.read(sourceBuffer->getBufferPtr(), sourceBuffer->getBufferSize());
+            if (sourceFile.bad())
+            {
+                throw SourceException(tr("La lecture du fichier source \"%0\" a échoué.", sourceFilePath.native()));
+            }
+
+            //fermeture du fichier
+            sourceFile.close();
+
+            //parsage des données
+            _sourceParser.parseSource(sourceFilePath.native(), sourceBuffer, nullptr); //BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILLD !!! BUILD !!! BUILD !!! BUILD !!!
+
+            //déallocation du buffer
+            delete sourceBuffer;
+        }
+        else
+        {
+            //traitement des erreurs
+            throw SourceException(tr("La lecture du fichier source \"%0\" a échoué.", sourceFilePath.native()));
+        }
+    }
 }
 

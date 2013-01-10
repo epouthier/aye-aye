@@ -22,6 +22,7 @@
 #define _AYEAYE_SOURCE_H
 
     #include <iostream>
+    #include <fstream>
     #include <string>
 
     #include <boost/filesystem.hpp>
@@ -41,14 +42,10 @@
         private:
             /* Attributs */
             static SourceParser _sourceParser;
-            string _sourceIdentifier = "";
 
         public:
             /* Constructeur */
-            
-
-            /* Getters */
-            string &getSourceIdentifier() {return _sourceIdentifier;}
+            Source(const path &sourceFilePath) throw(SourceException);
 
         };
     }

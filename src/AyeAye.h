@@ -23,6 +23,7 @@
 
     #include "Exception.h"
     #include "Language.h"
+    #include "Source.h"
     #include "Parameters.h"
 
 	namespace ayeaye
