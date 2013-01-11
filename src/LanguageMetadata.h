@@ -18,46 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AYEAYE_LANGUAGE_POOL_H
-#define _AYEAYE_LANGUAGE_POOL_H
+#ifndef _AYEAYE_LANGUAGE_METADATA_H
+#define _AYEAYE_LANGUAGE_METADATA_H
 
     #include <iostream>
-    #include <iterator>
+    #include <list>
     #include <map>
     #include <string>
-    #include <vector>
-
-    #include <boost/filesystem.hpp>
-
-    #include "Exception.h"
-    #include "Language.h"
-    #include "LanguageException.h"
-    #include "Localization.h"
-    #include "Parameters.h"
 
     using namespace std;
-    using namespace boost::filesystem;
 
     namespace ayeaye
     {
-        class LanguagePool
-        {
-        private:
-            /* Attributs */
-            Parameters &_parameters;
-            map<string, Language*> _pool;
+        //Rule indentifier
+        typedef string LMRuleIdentifier;
 
-        public:
-            /* Constructeur et destructeur */
-            LanguagePool(Parameters &parameters) throw(Exception, LanguageException);
-            ~LanguagePool();
+        //Rule definition and expression
+        typedef string LMExpression;
+        typedef list<LMExpression> LMRuleDefinition;
 
-            /* Méthodes publiques */
-
-        private:
-            void _scanLanguageDirectory(const path &languageDirectory) throw(Exception, LanguageException);
-
-        };
+        //Rules
+        typedef map<LMRuleIdentifier, LMRuleDefinition> LMRules;
     }
 
 #endif

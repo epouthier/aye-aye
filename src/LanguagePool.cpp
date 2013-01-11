@@ -22,9 +22,17 @@
 
 namespace ayeaye
 {
-    LanguagePool::LanguagePool(Parameters &parameters) :
+    LanguagePool::LanguagePool(Parameters &parameters) throw(Exception, LanguageException) :
         _parameters(parameters)
     {
+        //scan du répertoires de langages principales
+        _scanLanguageDirectory(AYEAYE_LANGUAGE_DIRECTORY);
+
+        //scan des répertoires de langages
+        for (unsigned int i = 0; i < _parameters.getLanguageDirectories().size(); i++)
+        {
+            _scanLanguageDirectory(path(_parameters.getLanguageDirectories()[i]));
+        }
     }
 
     LanguagePool::~LanguagePool()
@@ -39,73 +47,46 @@ namespace ayeaye
         }
     }
 
-    Language* LanguagePool::getLanguage(const string &languageIdentifier) throw(Exception, LanguageException)
+    void LanguagePool::_scanLanguageDirectory(const path &languageDirectory) throw(Exception, LanguageException)
     {
-        //variable
-        path testPath, languageFilePath;
-        unsigned int nbrLanguage = 0;
-        string multiPathError = "";
+        //variables
+        directory_iterator itrLanguageDirectory;
+        directory_iterator endItr;
+        path languageFilePath;
+        string languageIdentifier = "";
         Language *language = nullptr;
 
-        //si le langage est dans la pool
-        if (_pool.find(languageIdentifier) != _pool.end())
+        //scan du répertoire de langages
+        if (exists(languageDirectory) && is_directory(languageDirectory))
         {
-            return _pool[languageIdentifier];
+            for (itrLanguageDirectory = directory_iterator(languageDirectory); itrLanguageDirectory != endItr; itrLanguageDirectory++)
+            {
+                //si c'est un fichier .ayeaye
+                if (itrLanguageDirectory->path().extension() == ".ayeaye")
+                {
+                    //construction du chemin
+                    languageFilePath = itrLanguageDirectory->path();
+
+                    //extraction de l'identifiant du langage
+                    languageIdentifier = languageFilePath.filename().native();
+                    languageIdentifier = languageIdentifier.substr(0, languageIdentifier.size() - 7);
+
+                    //on le charge
+                    language = nullptr;
+                    language = new Language(languageFilePath);
+                    if (language == nullptr)
+                    {
+                        throw LanguageException(tr("Le chargement du language \"%0\" a échoué", languageIdentifier));
+                    }
+
+                    //ajout du langage dans la pool
+                    _pool[languageIdentifier] = language;
+                }
+            }
         }
         else
         {
-            //scan du répertoires de langages principales
-            testPath = AYEAYE_LANGUAGE_DIRECTORY;
-            testPath /= languageIdentifier + ".ayeaye";
-
-            //vérification de l'éxistence du langage
-            if (exists(testPath))
-            {
-                nbrLanguage++;
-
-                languageFilePath = testPath;
-                multiPathError += ((nbrLanguage == 1) ? (testPath.native()) : (", " + testPath.native()));
-            }
-            
-            //scan des répertoires de langages
-            for (unsigned int i = 0; i < _parameters.getLanguageDirectories().size(); i++)
-            {
-                //construction du chemin
-                testPath = _parameters.getLanguageDirectories()[i];
-                testPath /= languageIdentifier + ".ayeaye";
-
-                //vérification de l'éxistence du langage
-                if (exists(testPath))
-                {
-                    nbrLanguage++;
-
-                    languageFilePath = testPath;
-                    multiPathError += ((nbrLanguage == 1) ? (testPath.native()) : (", " + testPath.native()));
-                }
-            }
-
-            //traitement des erreurs
-            if (nbrLanguage == 0)
-            {
-                throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", languageIdentifier));
-            }
-            else if (nbrLanguage > 1)
-            {
-                throw LanguageException(tr("Le language \"%0\" existe dans plusieurs répertoire de language : \"%1\"", languageIdentifier, multiPathError));
-            }
-
-            //chargement du langage
-            language = new Language(languageFilePath);
-            if (language == nullptr)
-            {
-                throw LanguageException(tr("Le chargement du language \"%0\" a échoué", languageIdentifier));
-            }
-
-            //ajout du langage dans la pool
-            _pool[languageIdentifier] = language;
-
-            //on retourne le langage
-            return language;
+            throw LanguageException(tr("Le répertoire de langage \"%0\" n'existe pas.", languageDirectory.native()));
         }
     }
 }

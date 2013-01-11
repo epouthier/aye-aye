@@ -32,6 +32,8 @@
     #include "Exception.h"
     #include "FileBuffer.h"
     #include "LanguageException.h"
+    #include "LanguageMetadata.h"
+    #include "LanguageMetadataParser.h"
     #include "LanguageStructure.h"
     #include "LanguageStructureParser.h"
     #include "Localization.h"
@@ -45,18 +47,29 @@
         {
         private:
             /* Attributs */
+            static LanguageMetadataParser _languageMetadataParser;
             static LanguageStructureParser _languageStructureParser;
+            path _languageFilePath;
             string _languageIdentifier = "";
+            LMRules _languageMetadata;
             LSRules _languageStructure;
+            bool _languageStructureLoaded = false;
 
         public:
             /* Constructeur */
             Language(const path &languageFilePath) throw(Exception, LanguageException);
 
+            /* Méthode publique */
+            void loadStructure() throw(Exception, LanguageException);
 
             /* Getters */
             string &getLanguageIdentifier() {return _languageIdentifier;}
+            LMRules &getLanguageMetadata() {return _languageMetadata;}
             LSRules &getLanguageStructure() {return _languageStructure;}
+
+        private:
+            /* Méthodes privées */
+            FileBuffer *_extractFilePath(const string &extractFilePath) throw(Exception, LanguageException);
 
         };
     }

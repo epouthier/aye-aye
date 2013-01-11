@@ -19,7 +19,6 @@
 -->
 <language id="ayeaye-structure" _name="Aye-Aye Structure" version="2.0" _section="Others">
 	<metadata>
-		<property name="globs">structure.ayeaye</property>
 		<property name="block-comment-start">(*</property>
         <property name="block-comment-end">*)</property>
 	</metadata>
@@ -29,7 +28,6 @@
         <style id="ayeaye-operator-style" _name="Aye-Aye operator style" map-to="def:operator" />
 
         <style id="ayeaye-structure-operator-style" _name="Aye-Aye Structure operator style" map-to="def:operator" />
-
         <style id="ayeaye-structure-rule-identifier-style" _name="Aye-Aye Structure rule identifier style" map-to="def:identifier" />
         <style id="ayeaye-structure-terminal-symbol-style" _name="Aye-Aye Structure terminal symbol style" map-to="def:string" />
         <style id="ayeaye-structure-interval-symbol-style" _name="Aye-Aye Structure interval symbol style" map-to="def:string" />

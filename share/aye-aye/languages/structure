@@ -18,15 +18,12 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *)
 
-
-
 (* zut *)
 zut ::= ( comment | statement )*;
 
 comment ::= line-comment | block-comment;
 line-comment(value) ::= "//" .* {END-LINE};
 block-comment(value) ::= "/*" .* "*/";
-
 
 
 (* statement *)
@@ -56,7 +53,6 @@ call-function-statement ::= function-identifier "(" [ expression ( "," expressio
 return-statement ::= "return" "(" expression ( "," expression )* ")" ";";
 
 
-
 (* expression *)
 expression ::= ( group-expression | value-identifier | variable-identifier ) ( operator ( group-expression | value-identifier | variable-identifier ) )*;
 
@@ -64,7 +60,6 @@ group-expression ::= "(" expression ")";
 
 initialization-expression ::= [ "=" expression ];
 affectation-expression ::= increment-decrement-operator | affectation-operator expression;
-
 
 
 (* operator *)
@@ -76,7 +71,6 @@ logical-operator(value) ::= "&&" | "||" | "!";
 
 affectation-operator(value) ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=";
 increment-decrement-operator(value) ::= "++" | "--";
-
 
 
 (* identifier *)

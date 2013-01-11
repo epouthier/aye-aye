@@ -294,7 +294,7 @@ namespace ayeaye
 
     bool LanguageStructureParser::_parseRule() throw(LanguageException)
     {
-        //rule ::= rule-identifier unnecessary-character '::=' unnecessary-character rule-definition unnecessary-character ';';
+        //rule ::= rule-identifier unnecessary-character [ rule-parameters ] unnecessary-character '::=' unnecessary-character rule-definition unnecessary-character ';';
 
         //variables
         LSRuleIdentifier ruleIdentifier;
