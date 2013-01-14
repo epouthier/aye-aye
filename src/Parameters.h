@@ -42,6 +42,7 @@
         private:
             /* Attributs */
             vector<string> _sourceDirectories;
+            string _sourceLanguage = "";
             vector<string> _sources;
             vector<string> _languageDirectories;
 
@@ -53,6 +54,7 @@
 
             /* Getters */
             vector<string> &getSourceDirectories() {return _sourceDirectories;}
+            string &getSourceLanguage() {return _sourceLanguage;}
             vector<string> &getSources() {return _sources;}
             vector<string> &getLanguageDirectories() {return _languageDirectories;}
 

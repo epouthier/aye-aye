@@ -101,7 +101,7 @@ namespace ayeaye
             ostringstream oss;
             oss << nbLanguage;
 
-            throw LanguageException(tr("Il y a %0 langages dans les répertoires des langages qui supporte l'extension \"%1\" : %2", oss.str(), languageExtension, languageSupport));
+            throw LanguageException(tr("Il y a %0 langages dans les répertoires des langages qui supporte l'extension \"%1\" : %2.\nRun with option --source-language=<language>.", oss.str(), languageExtension, languageSupport));
         }
 
         return nullptr;

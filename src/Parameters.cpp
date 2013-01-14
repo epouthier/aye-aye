@@ -22,16 +22,18 @@
 
 namespace ayeaye
 {
-    Parameters::Parameters(int argc, char **argv) throw(ParametersException)
+    Parameters::Parameters(int argc, char **argv) throw(ParametersException) :
+        _sourceLanguage("")
     {
         //variables
         const option longOptions[] = {{"help", no_argument, nullptr, 'h'},
                                       {"version", no_argument, nullptr, 'v'},
                                       {"source-directory", required_argument, nullptr, 'S'},
+                                      {"source-language", required_argument, nullptr, 'l'},
                                       {"language-directory", required_argument, nullptr, 'L'},
                                       {nullptr, 0, nullptr, 0}};
 
-        const char *longOptionsStr = "hvS: L: ";
+        const char *longOptionsStr = "hvS: l: L: ";
 
         int longOptionsIndex = 0, opt = 0;
 
@@ -65,6 +67,14 @@ namespace ayeaye
                 case 'S': //--source-directory=<directory> ou -S<directory>
                     _sourceDirectories.push_back(optarg);
                 break;
+                case 'l': //--source-language=<language> ou -l<language>
+                    if (!_sourceLanguage.empty())
+                    {
+                        throw ParametersException(tr("L'option \"--source-language=<language> ou -l<language>\" est définie plusieurs fois."));
+                    }
+
+                    _sourceLanguage = optarg;
+                break;
                 case 'L': //--language-directory=<directory> ou -L<directory>
                     _languageDirectories.push_back(optarg);
                 break;
@@ -91,6 +101,7 @@ namespace ayeaye
              << " -h, --help                                        " << tr("Affiche l'aide") << endl
              << " -v, --version                                     " << tr("Affiche le numéro de version") << endl
              << " -S<directory>, --source-directory=<directory>     " << tr("Définie un répertoire de sources") << endl
+             << " -l<language>, --source-language=<language>        " << tr("Définie le langage des sources") << endl
              << " -L<directory>, --language-directory=<directory>   " << tr("Définie un répertoire de langages") << endl;
     }
 

@@ -60,16 +60,16 @@
             Language(const path &languageFilePath) throw(Exception, LanguageException);
 
             /* Méthode publique */
-            void loadStructure() throw(Exception, LanguageException);
+            LSRules &getLanguageStructure() throw(Exception, LanguageException);
 
             /* Getters */
             string &getLanguageIdentifier() {return _languageIdentifier;}
             LMRules &getLanguageMetadata() {return _languageMetadata;}
-            LSRules &getLanguageStructure() {return _languageStructure;}
 
         private:
             /* Méthodes privées */
             FileBuffer *_extractFilePath(const string &extractFilePath) throw(Exception, LanguageException);
+            void _loadStructure() throw(Exception, LanguageException);
 
         };
     }

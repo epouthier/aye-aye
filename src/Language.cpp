@@ -59,31 +59,14 @@ namespace ayeaye
         }
     }
 
-    void Language::loadStructure() throw(Exception, LanguageException)
+    LSRules &Language::getLanguageStructure() throw(Exception, LanguageException)
     {
-        //variables
-        FileBuffer *languageStructureBuffer = nullptr;
-
-        //traitement des erreurs
-        if (_languageStructureLoaded == true) {return;}
-
-        //extraction des meta-données dans le fichier de langage
-        languageStructureBuffer = _extractFilePath("structure");
-        if (languageStructureBuffer != nullptr)
+        if (!_languageStructureLoaded)
         {
-            //parsage des données
-            _languageStructure = _languageStructureParser.parseLanguageStructure(_languageIdentifier, languageStructureBuffer);
-
-            //déallocation du buffer
-            delete languageStructureBuffer;
-        }
-        else
-        {
-            throw LanguageException(tr("Le fichier du langage \"%0\" est invalide.", _languageIdentifier));
+            _loadStructure();
         }
 
-        //structure du langage chargé
-        _languageStructureLoaded = true;
+        return _languageStructure;
     }
 
     FileBuffer *Language::_extractFilePath(const string &extractFilePath) throw(Exception, LanguageException)
@@ -135,6 +118,33 @@ namespace ayeaye
         archive_read_free(languageFile);
 
         return nullptr;
+    }
+
+    void Language::_loadStructure() throw(Exception, LanguageException)
+    {
+        //variables
+        FileBuffer *languageStructureBuffer = nullptr;
+
+        //traitement des erreurs
+        if (_languageStructureLoaded == true) {return;}
+
+        //extraction des meta-données dans le fichier de langage
+        languageStructureBuffer = _extractFilePath("structure");
+        if (languageStructureBuffer != nullptr)
+        {
+            //parsage des données
+            _languageStructure = _languageStructureParser.parseLanguageStructure(_languageIdentifier, languageStructureBuffer);
+
+            //déallocation du buffer
+            delete languageStructureBuffer;
+        }
+        else
+        {
+            throw LanguageException(tr("Le fichier du langage \"%0\" est invalide.", _languageIdentifier));
+        }
+
+        //structure du langage chargé
+        _languageStructureLoaded = true;
     }
 }
 
