@@ -24,14 +24,15 @@
     #include <iostream>
     #include <iterator>
     #include <map>
+    #include <sstream>
     #include <string>
-    #include <vector>
 
     #include <boost/filesystem.hpp>
 
     #include "Exception.h"
     #include "Language.h"
     #include "LanguageException.h"
+    #include "LanguageMetadata.h"
     #include "Localization.h"
     #include "Parameters.h"
 
@@ -53,6 +54,8 @@
             ~LanguagePool();
 
             /* Méthodes publiques */
+            Language *getLanguageWithIdentifier(const string &languageIdentifier) throw(LanguageException);
+            Language *getLanguageWithExtension(const string &languageExtension) throw(LanguageException);
 
         private:
             void _scanLanguageDirectory(const path &languageDirectory) throw(Exception, LanguageException);

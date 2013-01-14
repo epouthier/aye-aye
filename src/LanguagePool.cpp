@@ -47,6 +47,66 @@ namespace ayeaye
         }
     }
 
+    Language *LanguagePool::getLanguageWithIdentifier(const string &languageIdentifier) throw(LanguageException)
+    {
+        if (_pool.find(languageIdentifier) != _pool.end())
+        {
+            return _pool[languageIdentifier];
+        }
+        else
+        {
+            throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", languageIdentifier));
+        }
+
+        return nullptr;
+    }
+
+    Language *LanguagePool::getLanguageWithExtension(const string &languageExtension) throw(LanguageException)
+    {
+        //variable
+        map<string, Language*>::const_iterator itrLanguage;
+        LMRuleDefinition::const_iterator itrExtension;
+        int nbLanguage = 0;
+        string languageSupport = "";
+        Language* language = nullptr;
+
+        //recherche du langage
+        for (itrLanguage = _pool.begin(); itrLanguage != _pool.end(); itrLanguage++)
+        {
+            for (itrExtension = itrLanguage->second->getLanguageMetadata()["extension"].begin();
+                 itrExtension != itrLanguage->second->getLanguageMetadata()["extension"].end();
+                 itrExtension++)
+            {
+                if (languageExtension == (*itrExtension))
+                {
+                    nbLanguage++;
+                    languageSupport += ((nbLanguage == 1) ? itrLanguage->first : (", " + itrLanguage->first));
+                    language = itrLanguage->second;
+                }
+            }
+        }
+
+        //traitement des erreurs
+        if (nbLanguage <= 0)
+        {
+            throw LanguageException(tr("Il n'y a aucun langage dans les répertoires des langages qui supporte l'extension \"%0\".", languageExtension));
+        }
+        else if (nbLanguage == 1)
+        {
+            return language;
+        }
+        else
+        {
+            //conversion int en string
+            ostringstream oss;
+            oss << nbLanguage;
+
+            throw LanguageException(tr("Il y a %0 langages dans les répertoires des langages qui supporte l'extension \"%1\" : %2", oss.str(), languageExtension, languageSupport));
+        }
+
+        return nullptr;
+    }
+
     void LanguagePool::_scanLanguageDirectory(const path &languageDirectory) throw(Exception, LanguageException)
     {
         //variables

@@ -27,6 +27,7 @@ namespace ayeaye
     Source::Source(const path &sourceFilePath) throw(SourceException)
     {
         //variables
+        Language *sourceLanguage = nullptr;
         ifstream sourceFile;
         FileBuffer *sourceBuffer = nullptr;
         size_t sourceFileSize = 0;
@@ -39,6 +40,9 @@ namespace ayeaye
 
         //taille du fichier
         sourceFileSize = file_size(sourceFilePath);
+
+        //récupération du langage
+        sourceLanguage = nullptr;
 
         //ouverture du fichier
         sourceFile.open(sourceFilePath.c_str(), ios::in);
@@ -58,7 +62,7 @@ namespace ayeaye
             sourceFile.close();
 
             //parsage des données
-            _sourceParser.parseSource(sourceFilePath.native(), sourceBuffer, nullptr); //BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILD !!! BUILLD !!! BUILD !!! BUILD !!! BUILD !!!
+            _sourceParser.parseSource(sourceFilePath.native(), sourceBuffer, sourceLanguage);
 
             //déallocation du buffer
             delete sourceBuffer;

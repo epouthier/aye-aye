@@ -34,6 +34,9 @@ namespace ayeaye
 
         //création d'une pool à langage
         _languagePool = new LanguagePool(parameters);
+
+        //analyse des sources
+        
 	}
 }
 
