@@ -1,0 +1,51 @@
+
+/* ceci est un commentaire multi-ligne */
+
+// ceci est commentaire sur une seule ligne
+
+var v1, v2 = false;
+
+v1 = true;
+v1 = false;
+v1 = 42;
+v1 = 42.0;
+v1 = "Hello world !!!";
+v1 = '1...2...1...2...Phase de test !!!';
+
+v1++;
+v1--;
+v1 += 1;
+v1 -= 2;
+v1 *= 3;
+v1 /= 4;
+v1 %= 5;
+
+v1 = 42 * ( 26 / 02 / 1990 ) + 1 - 1 % v2;
+
+if (v1 < v2)
+{
+}
+else if (v1 > v2)
+{
+}
+else if (v1 == v2)
+{
+}
+else
+{
+}
+
+while (v1 <= v2)
+{
+    break;
+}
+
+do
+{
+    continue;
+} while (v1 >= v2);
+
+for (var v3 = 42; v3 != v1; v3++)
+{
+}
+

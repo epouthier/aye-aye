@@ -25,6 +25,57 @@ namespace ayeaye
     LanguageMetadataParser Language::_languageMetadataParser;
     LanguageStructureParser Language::_languageStructureParser;
 
+    Language::Language(Parameters &parameters, const string &languageIdentifier) throw(Exception, LanguageException)
+    {
+        //variable
+        path testPath, languageFilePath;
+        unsigned int nbrLanguage = 0;
+        string multiPathError = "";
+
+        //scan du répertoires de langages principales
+        testPath = AYEAYE_LANGUAGE_DIRECTORY;
+        testPath /= languageIdentifier + ".ayeaye";
+
+        //vérification de l'éxistence du langage
+        if (exists(testPath))
+        {
+            nbrLanguage++;
+
+            languageFilePath = testPath;
+            multiPathError += ("\"" + testPath.native() + "\"");
+        }
+
+        //scan des répertoires de langages
+        for (unsigned int i = 0; i < parameters.getLanguageDirectories().size(); i++)
+        {
+            //construction du chemin
+            testPath = parameters.getLanguageDirectories()[i];
+            testPath /= languageIdentifier + ".ayeaye";
+
+            //vérification de l'éxistence du langage
+            if (exists(testPath))
+            {
+                nbrLanguage++;
+
+                languageFilePath = testPath;
+                multiPathError += ((nbrLanguage == 1) ? ("\"" + testPath.native() + "\"") : (", \"" + testPath.native() + "\""));
+            }
+        }
+
+        //traitement des erreurs
+        if (nbrLanguage == 0)
+        {
+            throw LanguageException(tr("Le langage \"%0\" n'existe pas dans le répertoire des langages.", languageIdentifier));
+        }
+        else if (nbrLanguage > 1)
+        {
+            throw LanguageException(tr("Le language \"%0\" existe dans plusieurs répertoire de language : %1", languageIdentifier, multiPathError));
+        }
+
+        //chargement du langage
+        Language(path(languageFilePath));
+    }
+
     Language::Language(const path &languageFilePath) throw(Exception, LanguageException) :
         _languageFilePath(languageFilePath),
         _languageIdentifier(""),

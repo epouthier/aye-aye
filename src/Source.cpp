@@ -24,10 +24,27 @@ namespace ayeaye
 {
     SourceParser Source::_sourceParser;
 
-    Source::Source(const path &sourceFilePath) throw(SourceException)
+    Source::Source(LanguagePool *languagePool, const path &sourceFilePath) throw(LanguageException, SourceException)
+    {
+        //variable
+        Language *sourceLanguage = nullptr;
+        
+        //vérification de l'existence du fichier
+        if (!exists(sourceFilePath))
+        {
+            throw SourceException(tr("Le fichier source \"%0\" n'existe pas.", sourceFilePath.native()));
+        }
+
+        //récupération du langage en fonction de l'extension de la source
+        sourceLanguage = languagePool->getLanguageWithExtension(sourceFilePath.extension().native());
+
+        //parsage de la source
+        Source(sourceLanguage, sourceFilePath);
+    }
+
+    Source::Source(Language *sourceLanguage, const path &sourceFilePath) throw(SourceException)
     {
         //variables
-        Language *sourceLanguage = nullptr;
         ifstream sourceFile;
         FileBuffer *sourceBuffer = nullptr;
         size_t sourceFileSize = 0;
@@ -40,9 +57,6 @@ namespace ayeaye
 
         //taille du fichier
         sourceFileSize = file_size(sourceFilePath);
-
-        //récupération du langage
-        sourceLanguage = nullptr;
 
         //ouverture du fichier
         sourceFile.open(sourceFilePath.c_str(), ios::in);

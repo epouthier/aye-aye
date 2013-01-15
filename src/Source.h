@@ -29,6 +29,9 @@
 
     #include "Exception.h"
     #include "FileBuffer.h"
+    #include "Language.h"
+    #include "LanguageException.h"
+    #include "LanguagePool.h"
     #include "Localization.h"
     #include "SourceException.h"
     #include "SourceParser.h"
@@ -46,7 +49,8 @@
 
         public:
             /* Constructeur */
-            Source(const path &sourceFilePath) throw(SourceException);
+            Source(LanguagePool *languagePool, const path &sourceFilePath) throw(LanguageException, SourceException);
+            Source(Language *sourceLanguage, const path &sourceFilePath) throw(SourceException);
 
         };
     }

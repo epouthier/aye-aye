@@ -21,9 +21,23 @@
 #ifndef _AYEAYE_AYEAYE_H
 #define _AYEAYE_AYEAYE_H
 
+    #include <iostream>
+    #include <string>
+    #include <vector>
+
+    #include <boost/filesystem.hpp>
+
     #include "Exception.h"
+    #include "Language.h"
+    #include "LanguageException.h"
     #include "LanguagePool.h"
+    #include "Localization.h"
     #include "Parameters.h"
+    #include "Source.h"
+    #include "SourceException.h"
+
+    using namespace std;
+    using namespace boost::filesystem;
 
 	namespace ayeaye
 	{
@@ -31,14 +45,20 @@
 		{
         private:
             /* Attributs */
+            Language *_sourceLanguage = nullptr;
             LanguagePool *_languagePool = nullptr;
 
 		public:
             /* Constructeur */
             AyeAye();
 
-			/* Méthode statique */
-			void run(int argc, char **argv) throw(Exception);
+			/* Méthode publique */
+			void run(int argc, char **argv) throw(Exception, LanguageException, SourceException);
+
+        private:
+            /* Méthodes privées */
+            void _scanSourceDirectory(const path &sourceDirectory) throw(Exception, LanguageException, SourceException);
+            void _parseSource(const path &sourceFilePath) throw(LanguageException, SourceException);
 		};
 	}
 
