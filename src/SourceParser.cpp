@@ -67,7 +67,13 @@ namespace ayeaye
         //initialisation du noeud principale
         rootNode = new SourceNode(_sourceIdentifier);
 
-        //initialisation du buffer
+        /*//initialisation du buffer
+        _sourceBuffer->reset();
+
+        //suppression des commentaires
+        */
+
+        //reinitialisation du buffer
         _sourceBuffer->reset();
 
         //parsage de la règle principale
@@ -88,8 +94,6 @@ namespace ayeaye
 
     bool SourceParser::_parseRule(SourceNode *rootNode, const LSRuleIdentifier &ruleIdentifier) throw(SourceException)
     {
-        cout << "_parseRule() << " << ruleIdentifier << endl; //debug
-
         //variable
         SourceNode *ruleNode = nullptr;
         SourceNodeValue ruleValue = "";
@@ -119,8 +123,6 @@ namespace ayeaye
 
     bool SourceParser::_parseRuleDefinition(SourceNode *ruleNode, SourceNodeValue &ruleValue, const LSRuleDefinition &ruleDefinition) throw(SourceException)
     {
-        cout << "_parseRuleDefinition()" << endl; //debug
-
         //variables
         LSRuleDefinition::const_iterator itRuleDefinition;
 
@@ -139,8 +141,6 @@ namespace ayeaye
 
     bool SourceParser::_parseExpressionList(SourceNode *ruleNode, SourceNodeValue &ruleValue, const LSExpressionList &expressionList) throw(SourceException)
     {
-        cout << "_parseExpressionList()" << endl; //debug
-
         //variables
         LSExpressionList::const_iterator itExpression;
         bool result, joker = false;
@@ -226,8 +226,6 @@ namespace ayeaye
 
     bool SourceParser::_parseExpression(SourceNode *ruleNode, SourceNodeValue &ruleValue, const LSExpression &expression, bool withSeparator) throw(SourceException)
     {
-        cout << "_parseExpression()" << endl; //debug
-
         //parse expression
         switch (expression.type)
         {
@@ -248,8 +246,6 @@ namespace ayeaye
 
     bool SourceParser::_parseUnaryExpression(SourceNode *ruleNode, SourceNodeValue &ruleValue, const LSUnaryExpression &unaryExpression, bool withSeparator) throw(SourceException)
     {
-        cout << "_parseUnaryExpression()" << endl; //debug
-
         //parse separator
         if (withSeparator && !_separatorParsing)
         {
@@ -278,8 +274,6 @@ namespace ayeaye
 
     bool SourceParser::_parseJokerSymbol(SourceNodeValue &ruleValue) throw(SourceException)
     {
-        cout << "_parseJokerSymbol()" << endl; //debug
-
         //variable
         char c;
 
@@ -300,8 +294,6 @@ namespace ayeaye
 
     bool SourceParser::_parseIntervalSymbol(SourceNodeValue &ruleValue, const LSIntervalSymbol &intervalSymbol) throw(SourceException)
     {
-        cout << "_parseIntervalSymbol() << " << intervalSymbol.first << ", " << intervalSymbol.second << endl; //debug
-
         //variable
         char c;
 
@@ -328,8 +320,6 @@ namespace ayeaye
 
     bool SourceParser::_parseTerminalSymbol(SourceNodeValue &ruleValue, const LSTerminalSymbol &terminalSymbol) throw(SourceException)
     {
-        cout << "_parseTerminalSymbol() << " << terminalSymbol << endl; //debug
-
         //parse terminal symbol
         for (unsigned int i = 0; i < terminalSymbol.size(); i++)
         {
@@ -352,8 +342,6 @@ namespace ayeaye
 
     bool SourceParser::_parseSeparator(SourceNode *ruleNode, SourceNodeValue &ruleValue) throw(SourceException)
     {
-        cout << "_parseSeparator()" << endl; //debug
-
         //variable
         bool result = false;
 
