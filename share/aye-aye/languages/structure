@@ -43,7 +43,7 @@ else-statement ::= "else" block-statement;
 
 while-statement ::= "while" "(" expression ")" block-statement;
 do-while-statement ::= "do" block-statement "while" "(" expression ")" ";";
-for-statement ::= "for" "(" variable-identifier initialization-expression ";" expression ";" variable-identifier affectation-expression ")" block-statement;
+for-statement ::= "for" "(" [ "var " ] variable-identifier initialization-expression ";" expression ";" variable-identifier affectation-expression ")" block-statement;
 
 break-statement ::= "break" ";";
 continue-statement ::= "continue" ";";

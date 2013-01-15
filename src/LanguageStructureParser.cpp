@@ -241,7 +241,7 @@ namespace ayeaye
     void LanguageStructureParser::_parseLanguageStructure() throw(LanguageException)
     {
         //on parse les règles
-        _languageStructureBuffer->resetIndexAndLine();
+        _languageStructureBuffer->reset();
 
         while (_languageStructureBuffer->hasData())
         {

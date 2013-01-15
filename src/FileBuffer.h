@@ -50,8 +50,9 @@
             bool hasData();
             char nextData();
             void decrementIndex();
-            void seekIndex(unsigned long index);
-            void resetIndexAndLine();
+            pair<unsigned long, unsigned int> saveState();
+            void restoreState(const pair<unsigned long, unsigned int> &saveStateBuffer);
+            void reset();
 
         };
     }

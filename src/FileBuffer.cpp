@@ -80,21 +80,36 @@ namespace ayeaye
 
     void FileBuffer::decrementIndex()
     {
+        char data;
+
         if (_bufferIndex > 0)
         {
             _bufferIndex--;
+
+            data = _buffer[_bufferIndex];
+
+            if (data == '\n')
+            {
+                _bufferLine--;
+            }
         }
     }
 
-    void FileBuffer::seekIndex(unsigned long index)
+    pair<unsigned long, unsigned int> FileBuffer::saveState()
     {
-        if ((index >= 0) && (index < _bufferSize))
+        return pair<unsigned long, unsigned int>(_bufferIndex, _bufferLine);
+    }
+
+    void FileBuffer::restoreState(const pair<unsigned long, unsigned int> &saveStateBuffer)
+    {
+        if ((saveStateBuffer.first >= 0) && (saveStateBuffer.first < _bufferSize))
         {
-            _bufferIndex = index;
+            _bufferIndex = saveStateBuffer.first;
+            _bufferLine = saveStateBuffer.second;
         }
     }
 
-    void FileBuffer::resetIndexAndLine()
+    void FileBuffer::reset()
     {
         _bufferIndex = 0;
         _bufferLine = 1;

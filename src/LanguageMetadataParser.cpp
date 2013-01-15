@@ -76,7 +76,7 @@ namespace ayeaye
     void LanguageMetadataParser::_parseLanguageMetadata() throw(LanguageException)
     {
         //on parse les règles
-        _languageMetadataBuffer->resetIndexAndLine();
+        _languageMetadataBuffer->reset();
 
         while (_languageMetadataBuffer->hasData())
         {
