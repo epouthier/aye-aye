@@ -25,7 +25,6 @@ namespace ayeaye
     FileBuffer::FileBuffer(size_t bufferSize) throw(Exception) :
         _bufferSize(bufferSize),
         _buffer(nullptr),
-        _bufferBlackList(nullptr),
         _bufferIndex(0),
         _bufferLine(1)
     {
@@ -36,19 +35,6 @@ namespace ayeaye
             if (_buffer == nullptr)
             {
                 throw Exception(tr("Erreur d'allocation de mémoire."));
-            }
-
-            //allocation de la liste noire
-            _bufferBlackList = new bool[_bufferSize];
-            if (_bufferBlackList == nullptr)
-            {
-                throw Exception(tr("Erreur d'allocation de mémoire."));
-            }
-
-            //initialisation de la liste noire
-            for (unsigned long i = 0; i < _bufferSize; i++)
-            {
-                _bufferBlackList[i] = false;
             }
         }
         else
@@ -64,38 +50,11 @@ namespace ayeaye
         {
             delete[] _buffer;
         }
-
-        //libération de la liste noire
-        if (_bufferBlackList != nullptr)
-        {
-            delete[] _bufferBlackList;
-        }
     }
 
     bool FileBuffer::hasData()
     {
-        //variable
-        unsigned long i = _bufferIndex;
-
-        //vérifie si il y a encore des données
-        while (true)
-        {
-            if (i < _bufferSize)
-            {
-                if (_bufferBlackList[i])
-                {
-                    i++;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
+        return (_bufferIndex < _bufferSize);
     }
 
     char FileBuffer::nextData()
@@ -106,22 +65,6 @@ namespace ayeaye
         //vérifie si il y a des données
         if (hasData())
         {
-            //on ignore tant qu'il y a des données sur liste noire
-            while (_bufferBlackList[_bufferIndex])
-            {
-                //on récupert la donnée
-                data = _buffer[_bufferIndex];
-
-                //on avance le curseur
-                _bufferIndex++;
-
-                //si c'est un caractère de fin de ligne on met à jour le compteur de ligne
-                if (data == '\n')
-                {
-                    _bufferLine++;
-                }
-            }
-
             //on récupert la donnée
             data = _buffer[_bufferIndex];
 
@@ -176,27 +119,6 @@ namespace ayeaye
     {
         _bufferIndex = 0;
         _bufferLine = 1;
-    }
-
-    void FileBuffer::blacklistData(unsigned long bufferIndexMin, unsigned long bufferIndexMax)
-    {
-        if (bufferIndexMin >= _bufferSize)
-        {
-            bufferIndexMin = _bufferSize - 1;
-        }
-
-        if (bufferIndexMax >= _bufferSize)
-        {
-            bufferIndexMax = _bufferSize - 1;
-        }
-
-        if (bufferIndexMin < bufferIndexMax)
-        {
-            for (bufferIndexMin; bufferIndexMin < bufferIndexMax; bufferIndexMin++)
-            {
-                _bufferBlackList[bufferIndexMin] = true;
-            }
-        }
     }
 }
 

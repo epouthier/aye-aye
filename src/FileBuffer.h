@@ -32,7 +32,6 @@
             /* Attributs */
             size_t _bufferSize = 0;
             char *_buffer = nullptr;
-            bool *_bufferBlackList = nullptr;
             unsigned long _bufferIndex = 0;
             unsigned int _bufferLine = 1;
 
@@ -54,7 +53,6 @@
             pair<unsigned long, unsigned int> saveState();
             void restoreState(const pair<unsigned long, unsigned int> &saveStateBuffer);
             void reset();
-            void blacklistData(unsigned long bufferIndexMin, unsigned long bufferIndexMax);
 
         };
     }

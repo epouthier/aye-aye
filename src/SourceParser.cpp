@@ -63,21 +63,17 @@ namespace ayeaye
     {
         //variable
         SourceNode* rootNode = nullptr;
+        unsigned long bufferIndexMin = 0;
 
         //initialisation du noeud principale
         rootNode = new SourceNode(_sourceIdentifier);
-
-        /*//initialisation du buffer
-        _sourceBuffer->reset();
-
-        //suppression des commentaires
-        */
 
         //reinitialisation du buffer
         _sourceBuffer->reset();
 
         //parsage de la règle principale
-        if (!_parseRule(rootNode, _sourceLanguage->getLanguageIdentifier()))
+        if ((!_parseRule(rootNode, _sourceLanguage->getLanguageIdentifier())) ||
+            (_sourceBuffer->hasData()))
         {
             //traitement des erreurs
             throw SourceException(_sourceIdentifier, _sourceBuffer->getCurrentLine(), tr("syntaxe incorrecte, la source ne correspond pas au langage défini."));
@@ -103,6 +99,12 @@ namespace ayeaye
 
         if (_parseRuleDefinition(ruleNode, ruleValue, _sourceLanguage->getLanguageStructure()[ruleIdentifier].ruleDefinition))
         {
+            //on parse les séparators si c'est la règle principale
+            if (ruleIdentifier == _sourceLanguage->getLanguageIdentifier())
+            {
+                while (_parseSeparator(ruleNode, ruleValue));
+            }
+
             //ajout de la valeur au noeud
             if (_sourceLanguage->getLanguageStructure()[ruleIdentifier].ruleParameters.isValue)
             {
@@ -264,9 +266,6 @@ namespace ayeaye
             case LSUnaryExpressionType::LSUET_INTERVAL_SYMBOL:
                 return _parseIntervalSymbol(ruleValue, unaryExpression.intervalSymbol);
                 break;
-            case LSUnaryExpressionType::LSUET_JOKER_SYMBOL:
-                return _parseJokerSymbol(ruleValue);
-                break;
         }
 
         return false;
@@ -300,7 +299,7 @@ namespace ayeaye
         //traitement des erreurs
         if (!_sourceBuffer->hasData())
         {
-            throw SourceException(_sourceIdentifier, _sourceBuffer->getCurrentLine(), tr("syntaxe incorrecte, fin de fichier inattendu."));
+            return false;
         }
 
         //parse interval symbol
@@ -370,7 +369,7 @@ namespace ayeaye
         //parse character
         if (!_sourceBuffer->hasData())
         {
-            throw SourceException(_sourceIdentifier, _sourceBuffer->getCurrentLine(), tr("syntaxe incorrecte, fin de fichier inattendu."));
+            return false;
         }
 
         if (_sourceBuffer->nextData() != c)
